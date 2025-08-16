@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+    --dominant-color: #841618;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #333333;
+    font-family: "Roboto", sans-serif;
+}
+
+a {
+    color: var(--dominant-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #5a1011; /* Slightly darker shade of the dominant color */
+}

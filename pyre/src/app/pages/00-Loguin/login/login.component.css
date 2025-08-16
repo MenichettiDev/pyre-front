@@ -1,0 +1,357 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+/* Fondo optimizado */
+.fullscreen-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.9));
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+}
+
+/* Container optimizado */
+.container {
+    width: 420px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333333;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    animation: fadeInForm 1.2s ease-out forwards;
+}
+
+.container h1 {
+    font-size: 32px;
+    text-align: center;
+    color: #333333;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-shadow: none;
+    letter-spacing: 1px;
+}
+
+/* Form groups optimizados */
+.form-group {
+    position: relative;
+    width: 100%;
+    height: 55px;
+    margin: 25px 0;
+}
+
+.form-group input {
+    width: 100%;
+    height: 100%;
+    background: rgba(240, 240, 240, 0.8);
+    border: 2px solid rgba(200, 200, 200, 0.8);
+    border-radius: 25px;
+    font-size: 16px;
+    color: #333333;
+    padding: 20px 50px 20px 20px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: rgba(100, 100, 100, 0.8);
+    font-weight: 400;
+}
+
+.form-group input:focus {
+    border-color: var(--dominant-color);
+    background: rgba(240, 240, 240, 1);
+    box-shadow: 0 0 10px rgba(132, 22, 24, 0.3);
+    transform: translateY(-2px);
+}
+
+.form-group input:valid {
+    border-color: var(--dominant-color);
+}
+
+.form-group i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: rgba(100, 100, 100, 0.8);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus+i {
+    color: #007BFF;
+}
+
+/* Recordar y olvidar contraseña */
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: 20px 0 25px;
+}
+
+.remember-forgot label {
+    display: flex;
+    align-items: center;
+    color: #555555;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.remember-forgot label:hover {
+    color: #ffffff;
+}
+
+.remember-forgot input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: #45B7D1;
+}
+
+.remember-forgot a {
+    color: var(--dominant-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.remember-forgot a:hover {
+    color: #5a1011; /* Slightly darker shade of the dominant color */
+    text-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
+}
+
+/* Mensajes de error */
+.error-message {
+    color: #DC3545;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-left: 10px;
+    opacity: 0;
+    animation: errorFadeIn 0.3s ease forwards;
+}
+
+@keyframes errorFadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Botón optimizado */
+.btn {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, var(--dominant-color), #5a1011);
+    border: none;
+    border-radius: 25px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(132, 22, 24, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a1011, var(--dominant-color));
+    box-shadow: 0 8px 25px rgba(132, 22, 24, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Estilo del enlace de registro */
+.register-link {
+    font-size: 14px;
+    text-align: center;
+    margin: 25px 0 15px;
+    color: #555555;
+}
+
+.register-link p {
+    margin: 0;
+}
+
+.register-link a {
+    color: var(--dominant-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #5a1011;
+    text-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
+}
+
+/* Botón de cerrar (X) */
+.close-btn {
+    background: transparent;
+    border: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    color: rgba(100, 100, 100, 0.8);
+    cursor: pointer;
+    z-index: 9999;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    color: var(--dominant-color);
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+/* Animación de entrada */
+@keyframes fadeInForm {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Efectos de micro-interacciones */
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .container h1 {
+        font-size: 28px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        height: 50px;
+        margin: 20px 0;
+    }
+
+    .form-group input {
+        font-size: 14px;
+        padding: 15px 40px 15px 15px;
+    }
+
+    .form-group i {
+        right: 15px;
+        font-size: 18px;
+    }
+
+    .btn {
+        height: 45px;
+        font-size: 14px;
+    }
+
+    .register-link {
+        font-size: 13px;
+    }
+
+    .remember-forgot {
+        font-size: 12px;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    .container {
+        width: 95%;
+        padding: 25px 15px;
+    }
+
+    .container h1 {
+        font-size: 24px;
+    }
+
+    .form-group {
+        height: 45px;
+        margin: 15px 0;
+    }
+
+    .form-group input {
+        font-size: 13px;
+        padding: 12px 35px 12px 12px;
+    }
+
+    .btn {
+        height: 40px;
+        font-size: 13px;
+    }
+}
+
+/* Animación de pulso para el botón cuando está habilitado */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 5px 15px rgba(69, 183, 209, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 5px 15px rgba(69, 183, 209, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 5px 15px rgba(69, 183, 209, 0.4);
+    }
+}
+
+.btn:not(:disabled) {
+    animation: pulse 2s infinite;
+}
