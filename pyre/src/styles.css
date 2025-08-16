@@ -2,11 +2,19 @@
 
 :root {
     --dominant-color: #841618;
+    --background-color: #121212;
+    --text-color: #e0e0e0;
+    --secondary-color: #5a1011;
+    /* Slightly darker shade of the dominant color */
+    --light-background-color: #ffffff;
+    /* Light mode background */
+    --light-text-color: #333333;
+    /* Light mode text color */
 }
 
 body {
-    background-color: #f8f9fa;
-    color: #333333;
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-family: "Roboto", sans-serif;
 }
 
@@ -17,5 +25,5 @@ a {
 }
 
 a:hover {
-    color: #5a1011; /* Slightly darker shade of the dominant color */
+    color: var(--secondary-color);
 }

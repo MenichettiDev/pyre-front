@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -18,6 +17,7 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   errorMessage: string | null = null;
+  isDarkMode: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -87,7 +87,6 @@ export class LoginComponent implements OnInit {
     }
   }
 
-
   isFieldInvalid(field: string): boolean {
     const control = this.loginForm.get(field);
     return control?.invalid && control?.touched ? true : false;
@@ -95,5 +94,17 @@ export class LoginComponent implements OnInit {
 
   closeLogin() {
     this.router.navigate(['/']); // Navega a la página de inicio (home)
+  }
+
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+    const root = document.documentElement;
+    if (this.isDarkMode) {
+      root.style.setProperty('--background-color', '#121212');
+      root.style.setProperty('--text-color', '#e0e0e0');
+    } else {
+      root.style.setProperty('--background-color', 'var(--light-background-color)');
+      root.style.setProperty('--text-color', 'var(--light-text-color)');
+    }
   }
 }

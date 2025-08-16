@@ -13,7 +13,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.9));
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.95));
     backdrop-filter: blur(15px);
     z-index: 1000;
     display: flex;
@@ -32,8 +32,8 @@ body {
 /* Container optimizado */
 .container {
     width: 420px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #333333;
+    background: rgba(36, 36, 36, 0.95);
+    color: var(--text-color);
     padding: 40px 30px;
     border-radius: 20px;
     box-shadow:
@@ -41,14 +41,14 @@ body {
         0 0 0 1px rgba(255, 255, 255, 0.1);
     position: relative;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     animation: fadeInForm 1.2s ease-out forwards;
 }
 
 .container h1 {
     font-size: 32px;
     text-align: center;
-    color: #333333;
+    color: var(--text-color);
     margin-bottom: 30px;
     font-weight: 700;
     text-shadow: none;
@@ -66,25 +66,25 @@ body {
 .form-group input {
     width: 100%;
     height: 100%;
-    background: rgba(240, 240, 240, 0.8);
-    border: 2px solid rgba(200, 200, 200, 0.8);
+    background: rgba(50, 50, 50, 0.8);
+    border: 2px solid rgba(100, 100, 100, 0.8);
     border-radius: 25px;
     font-size: 16px;
-    color: #333333;
+    color: var(--text-color);
     padding: 20px 50px 20px 20px;
     transition: all 0.3s ease;
     outline: none;
 }
 
 .form-group input::placeholder {
-    color: rgba(100, 100, 100, 0.8);
+    color: rgba(200, 200, 200, 0.6);
     font-weight: 400;
 }
 
 .form-group input:focus {
     border-color: var(--dominant-color);
     background: rgba(240, 240, 240, 1);
-    box-shadow: 0 0 10px rgba(132, 22, 24, 0.3);
+    box-shadow: 0 0 10px rgba(132, 22, 24, 0.5);
     transform: translateY(-2px);
 }
 
@@ -98,7 +98,7 @@ body {
     top: 50%;
     transform: translateY(-50%);
     font-size: 20px;
-    color: rgba(100, 100, 100, 0.8);
+    color: rgba(200, 200, 200, 0.6);
     transition: all 0.3s ease;
 }
 
@@ -117,7 +117,7 @@ body {
 .remember-forgot label {
     display: flex;
     align-items: center;
-    color: #555555;
+    color: var(--text-color);
     cursor: pointer;
     transition: color 0.3s ease;
 }
@@ -140,7 +140,7 @@ body {
 }
 
 .remember-forgot a:hover {
-    color: #5a1011; /* Slightly darker shade of the dominant color */
+    color: var(--secondary-color);
     text-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
 }
 
@@ -164,7 +164,7 @@ body {
 .btn {
     width: 100%;
     height: 50px;
-    background: linear-gradient(135deg, var(--dominant-color), #5a1011);
+    background: linear-gradient(135deg, var(--dominant-color), var(--secondary-color));
     border: none;
     border-radius: 25px;
     color: #ffffff;
@@ -179,7 +179,7 @@ body {
 }
 
 .btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #5a1011, var(--dominant-color));
+    background: linear-gradient(135deg, var(--secondary-color), var(--dominant-color));
     box-shadow: 0 8px 25px rgba(132, 22, 24, 0.6);
     transform: translateY(-2px);
 }
@@ -201,7 +201,7 @@ body {
     font-size: 14px;
     text-align: center;
     margin: 25px 0 15px;
-    color: #555555;
+    color: var(--text-color);
 }
 
 .register-link p {
@@ -216,7 +216,7 @@ body {
 }
 
 .register-link a:hover {
-    color: #5a1011;
+    color: var(--secondary-color);
     text-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
 }
 
@@ -228,7 +228,7 @@ body {
     top: 15px;
     right: 15px;
     font-size: 28px;
-    color: rgba(100, 100, 100, 0.8);
+    color: rgba(200, 200, 200, 0.7);
     cursor: pointer;
     z-index: 9999;
     width: 35px;
@@ -354,4 +354,23 @@ body {
 
 .btn:not(:disabled) {
     animation: pulse 2s infinite;
+}
+
+/* Estilo del botón de modo oscuro */
+.toggle-mode-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--dominant-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.toggle-mode-btn:hover {
+    background: var(--secondary-color);
 }
