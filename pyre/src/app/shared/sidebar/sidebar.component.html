@@ -1,0 +1,77 @@
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400&display=swap" rel="stylesheet">
+
+<!-- Barra superior para pantallas pequeñas -->
+<div class="top-bar" *ngIf="isSmallScreen">
+    <div class="logo-small">
+        <img src="" alt="Logo" (click)="navigateToHome()">
+    </div>
+    <div class="hamburger-menu" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div *ngIf="isLoggedIn">
+    <div class="sidebar" [ngClass]="{'hidden': !isSidebarVisible, 'visible': isSidebarVisible}">
+
+        <!-- Logo -->
+        <div class="sidebar-img">
+            <img src="" alt="Logo" (click)="navigateToHome()">
+        </div>
+
+        <!-- Perfil del usuario -->
+        <div class="user-profile" [ngClass]="getPerfilClass()">
+            <div class="profile-content">
+                <i [class]="getPerfilIcon()"></i>
+                <div class="profile-info">
+                    <div class="user-name">{{ nombreUsuario }}</div>
+                    <div class="user-lastname">{{ apellidoUsuario }}</div>
+                    <div class="profile-type">{{ getPerfilName() }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de menús principales -->
+        <ul class="nav flex-column">
+            <li *ngFor="let menu of visibleMenuItems" class="nav-item">
+                <!-- Enlace del menú principal -->
+                <a class="nav-link" (click)="toggleSubMenu(menu)">
+                    <i class="{{ menu.icono }}"></i> <!-- Icono del menú principal -->
+                    <span>{{ menu.descripcion }}</span>
+                    <i class="arrow" [ngClass]="{'rotate': isMenuExpanded(menu)}"
+                        *ngIf="getSubMenus(menu).length > 0"></i>
+                </a>
+
+                <!-- Submenús -->
+                <ul [ngClass]="{'sub-menu': true, 'expanded': isMenuExpanded(menu)}"
+                    *ngIf="getSubMenus(menu).length > 0">
+                    <li *ngFor="let subMenu of getSubMenus(menu)" class="nav-item">
+                        <a class="nav-link" [routerLink]="subMenu.link" routerLinkActive="active"
+                            (click)="navigateToSubMenu(subMenu)">
+                            <i class="{{ subMenu.icono }}" *ngIf="subMenu.icono"></i>
+                            <span>{{ subMenu.descripcion }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <!-- Botón de Logout -->
+        <div class="sidebar-logout">
+            <button (click)="confirmLogout()" class="btn-logout">
+                <i class="bx bx-log-out"></i> Logout
+            </button>
+        </div>
+
+        <!-- Modal de confirmación -->
+        <app-modal-confirm [visible]="isModalVisible" [title]="'Confirmación'"
+            [message]="'¿Estás seguro de que deseas cerrar sesión?'" (confirm)="handleConfirm()"
+            (cancel)="handleCancel()">
+        </app-modal-confirm>
+    </div>
+</div>
+
+<!-- Contenido principal -->
+<div class="main-content" [ngClass]="{'expanded': !isSidebarVisible}">
+    <!-- Aquí va el contenido principal de tu aplicación -->
+</div>
