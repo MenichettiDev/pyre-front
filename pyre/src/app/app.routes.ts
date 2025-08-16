@@ -6,4 +6,9 @@ export const routes: Routes = [
     {
         path: 'login',
         loadChildren: () => import('./pages/00-Login/login.routes').then(m => m.loginRoutes)
-    },];
+    },
+    {
+        path: 'inicio',
+        loadChildren: () => import('./pages/01-Inicio/inicio.routes').then(m => m.inicioRoutes)
+    },
+];
