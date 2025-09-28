@@ -1,10 +1,9 @@
-<div class="row ">
-
+<div class="app-container">
     <div *ngIf="isLoggedIn">
         <app-sidebar></app-sidebar>
     </div>
 
-    <div class="col-10">
+    <div class="main-wrapper" [class.with-sidebar]="isLoggedIn">
         <router-outlet></router-outlet>
     </div>
 </div>

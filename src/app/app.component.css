@@ -1,0 +1,41 @@
+/* ==========================================================
+   Layout principal de la aplicación
+   ========================================================== */
+.app-container {
+  width: 100%;
+  /* Evitar scrollbar permanente: considerar topbar fijo */
+  min-height: calc(100vh - 70px);
+  overflow-x: hidden; /* Prevenir scroll horizontal */
+}
+
+.main-wrapper {
+  min-height: calc(100vh - var(--topbar-height)); /* Ajustar altura para el topbar */
+  padding-top: var(--topbar-height); /* Reservar espacio para el topbar fijo sin empujar contenido */
+  transition: margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Cuando el sidebar está visible, ajustar el margen */
+.main-wrapper.with-sidebar {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+}
+
+/* ==========================================================
+   Responsive Design
+   ========================================================== */
+@media (max-width: 991.98px) {
+  .main-wrapper.with-sidebar {
+    margin-left: 0;
+    width: 100%;
+    /* El margin-top ya está aplicado globalmente para el topbar */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .main-wrapper {
+    margin-top: 60px; /* Topbar más pequeño en móviles */
+    min-height: calc(100vh - 60px);
+  }
+}

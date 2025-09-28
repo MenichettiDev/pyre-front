@@ -1,0 +1,191 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header de la página -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1">
+            <i class="bi bi-box-arrow-in-right text-success me-2"></i>
+            Registrar Préstamo
+          </h2>
+          <p class="text-muted mb-0">Registro de préstamo de herramientas a operarios</p>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary me-2" routerLink="/movimientos">
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Formulario de Préstamo -->
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-clipboard-check me-2"></i>
+                Datos del Préstamo
+              </h5>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row g-3">
+                  <!-- Selección de Herramienta -->
+                  <div class="col-md-6">
+                    <label class="form-label">Herramienta *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-tools"></i></span>
+                      <select class="form-select" required>
+                        <option value="">Seleccionar herramienta...</option>
+                        <option value="H-001">H-001 - Taladro Eléctrico Bosch</option>
+                        <option value="H-003">H-003 - Sierra Circular Makita</option>
+                        <option value="H-005">H-005 - Amoladora Angular DeWalt</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Operario -->
+                  <div class="col-md-6">
+                    <label class="form-label">Operario *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-person"></i></span>
+                      <select class="form-select" required>
+                        <option value="">Seleccionar operario...</option>
+                        <option value="001">Juan Pérez - Técnico Mecánico</option>
+                        <option value="002">María González - Soldadora</option>
+                        <option value="003">Carlos López - Electricista</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Fecha de Préstamo -->
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha de Préstamo *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                      <input type="date" class="form-control" required>
+                    </div>
+                  </div>
+
+                  <!-- Fecha Estimada de Devolución -->
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha Estimada Devolución *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
+                      <input type="date" class="form-control" required>
+                    </div>
+                  </div>
+
+                  <!-- Obra/Proyecto -->
+                  <div class="col-md-6">
+                    <label class="form-label">Obra/Proyecto</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-building"></i></span>
+                      <input type="text" class="form-control" placeholder="Ej: Construcción Edificio A">
+                    </div>
+                  </div>
+
+                  <!-- Prioridad -->
+                  <div class="col-md-6">
+                    <label class="form-label">Prioridad</label>
+                    <select class="form-select">
+                      <option value="baja">Baja</option>
+                      <option value="normal" selected>Normal</option>
+                      <option value="alta">Alta</option>
+                      <option value="urgente">Urgente</option>
+                    </select>
+                  </div>
+
+                  <!-- Observaciones -->
+                  <div class="col-12">
+                    <label class="form-label">Observaciones</label>
+                    <textarea class="form-control" rows="3" placeholder="Detalles adicionales del préstamo..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-flex gap-2 mt-4">
+                  <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Registrar Préstamo
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Limpiar Formulario
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de Información -->
+        <div class="col-lg-4">
+          <!-- Estado de la Herramienta -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Estado de Herramienta
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="badge bg-success me-2">Disponible</span>
+                <small class="text-muted">Última actualización: Hoy 09:30</small>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between mb-1">
+                <small>Ubicación:</small>
+                <small><strong>Almacén 1 - A3</strong></small>
+              </div>
+              <div class="d-flex justify-content-between mb-1">
+                <small>Último uso:</small>
+                <small>20/09/2025</small>
+              </div>
+              <div class="d-flex justify-content-between">
+                <small>Mantenimiento:</small>
+                <small class="text-success">Al día</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Préstamos Recientes -->
+          <div class="card">
+            <div class="card-header bg-light">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-clock-history me-2"></i>
+                Préstamos Recientes
+              </h6>
+            </div>
+            <div class="card-body p-2">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item border-0 px-2 py-2">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <small class="text-primary fw-bold">H-002</small>
+                      <div class="small text-muted">Soldadora MIG/MAG</div>
+                      <div class="small text-muted">Juan Pérez</div>
+                    </div>
+                    <span class="badge bg-warning text-dark">En uso</span>
+                  </div>
+                </div>
+                <div class="list-group-item border-0 px-2 py-2">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <small class="text-primary fw-bold">H-004</small>
+                      <div class="small text-muted">Compresor de Aire</div>
+                      <div class="small text-muted">María González</div>
+                    </div>
+                    <span class="badge bg-success">Devuelto</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

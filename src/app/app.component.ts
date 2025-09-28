@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { SidebarComponent } from "./shared/sidebar/sidebar.component";
+import { CommonModule } from '@angular/common';
+import { SidebarComponent } from "./shared/components/sidebar/sidebar.component";
 import { Subscription } from 'rxjs';
-import { AuthService } from './service/auth.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SidebarComponent],
+  imports: [RouterOutlet, SidebarComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -25,7 +26,10 @@ export class AppComponent implements OnInit, OnDestroy {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     public authService: AuthService
-  ) { }
+  ) {
+    // Inicializar el estado desde el inicio
+    this.isLoggedIn = this.authService.isLoggedIn();
+  }
 
   ngOnInit(): void {
     // Nos suscribimos al observable del servicio de autenticación para obtener el estado de login

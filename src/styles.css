@@ -1,21 +1,113 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* ==========================================================
+   Variables CSS globales - DESIGN TOKENS SYSTEM 🎨
+   ========================================================== */
 :root {
-    --dominant-color: #841618;
-    --background-color: #121212;
-    --text-color: #e0e0e0;
-    --secondary-color: #5a1011;
-    /* Slightly darker shade of the dominant color */
-    --light-background-color: #ffffff;
-    /* Light mode background */
-    --light-text-color: #333333;
-    /* Light mode text color */
+    /* 🏢 COLORES CORPORATIVOS */
+    --dominant-color: #841618;                    /* Rojo principal de la empresa */
+    --secondary-color: #5a1011;                  /* Rojo más oscuro */
+    --corporate-red: #dc261b;                    /* Rojo corporativo alternativo */
+
+    /* 🌈 COLORES PRINCIPALES */
+    --primary-blue: #007BFF;                     /* Azul principal (botones, enlaces) */
+    --primary-blue-dark: #0056b3;               /* Azul oscuro (hover, activo) */
+    --primary-blue-darker: #1a365d;             /* Azul muy oscuro (login, principal) */
+    --primary-blue-hover: #2c5282;              /* Azul hover intermedio */
+
+    /* 🎯 COLORES DE ESTADO */
+    --success-color: #4CAF50;                   /* Verde éxito */
+    --success-dark: #2E7D32;                    /* Verde éxito oscuro */
+    --warning-color: #ffc107;                   /* Amarillo advertencia */
+    --warning-bg: #fff3cd;                      /* Fondo amarillo claro */
+    --error-color: #DC3545;                     /* Rojo error */
+    --error-bg: #f8d7da;                        /* Fondo rojo claro */
+    --info-color: #17a2b8;                      /* Azul información */
+    --info-main: #2196F3;                       /* Azul información principal */
+    --info-dark: #1565C0;                       /* Azul información oscuro */
+
+    /* 🖤 COLORES NEUTROS */
+    --white: #ffffff;                           /* Blanco puro */
+    --black: #000000;                           /* Negro puro */
+    --text-color: #333333;                      /* Texto principal */
+    --text-secondary: #666666;                  /* Texto secundario */
+    --text-light: #999999;                      /* Texto claro/placeholders */
+    --text-muted: #e0e0e0;                      /* Texto muy claro */
+
+    /* 🌫️ COLORES DE FONDO */
+    --background-color: #f5f6f8;                /* Fondo general */
+    --light-background-color: #f8f9fa;          /* Fondo claro alternativo */
+    --card-background: #ffffff;                 /* Fondo de tarjetas */
+    --overlay-background: rgba(0, 0, 0, 0.4);   /* Fondo de overlay */
+
+    /* 🔲 COLORES DE BORDES */
+    --border-color: #ddd;                       /* Borde principal */
+    --border-light: #e0e0e0;                    /* Borde claro */
+    --border-disabled: #cccccc;                 /* Borde deshabilitado */
+
+    /* 🎨 GRADIENTES */
+    --gradient-gold: linear-gradient(135deg, #FFD700, #FFA500);
+    --gradient-green: linear-gradient(135deg, #4CAF50, #2E7D32);
+    --gradient-blue: linear-gradient(135deg, #2196F3, #1565C0);
+    --gradient-primary: linear-gradient(135deg, var(--dominant-color), var(--secondary-color));
+
+    /* 📏 ESPACIADOS */
+    --spacing-xs: 4px;                          /* Espaciado extra pequeño */
+    --spacing-sm: 8px;                          /* Espaciado pequeño */
+    --spacing-md: 16px;                         /* Espaciado medio */
+    --spacing-lg: 24px;                         /* Espaciado grande */
+    --spacing-xl: 32px;                         /* Espaciado extra grande */
+
+    /* 🌟 SOMBRAS */
+    --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);              /* Sombra suave */
+    --shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.15);            /* Sombra media */
+    --shadow-strong: 0 4px 20px rgba(0, 0, 0, 0.3);            /* Sombra fuerte */
+    --shadow-card: 0 5px 15px rgba(0, 0, 0, 0.3);              /* Sombra de tarjeta */
+
+    /* 📱 MEDIDAS */
+    --topbar-height: 70px;                      /* Altura fija de la topbar */
+    --border-radius: 4px;                       /* Radio de borde estándar */
+    --border-radius-lg: 8px;                    /* Radio de borde grande */
+    --input-height: 45px;                       /* Altura estándar de inputs */
+    --button-height: 45px;                      /* Altura estándar de botones */
+
+    /* ⚡ TRANSICIONES */
+    --transition-fast: 0.15s ease-in-out;      /* Transición rápida */
+    --transition-normal: 0.2s ease;            /* Transición normal */
+    --transition-slow: 0.3s ease;              /* Transición lenta */
+
+    /* 📝 TIPOGRAFÍA */
+    --font-family-primary: "Roboto", sans-serif;               /* Fuente principal */
+    --font-family-mono: monospace, 'Roboto', sans-serif;       /* Fuente monospace */
+    --font-size-xs: 11px;                       /* Texto extra pequeño */
+    --font-size-sm: 12px;                       /* Texto pequeño */
+    --font-size-md: 14px;                       /* Texto medio */
+    --font-size-lg: 16px;                       /* Texto grande */
+    --font-size-xl: 18px;                       /* Texto extra grande */
+}
+
+/* ==========================================================
+   Reset global y configuración base
+   ========================================================== */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden; /* Prevenir scroll horizontal global */
+    width: 100%;
 }
 
 body {
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Prevenir scroll horizontal */
+    /* Mantener altura completa; el offset del topbar se aplica en .main-wrapper */
+    height: 100%;
 }
 
 a {
@@ -26,4 +118,24 @@ a {
 
 a:hover {
     color: var(--secondary-color);
+}
+
+/* ==========================================================
+   Clases de utilidad para prevenir overflow
+   ========================================================== */
+.no-overflow {
+    overflow-x: hidden;
+}
+
+.container-fluid {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Estilos para el popup básico de SweetAlert2 (clase custom aplicada en TS) */
+.swal2-popup-basic {
+    font-family: Nunito, Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    border-radius: 8px !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
 }
