@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environment/environment';
+import { environment } from '../../../environments/environment';
 
 interface LoginResponse {
   status: number;
@@ -27,8 +27,8 @@ export class LoginService {
     private http: HttpClient
   ) { }
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password });
+  login(legajo: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { legajo, password });
   }
 
 }
