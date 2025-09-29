@@ -108,6 +108,14 @@ body {
     pointer-events: none; /* Para que no interfiera con clicks */
 }
 
+/* Asegurar que el icono de mostrar/ocultar contraseña sea clickable
+   y muestre el cursor de mano, sobrescribiendo la regla general
+   que desactiva pointer-events para otros iconos dentro de .form-group. */
+.form-group .password-toggle-icon {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
 /* Ícono para mostrar/ocultar contraseña - override de los estilos generales */
 .password-toggle-icon {
     position: absolute;
