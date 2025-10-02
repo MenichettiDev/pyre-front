@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy, inject, HostListener, ElementRef } from '
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AlertService } from '../../../core/services/alert.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
-// Usaremos SweetAlert2 cargado desde CDN en index.html
-declare const Swal: any;
+  // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
   id: number;
@@ -87,6 +87,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // Servicios inyectados
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private router = inject(Router);
   private el = inject(ElementRef);
 
@@ -242,24 +243,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   confirmLogout() {
     // Cerrar el dropdown antes de abrir el diálogo
     this.isPerfilModalVisible = false;
-    // SweetAlert2 por defecto centra el modal y su estilo básico está incluido via CDN
-    Swal.fire({
-      title: '¿Cerrar sesión?',
-      text: '¿Estás seguro de que deseas cerrar sesión?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, salir',
-      cancelButtonText: 'Cancelar',
-      focusCancel: true,
-      customClass: {
-        popup: 'swal2-popup-basic'
-      }
-    }).then((result: any) => {
-      if (result.isConfirmed) {
-        this.authService.logout();
-        this.router.navigate(['/login/login']);
-      }
-    });
+
+    // Usar AlertService (wrapper de SweetAlert2). Devuelve la promesa de Swal.fire
+    this.alertService
+      .confirm('¿Estás seguro de que deseas cerrar sesión?', '¿Cerrar sesión?')
+      .then((result: any) => {
+        if (result && result.isConfirmed) {
+          this.authService.logout();
+          this.router.navigate(['/login/login']);
+        }
+      });
   }
 
   // Método para toggle del modal de perfil
