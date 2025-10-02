@@ -8,11 +8,6 @@ export const herramientasRoutes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'listado',
-    loadComponent: () => import('./listado/listado.component').then(m => m.ListadoComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-  },
-  {
     path: 'alta',
     loadComponent: () => import('./alta/alta.component').then(m => m.AltaComponent),
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
