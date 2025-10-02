@@ -77,6 +77,23 @@
   --font-size-md: 14px;
   --font-size-lg: 16px;
   --font-size-xl: 18px;
+
+  /* Variables esenciales para el login */
+  --card-background: #ffffff; /* Fondo blanco */
+  --text-color: #333333; /* Texto oscuro */
+  --primary-blue-darker: #1a365d; /* Azul oscuro */
+  --white: #ffffff; /* Blanco puro */
+
+  /* Colores para los inputs */
+  --input-background: #ffffff; /* Fondo blanco */
+  --input-border: #cccccc; /* Borde gris claro */
+  --input-border-focus: #007BFF; /* Azul al hacer foco */
+  --input-placeholder: #999999; /* Placeholder gris */
+
+  /* Colores para el botón */
+  --button-background: #1a365d; /* Azul oscuro */
+  --button-hover: #0056b3; /* Azul más claro al hover */
+  --button-disabled: #cccccc; /* Gris claro para estado deshabilitado */
 }
 
 /* ==========================================================

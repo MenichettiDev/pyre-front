@@ -13,7 +13,7 @@ export const userRoutes: Routes = [
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
   },
   {
-    path: 'alta',
+    path: 'create', // Changed from 'alta' to 'create'
     loadComponent: () => import('./alta/alta.component').then(m => m.AltaComponent),
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
   },

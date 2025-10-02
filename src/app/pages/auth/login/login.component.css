@@ -80,11 +80,11 @@ body {
 .form-group input {
     width: 100%;
     height: var(--input-height);        /* 🎯 ¡Altura estándar! */
-    background: var(--white);           /* 🎯 ¡Blanco puro! */
-    border: 1px solid var(--border-color); /* 🎯 ¡Borde consistente! */
+    background: var(--input-background);
+    border: 1px solid var(--input-border);
+    color: var(--text-color);
     border-radius: var(--border-radius); /* 🎯 ¡Radio estándar! */
     font-size: var(--font-size-md);     /* 🎯 ¡Tamaño consistente! */
-    color: var(--text-color);           /* 🎯 ¡Color de texto! */
     padding: 0 45px 0 15px;
     transition: var(--transition-normal); /* 🎯 ¡Transición suave! */
     outline: none;
@@ -92,11 +92,11 @@ body {
 }
 
 .form-group input::placeholder {
-    color: var(--text-light);  /* 🎯 ¡Placeholder claro! */
+    color: var(--input-placeholder);
 }
 
 .form-group input:focus {
-    border-color: var(--primary-blue);  /* 🎯 ¡Azul principal al focus! */
+    border-color: var(--input-border-focus);
 }
 
 .form-group i {
@@ -236,7 +236,8 @@ input[inputmode="numeric"] {
 }
 
 .btn:hover:not(:disabled) {
-    background: var(--primary-blue-hover); /* 🎯 ¡Hover consistente! */
+    background: var(--button-hover);
+    color: var(--white); /* Aseguramos que el texto sea blanco para contraste */
 }
 
 .btn:disabled {

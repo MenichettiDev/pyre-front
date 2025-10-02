@@ -8,9 +8,11 @@ abstract class UserService {
 
 interface User {
 	id: number;
-	name?: string;
+	firstName?: string; // Changed from 'nombre'
+	lastName?: string; // Changed from 'apellido'
 	email?: string;
-	// ...añadir otros campos que use la app si es necesario...
+	role?: string; // Changed from 'rol'
+	// ...add other fields as needed...
 }
 
 @Component({
