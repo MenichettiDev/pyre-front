@@ -6,6 +6,7 @@ import { AlertService } from '../../../core/services/alert.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
 import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
+import { SidebarService } from '../../../core/services/sidebar.service';
   // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
@@ -72,10 +73,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 13, descripcion: 'Movimientos por Operario', icono: 'bi bi-person-lines-fill', link: '/movimientos/operario', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Gestión de Usuarios
-    { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/usuarios', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 15, descripcion: 'Listado de Empleados', icono: 'bi bi-list-ul', link: '/usuarios/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 16, descripcion: 'Alta / Edición de Usuario', icono: 'bi bi-person-plus', link: '/usuarios/alta', grupo: 'GM04', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/usuarios/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
+  { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+  { id: 15, descripcion: 'Listado de Empleados', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+  { id: 16, descripcion: 'Alta / Edición de Usuario', icono: 'bi bi-person-plus', link: '/user/create', grupo: 'GM04', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+  { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Reportes
     { id: 18, descripcion: 'Reportes', icono: 'bi bi-bar-chart', link: '/reportes', grupo: 'GM05', principal: true, orden: 5, estado: true, requiredAccess: [1, 2, 3, 4] },
@@ -96,6 +97,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
   private router = inject(Router);
   private el = inject(ElementRef);
+  private sidebarService = inject(SidebarService);
 
   @HostListener('window:resize')
   onResize() {
@@ -116,11 +118,24 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.authService.loggedIn$.subscribe((isLoggedIn: boolean) => {
         this.isLoggedIn = isLoggedIn;
-        this.isSidebarVisible = isLoggedIn && !this.isSmallScreen;
-
+        // Mostrar u ocultar el sidebar según pantalla y login
         if (isLoggedIn) {
+          if (this.isSmallScreen) {
+            this.sidebarService.hide();
+          } else {
+            this.sidebarService.show();
+          }
           this.loadUserData();
+        } else {
+          this.sidebarService.hide();
         }
+      })
+    );
+
+    // Suscribirse al estado del sidebar
+    this.subscription.add(
+      this.sidebarService.visible$.subscribe(v => {
+        this.isSidebarVisible = v;
       })
     );
 
@@ -233,7 +248,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (subMenu.link && subMenu.link !== '/') {
       this.router.navigate([subMenu.link]);
       if (this.isSmallScreen) {
-        this.isSidebarVisible = false;
+        this.sidebarService.hide();
       }
     }
   }
@@ -243,9 +258,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleSidebar() {
-    if (this.isSmallScreen) {
-      this.isSidebarVisible = !this.isSidebarVisible;
-    }
+    // Delegar en el servicio para mantener estado global
+    this.sidebarService.toggle();
   }
 
   navigateToHome() {

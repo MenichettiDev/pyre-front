@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, NgIf]
 })
 export class TopbarComponent {
   @Input() isLoggedIn: boolean = false;
