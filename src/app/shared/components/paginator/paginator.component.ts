@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule, NgIf, NgForOf } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 
 /**
  * Simple reusable paginator component.
@@ -14,7 +14,7 @@ import { CommonModule, NgIf, NgForOf } from '@angular/common';
 @Component({
   selector: 'app-paginator',
   standalone: true,
-  imports: [CommonModule, NgForOf],
+  imports: [CommonModule, NgFor],
   templateUrl: './paginator.component.html',
   styleUrls: ['./paginator.component.css']
 })
