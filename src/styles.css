@@ -258,10 +258,15 @@ a:hover {
 }
 
 /* ACCESIBILIDAD - Estados de foco para navegación por teclado */
+.swal2-popup.swal2-themed .swal2-confirm:focus,
 .swal2-popup.swal2-themed .swal2-confirm:focus-visible,
+.swal2-popup.swal2-themed .swal2-cancel:focus,
 .swal2-popup.swal2-themed .swal2-cancel:focus-visible {
-  outline: 2px solid var(--color-primary) !important; /* Color del outline al hacer foco */
-  outline-offset: 2px !important;
+  /* Reemplazamos el outline rígido por un ring suave usando box-shadow
+     para mantener la indicación de foco (accesibilidad) con mejor apariencia */
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(132, 22, 24, 0.12) !important; /* color-primary con alpha */
+  border-radius: calc(var(--border-radius) + 2px) !important;
 }
 
 /* SELECTORES ADICIONALES para mayor especificidad (override de SweetAlert2 defaults) */
