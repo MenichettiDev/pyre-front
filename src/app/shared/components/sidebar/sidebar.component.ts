@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
+import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
   // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
@@ -23,7 +24,7 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TopbarComponent], // Agregar TopbarComponent aquí
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
@@ -41,6 +42,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   nombreCompleto = '';
   userEmail: string = '';
   displayEmail: string = '';
+  // Nuevo: legajo
+  userLegajo: string = '';
+  displayLegajo: string = '';
+  // Etiqueta descriptiva que se mostrará en el topbar: "Legajo: 12345 — Nombre Apellido"
+  displayUserLabel: string = '';
 
   private subscription = new Subscription();
 
@@ -67,7 +73,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     // Gestión de Usuarios
     { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/usuarios', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 15, descripcion: 'Listado de Empleados', icono: 'bi bi-list-ul', link: '/usuarios/listado', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 15, descripcion: 'Listado de Empleados', icono: 'bi bi-list-ul', link: '/usuarios/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 16, descripcion: 'Alta / Edición de Usuario', icono: 'bi bi-person-plus', link: '/usuarios/alta', grupo: 'GM04', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/usuarios/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
@@ -132,15 +138,27 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const nombre = user.nombre || '';
       const apellido = user.apellido || '';
       this.nombreCompleto = `${nombre} ${apellido}`.trim() || 'Usuario';
-      // email
-      this.userEmail = user.email || user.email || '';
-      this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
+  // email (legacy)
+  this.userEmail = user.email || '';
+  this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
+
+  // legajo (preferir legajo en raw si existe)
+  const legajo = user.legajo ?? user.raw?.legajo ?? user.id ?? null;
+  this.userLegajo = legajo != null ? String(legajo) : '';
+  this.displayLegajo = this.userLegajo && this.userLegajo.length > 12 ? this.userLegajo.slice(0, 9) + '...' : this.userLegajo;
+      // Construir etiqueta descriptiva: incluir legajo y nombre completo si están disponibles
+      const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
+      const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
+      this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario';
     } else {
       // Sin usuario: ocultar menú y mostrar nombre por defecto
       this.id_acceso = 0;
       this.nombreCompleto = 'Usuario Demo';
       this.userEmail = '';
       this.displayEmail = '';
+      this.userLegajo = '';
+      this.displayLegajo = '';
+      this.displayUserLabel = 'Usuario';
     }
   }
 
@@ -258,6 +276,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Método para toggle del modal de perfil
   togglePerfilModal() {
     this.isPerfilModalVisible = !this.isPerfilModalVisible;
+  }
+
+  // Método para manejar el evento del topbar
+  onPerfilModalToggled(isVisible: boolean) {
+    this.isPerfilModalVisible = isVisible;
   }
 
   // Cerrar el dropdown si se hace click fuera

@@ -1,0 +1,145 @@
+/* Estilos para el componente Topbar */
+.top-bar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.5rem 1rem;
+}
+
+.topbar-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar-mobile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  position: relative; /* Necesario para el positioning del dropdown */
+}
+
+.user-email-pill {
+  display: flex;
+  align-items: center;
+  background-color: #e9ecef;
+  border-radius: 15px;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.5rem;
+  cursor: default; /* No debe parecer clickeable */
+}
+
+.profile-toggle {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.profile-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.profile-icon {
+  font-size: 1.5rem;
+  color: #495057;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 5px); /* Un poco de espacio debajo del icono */
+  right: 0;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1200;
+  min-width: 190px;
+}
+
+.profile-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.profile-dropdown li {
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.profile-dropdown li:hover {
+  background-color: rgba(0, 0, 0, 0.035);
+}
+
+.profile-dropdown li i {
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Estilos para los iconos del email */
+.email-icon {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-right: 0.25rem;
+}
+
+.email-text {
+  font-size: 0.85rem;
+  color: #495057;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilos específicos para mobile */
+.topbar-mobile .user-email-pill {
+  max-width: 120px;
+}
+
+.topbar-mobile .email-text {
+  max-width: 80px;
+}
+
+/* Título de la aplicación */
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #495057;
+  margin: 0;
+}
+
+.topbar-mobile .app-title {
+  font-size: 1rem;
+}
+
+/* Logo pequeño para mobile */
+.logo-small img {
+  height: 32px;
+  width: auto;
+  cursor: pointer;
+}
+
+.hamburger-menu {
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.hamburger-menu i {
+  font-size: 1.5rem;
+  color: #495057;
+}

@@ -1,0 +1,56 @@
+<!-- Topbar Component -->
+<div class="top-bar" *ngIf="isLoggedIn">
+  <!-- Layout para Desktop -->
+  <div class="topbar-desktop" *ngIf="!isSmallScreen">
+    <div class="topbar-center">
+      <h4 class="app-title">Sistema de Gestión de Herramientas</h4>
+    </div>
+
+    <div class="topbar-right">
+      <div class="user-info">
+        <div class="user-email-pill" *ngIf="userLabel" [title]="userLabel">
+          <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
+          <span class="email-text">{{ userLabel || displayLegajo || 'Usuario' }}</span>
+        </div>
+        <span class="profile-toggle" (click)="togglePerfilModal()" title="Ver perfil y opciones">
+          <i class="bi bi-person-circle profile-icon"></i>
+        </span>
+        <!-- Dropdown de perfil -->
+        <div class="profile-dropdown" *ngIf="isPerfilModalVisible">
+          <ul>
+            <li (click)="navigateToHome(); isPerfilModalVisible=false"><i class="bi bi-person me-2"></i> Perfil</li>
+            <li (click)="confirmLogout()"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layout para Mobile -->
+  <div class="topbar-mobile" *ngIf="isSmallScreen">
+    <div class="topbar-left">
+      <div class="logo-small">
+        <img src="assets/images/logos/logo.png" alt="Logo" (click)="navigateToHome()">
+      </div>
+      <div class="hamburger-menu" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </div>
+    </div>
+
+    <div class="topbar-center">
+      <h4 class="app-title">Sistema de Gestión</h4>
+    </div>
+
+    <div class="topbar-right">
+        <div class="user-info">
+        <div class="user-email-pill" *ngIf="userLabel" [title]="userLabel">
+          <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
+          <span class="email-text">{{ userLabel || displayLegajo || '' }}</span>
+        </div>
+        <span class="profile-toggle" (click)="togglePerfilModal()" title="Ver perfil y opciones">
+          <i class="bi bi-person-circle profile-icon"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
