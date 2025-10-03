@@ -14,22 +14,42 @@ import { CommonModule, NgIf, NgForOf } from '@angular/common';
 @Component({
   selector: 'app-paginator',
   standalone: true,
-  imports: [CommonModule, NgIf, NgForOf],
+  imports: [CommonModule, NgForOf],
   templateUrl: './paginator.component.html',
   styleUrls: ['./paginator.component.css']
 })
 export class PaginatorComponent {
   @Input() length = 0;
-  @Input() pageSize = 10;
+  // fixed page size across app (rows per page)
+  @Input() pageSize = 7;
   @Input() pageIndex = 0; // zero-based
-  @Input() pageSizeOptions: number[] = [5, 10, 25, 50];
 
   @Output() pageChange = new EventEmitter<{ pageIndex: number; pageSize: number }>();
   // temporary input model for page jump
   jumpPageInput: number | null = null;
-  jumpInputInvalid = false;
   // aria message for page changes
   ariaPageMessage = '';
+  // maximum number of page buttons to show in the center (odd number recommended)
+  maxPageButtons = 5;
+
+  /**
+   * Compute the array of page numbers to render as buttons (1-based).
+   * Centers around current page when possible.
+   */
+  get pageButtons(): number[] {
+    const total = this.totalPages;
+    const maxButtons = Math.max(1, Math.min(this.maxPageButtons, total));
+    const half = Math.floor(maxButtons / 2);
+    let start = Math.max(1, this.pageIndex + 1 - half);
+    let end = start + maxButtons - 1;
+    if (end > total) {
+      end = total;
+      start = Math.max(1, end - maxButtons + 1);
+    }
+    const res: number[] = [];
+    for (let i = start; i <= end; i++) res.push(i);
+    return res;
+  }
 
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.length / this.pageSize));
@@ -63,13 +83,7 @@ export class PaginatorComponent {
     this.goTo(this.pageIndex + 1);
   }
 
-  onPageSizeChange(event: Event) {
-    const value = +(event.target as HTMLSelectElement).value;
-    this.pageSize = value;
-    // reset to first page when page size changes
-    this.pageIndex = 0;
-    this.emitChange();
-  }
+  // page size is fixed; no runtime change handler
 
   private emitChange() {
     this.pageChange.emit({ pageIndex: this.pageIndex, pageSize: this.pageSize });
@@ -78,24 +92,27 @@ export class PaginatorComponent {
   // handle manual page jump (1-based input)
   onJumpPage(event: Event) {
     if (this.length === 0) {
-      this.jumpInputInvalid = false;
       return;
     }
     const vRaw = (event.target as HTMLInputElement).value;
     const v = +(vRaw);
+    // if invalid input, ignore silently (do not set an error flag)
     if (!Number.isFinite(v) || v <= 0) {
-      this.jumpInputInvalid = true;
       return;
     }
-    this.jumpInputInvalid = false;
     const newIndex = Math.max(0, Math.min(Math.floor(v) - 1, this.totalPages - 1));
-    if (newIndex !== this.pageIndex) {
-      this.pageIndex = newIndex;
+    // If the requested page is beyond bounds, normalize it to last page.
+    const requested = Math.floor(v);
+    const normalized = Math.max(1, Math.min(requested, this.totalPages));
+    const normalizedIndex = normalized - 1;
+    // update pageIndex and emit change only if different
+    if (normalizedIndex !== this.pageIndex) {
+      this.pageIndex = normalizedIndex;
       this.emitChange();
-      this.ariaPageMessage = `Página ${this.pageIndex + 1} de ${this.totalPages}`;
     }
-    // keep the input in sync
-    this.jumpPageInput = newIndex + 1;
+    // keep the input in sync and always update aria message to reflect normalized page
+    this.jumpPageInput = normalizedIndex + 1;
+    this.ariaPageMessage = `Página ${normalizedIndex + 1} de ${this.totalPages}`;
   }
 
   onJumpKeyEnter(event: KeyboardEvent) {

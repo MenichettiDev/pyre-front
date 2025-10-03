@@ -3,23 +3,20 @@
   <div class="paginator-center" role="navigation" aria-label="Paginación">
     <button title="Primera página" (click)="goTo(0)" [disabled]="pageIndex === 0">«</button>
     <button title="Página anterior" (click)="prev()" [disabled]="pageIndex === 0">‹</button>
-    <span class="page-indicator" title="Página {{ pageIndex + 1 }} de {{ totalPages }}">Página {{ pageIndex + 1 }} de {{ totalPages }}</span>
-    <label class="jump-label" for="jumpToPage">Ir a</label>
-    <input id="jumpToPage" type="number" [value]="jumpPageInput ?? (pageIndex + 1)" (change)="onJumpPage($event)" (keydown.enter)="onJumpKeyEnter($any($event))" min="1" [max]="totalPages" class="jump-input" placeholder="N° de página" [disabled]="length === 0">
-  <span class="jump-error" *ngIf="jumpInputInvalid">Número inválido</span>
-  <!-- aria live region for screen readers -->
-  <div aria-live="polite" class="sr-only">{{ ariaPageMessage }}</div>
+    <!-- Page buttons (center) -->
+    <!-- Page buttons (center) -->
+    <div class="page-buttons" role="group" aria-label="Seleccionar página">
+      <button *ngFor="let p of pageButtons" [class.active]="p === (pageIndex + 1)" (click)="goTo(p - 1)" [disabled]="length === 0">{{p}}</button>
+    </div>
+
+    <!-- aria live region for screen readers -->
+    <div aria-live="polite" class="sr-only">{{ ariaPageMessage }}</div>
     <button title="Página siguiente" (click)="next()" [disabled]="pageIndex >= totalPages - 1">›</button>
     <button title="Última página" (click)="goTo(totalPages - 1)" [disabled]="pageIndex >= totalPages - 1">»</button>
+    <!-- Move page indicator to the right of the last arrow -->
+    <span class="page-indicator" title="Página {{ pageIndex + 1 }} de {{ totalPages }}">Página {{ pageIndex + 1 }} de {{ totalPages }}</span>
   </div>
 
-  <!-- Derecha: selector de cantidad -->
-  <div class="paginator-right">
-    <div class="right-controls">
-      <label for="pageSizeSelect">Elementos por página:</label>
-      <select id="pageSizeSelect" [value]="pageSize" (change)="onPageSizeChange($event)">
-        <option *ngFor="let s of pageSizeOptions" [value]="s">{{s}}</option>
-      </select>
-    </div>
-  </div>
+  <!-- Right side left empty (page size fixed) -->
+  <div class="paginator-right" aria-hidden="true"></div>
 </div>

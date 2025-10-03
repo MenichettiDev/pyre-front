@@ -33,6 +33,31 @@
   gap:6px;cursor:pointer;
 }
 
+/* page number buttons container */
+:host .page-buttons{display:flex;gap:6px;align-items:center}
+:host .page-buttons button{min-width:38px;padding:6px 10px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);background:#fff}
+:host .page-buttons button.active{
+  background: var(--color-primary, #841618);
+  color: var(--color-white, #fff);
+  border-color: var(--color-primary-dark, #5a1011);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* nicer hover for page buttons */
+:host .page-buttons button:hover{
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+/* focus visible for accessibility */
+:host .page-buttons button:focus-visible{
+  outline: 3px solid rgba(132,22,24,0.12);
+  outline-offset: 2px;
+}
+
+/* Move page-indicator near the arrows (left of center) */
+:host .page-indicator{min-width:130px;text-align:left;font-size:13px;color:var(--muted,#6b7280);margin-left:8px;margin-right:8px}
+
 /* jump input */
 :host .jump-label{font-size:13px;color:var(--muted,#6b7280);margin-left:6px}
 :host .jump-input{width:72px;padding:6px 8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);text-align:center}
