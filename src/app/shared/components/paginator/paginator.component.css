@@ -1,0 +1,63 @@
+:host{display:block;font-family:inherit}
+
+
+:host .paginator{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 14px;
+  border-top:1px solid rgba(16,24,40,0.06);
+  background: var(--card-bg, #fff);
+  box-shadow: var(--card-shadow, none);
+  border-radius: 0 0 var(--radius,8px) var(--radius,8px);
+}
+
+/* center area: pagination controls centered */
+:host .paginator-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center}
+
+:host .paginator-right{display:flex;align-items:center;gap:8px}
+:host .right-controls{display:flex;align-items:center;gap:8px}
+:host label{font-size:13px;color:var(--muted,#6b7280)}
+:host select{min-width:72px;padding:6px 8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);background:var(--input-bg,#fff)}
+:host .paginator-info{color:var(--muted,#6b7280);font-size:13px}
+
+/* modern buttons */
+
+:host .paginator-center button{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid rgba(16,24,40,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(250,250,250,0.8));
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6px;cursor:pointer;
+}
+
+/* jump input */
+:host .jump-label{font-size:13px;color:var(--muted,#6b7280);margin-left:6px}
+:host .jump-input{width:72px;padding:6px 8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);text-align:center}
+ :host .jump-input[disabled]{opacity:.5;cursor:not-allowed;background:var(--disabled-bg,#f9fafb)}
+ :host .page-indicator[title]{cursor:help}
+
+:host .paginator-right button:hover{filter:brightness(.98)}
+:host .paginator-right button:active{transform:translateY(1px)}
+
+/* focus visible accessible outline */
+
+:host .paginator-center button:focus-visible,
+:host select:focus-visible{
+  outline:3px solid color-mix(in srgb, var(--primary,#0d6efd) 20%, white);
+  outline-offset:2px;
+}
+
+/* disabled */
+:host .paginator-right button[disabled]{opacity:.5;cursor:not-allowed}
+
+:host .page-indicator{min-width:110px;text-align:center;font-size:13px;color:var(--muted,#6b7280)}
+
+/* responsive: stack vertically on very small screens */
+@media (max-width:420px){
+  :host .paginator{flex-direction:column;align-items:stretch;gap:8px}
+  :host .paginator-center{justify-content:flex-start;flex-wrap:wrap;gap:6px}
+  :host .paginator-right{justify-content:flex-end}
+}
