@@ -1,0 +1,458 @@
+:host {
+  display: block;
+  font-family: inherit;
+
+  /* Tokens personalizables */
+  --paginator-padding-y: 10px;
+  --paginator-padding-x: 14px;
+  --paginator-gap: 12px;
+  --paginator-border: 1px solid rgba(16, 24, 40, 0.06);
+  --paginator-radius: 8px;
+  --paginator-bg: var(--card-bg, #fff);
+  --btn-bg: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.9));
+  --btn-border: 1px solid rgba(16, 24, 40, 0.06);
+  --btn-radius: 8px;
+  --btn-padding-xy: 8px 12px;
+  --btn-transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  --muted: #6b7280;
+}
+
+:host nav.paginator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--paginator-gap);
+  padding: var(--paginator-padding-y) var(--paginator-padding-x);
+  border-top: var(--paginator-border);
+  background: var(--paginator-bg);
+  border-radius: 0 0 var(--paginator-radius) var(--paginator-radius);
+}
+
+:host .paginator-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:host .records-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+:host .page-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+:host .page-buttons button,
+:host .paginator-right button {
+  padding: var(--btn-padding-xy);
+  min-width: 40px;
+  border: var(--btn-border);
+  background: var(--btn-bg);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition: var(--btn-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host .page-buttons button.active {
+  background: var(--color-primary, #841618);
+  color: var(--color-white, #fff);
+  border-color: var(--color-primary-dark, #5a1011);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+:host button:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+:host button:active {
+  transform: translateY(1px);
+}
+
+:host button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary, #0d6efd) 20%, white);
+  outline-offset: 2px;
+}
+
+:host button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:host .jump-to {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+:host .jump-input {
+  width: 60px;
+  padding: 6px 8px;
+  border-radius: var(--btn-radius);
+  border: var(--btn-border);
+  text-align: center;
+}
+
+:host .page-indicator {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 130px;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --paginator-bg: #1f2937;
+    --btn-bg: linear-gradient(180deg, #2d3748, #1a202c);
+    --btn-border: 1px solid rgba(255, 255, 255, 0.1);
+    --muted: #9ca3af;
+  }
+}
+
+@media (max-width: 420px) {
+  :host nav.paginator {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  :host .paginator-right {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  :host .page-buttons {
+    gap: 6px;
+  }
+
+  :host .page-buttons button {
+    min-width: 34px;
+    padding: 6px 8px;
+  }
+}
+
+/* wrapper to center external paginator under the table */
+:host .pyre-paginator-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center; /* center the paginator under the table */
+}
+
+/* ensure the app-paginator keeps a reasonable width when aligned right */
+:host .pyre-paginator-wrap app-paginator{
+  max-width:720px;
+  width:auto;
+}
+
+/* on small screens keep it centered and full-width for usability */
+@media (max-width:480px){
+  :host .pyre-paginator-wrap{justify-content:center}
+  :host .pyre-paginator-wrap app-paginator{width:100%;max-width:none}
+}
+
+/* Paginator bar (soft gray) - similar look to filter bar */
+:host .pyre-paginator-bar{
+  background: rgba(16,24,40,0.03);
+  padding:10px 16px;
+  margin-top:12px;
+  margin-bottom:6px;
+}
+:host .pyre-paginator-bar .pyre-paginator-wrap{justify-content:center}
+
+@media (max-width:480px){
+  :host .pyre-paginator-bar{padding:8px}
+}
+
+/* Custom table styles - eliminating striping and hover */
+:host ::ng-deep .custom-table {
+  /* Remove table striping (alternate rows) */
+  --dt-row-bg: transparent !important;
+  --dt-row-bg-even: transparent !important;
+
+  /* More relaxed spacing between rows - aumentado sutilmente */
+  --dt-row-padding: 14px 16px !important; /* Aumentado desde 12px a 14px vertical */
+
+  /* Softer row borders */
+  --dt-row-border: 1px solid rgba(16, 24, 40, 0.03) !important;
+}
+
+/* Eliminar completamente el efecto de filas alternadas */
+:host ::ng-deep .custom-table tbody tr {
+  background-color: transparent !important;
+  height: 48px !important; /* Establecer una altura mínima para las filas */
+  min-height: 48px !important; /* Asegurar altura mínima en diferentes navegadores */
+}
+
+:host ::ng-deep .custom-table tbody tr:nth-child(even),
+:host ::ng-deep .custom-table tbody tr:nth-child(odd),
+:host ::ng-deep .p-datatable-striped .p-datatable-tbody > tr:nth-child(even),
+:host ::ng-deep .p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
+:host ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-even,
+:host ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-odd {
+  background-color: transparent !important;
+}/* Remove hover effect - más específico para anular el CSS de PrimeNG */
+:host ::ng-deep .custom-table tbody tr:hover,
+:host ::ng-deep .p-datatable.custom-table tbody tr:hover,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+/* Asegurar que los estilos se apliquen incluso cuando PrimeNG usa clases adicionales */
+:host ::ng-deep .p-datatable.custom-table .p-datatable-tbody > tr:hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+/* Stronger header style - más destacados, centrados y compactos */
+:host ::ng-deep .custom-table thead th {
+  background: var(--color-bg-alt) !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  font-weight: 600 !important;
+  padding: 10px var(--spacing-md) !important; /* Padding vertical reducido */
+  color: var(--color-text-secondary) !important;
+  text-transform: uppercase !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  position: relative !important;
+  text-align: center !important; /* Centrar el texto */
+}
+
+/* Indicador sutil en los encabezados */
+:host ::ng-deep .custom-table thead th:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: var(--color-primary);
+  opacity: 0.7;
+  border-radius: var(--border-radius);
+}
+
+/* Optimized padding for cells and centered content */
+:host ::ng-deep .custom-table tbody td {
+  padding: 15px var(--spacing-md) !important; /* Aumentado a 15px vertical */
+  border-bottom: 1px solid var(--color-border-light) !important;
+  text-align: center !important; /* Centrar el contenido de las celdas */
+  color: var(--color-text) !important;
+  vertical-align: middle !important; /* Centrar contenido verticalmente */
+  font-size: 0.95rem !important; /* Aumentar tamaño de letra para mejor legibilidad */
+}
+
+/* Reemplazar texto negro por un gris suave en las celdas de la tabla */
+:host ::ng-deep .custom-table tbody td {
+  color: #4b5563 !important; /* gris medio (Tailwind slate-600) */
+}
+
+/* Asegurar que los botones e iconos dentro de las celdas mantengan buen contraste si necesitan color negro */
+:host ::ng-deep .custom-table tbody td .pi,
+:host ::ng-deep .custom-table tbody td button,
+:host ::ng-deep .custom-table tbody td a {
+  color: inherit !important;
+}
+
+/* Empty message styling */
+:host ::ng-deep .custom-table .empty-message {
+  padding: calc(var(--spacing-lg) + var(--spacing-sm)) var(--spacing-md) !important;
+  color: var(--color-text-muted) !important;
+  font-style: italic;
+}
+
+/* Filter bar styles - improved and more compact */
+:host .pyre-filter-bar{
+  background: var(--color-bg-alt);
+  border-radius:0; /* removed rounding as requested */
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: 20px; /* Aumentado: más separación entre filtros y tabla */
+  box-shadow: var(--shadow-sm);
+}
+:host .pyre-filter-bar .filter-row{
+  display:flex;
+  gap:16px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  position: relative; /* Para posicionar correctamente el botón */
+  padding-right: 150px; /* Espacio para el botón fijo */
+}
+:host .pyre-filter-bar .filter-item{display:flex;flex-direction:column;min-width:180px}
+:host .pyre-filter-bar label{
+  font-size:13px;
+  font-weight:600;
+  color:var(--color-text-secondary);
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+:host .pyre-filter-bar input,
+:host .pyre-filter-bar select{
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid rgba(16,24,40,0.1);
+  background:rgba(255,255,255,0.7);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+}
+
+:host .pyre-filter-bar input:focus,
+:host .pyre-filter-bar select:focus{
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Destacar más el campo activo */
+}
+:host .pyre-filter-bar .filter-actions{
+  position: absolute;
+  right: 0;
+  top: 50%; /* Centrar verticalmente */
+  transform: translateY(-50%); /* Ajustar la posición vertical perfectamente */
+  display: flex;
+  align-items: center;
+}
+
+:host .pyre-filter-bar .filter-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+/* Estilo moderno para el botón de búsqueda */
+:host .pyre-filter-bar .filter-actions .search-button {
+  background: #3b82f6 !important; /* Azul moderno (blue-500 de Tailwind) */
+  border: none !important;
+  color: white !important;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.3px !important;
+  min-width: 120px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(59, 130, 246, 0.2) !important;
+  transition: all 0.2s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+:host .pyre-filter-bar .filter-actions .search-button:hover {
+  background: #2563eb !important; /* Azul más oscuro al hover (blue-600) */
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+:host .pyre-filter-bar .filter-actions .search-button:active {
+  background: #1d4ed8 !important; /* Azul aún más oscuro al click (blue-700) */
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mejorar el icono dentro del botón */
+:host .pyre-filter-bar .filter-actions .pi-search {
+  font-size: 16px !important; /* Icono más grande */
+  margin-right: 2px !important;
+}
+
+@media (max-width:520px){
+  :host .pyre-filter-bar .filter-row{
+    flex-direction: column;
+    align-items: stretch;
+    padding-right: 0; /* Quitar padding en móvil */
+    padding-bottom: 60px; /* Espacio para el botón abajo */
+  }
+
+  :host .pyre-filter-bar .filter-item{
+    min-width: unset;
+    width: 100%;
+  }
+
+  :host .pyre-filter-bar .filter-actions{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px; /* Un poco de espacio desde abajo */
+    top: auto; /* Anular el top:50% */
+    transform: none; /* Anular el transform */
+    width: 100%;
+    justify-content: flex-end; /* Alineado a la derecha */
+    padding: 0 var(--spacing-md);
+  }
+
+  :host .pyre-filter-bar .filter-actions .search-button {
+    width: auto; /* Ancho automático en lugar de 100% */
+    min-width: 120px; /* Mantener ancho mínimo */
+    justify-content: center;
+    padding: 12px;
+  }
+}
+
+/* Reduce slightly the font-size on very small screens to keep layout tidy */
+@media (max-width: 420px) {
+  :host ::ng-deep .custom-table tbody td {
+    font-size: rem !important; /* fallback for readability on very small screens */
+  }
+}
+
+/* Estilos para mejorar la accesibilidad de los inputs (para soportar envío con Enter) */
+:host .pyre-filter-bar input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Destacar más el campo activo */
+}
+
+/* Indicador visual para campos que están en foco (ayuda a usuarios a saber qué campo está activo) */
+:host .pyre-filter-bar input:focus::placeholder {
+  color: rgba(59, 130, 246, 0.5); /* Color del placeholder cambia al enfocar */
+  transition: color 0.2s ease;
+}
+
+/* Añadir un leve efecto cuando se presiona Enter en un input (retroalimentación visual) */
+:host .pyre-filter-bar input.input-submitted {
+  animation: pulse-border 0.3s ease;
+}
+
+@keyframes pulse-border {
+  0% { border-color: rgba(59, 130, 246, 0.8); }
+  50% { border-color: rgba(59, 130, 246, 1); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4); }
+  100% { border-color: rgba(59, 130, 246, 0.8); }
+}
+
+/* --------------------------------------------------
+   Remove bottom separator under the last row
+   This hides any border-bottom or pseudo-element used
+   by the table or by PrimeNG renderers.
+   -------------------------------------------------- */
+:host ::ng-deep .custom-table tbody tr:last-child td {
+  /* remove only the bottom border, keep cells visible */
+  border-bottom: none !important;
+}
+
+/* Hide only pseudo-elements that may be used as separators */
+:host ::ng-deep .custom-table tbody tr:last-child::after,
+:host ::ng-deep .custom-table tbody tr:last-child td::after,
+:host ::ng-deep .p-datatable.custom-table .p-datatable-tbody > tr:last-child::after {
+  display: none !important;
+}
+
+/* Ensure PrimeNG table cell borders are removed but cells remain visible */
+:host ::ng-deep .p-datatable.custom-table .p-datatable-tbody > tr:last-child > td,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+

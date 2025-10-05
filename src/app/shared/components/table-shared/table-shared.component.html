@@ -1,0 +1,75 @@
+<div class="pyre-table-shell">
+  <!-- Filter bar (soft gray) -->
+  <div class="pyre-filter-bar">
+    <div class="filter-row">
+      <div class="filter-item">
+        <label>Nombre</label>
+        <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre" />
+      </div>
+      <div class="filter-item">
+        <label>Legajo</label>
+        <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" />
+      </div>
+      <div class="filter-item">
+        <label>Estado</label>
+        <select [(ngModel)]="filtroEstado">
+          <option value="">-- Todos --</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button pButton type="button" icon="pi pi-search" label="Buscar" class="p-button-primary search-button" (click)="onSearch()"></button>
+      </div>
+    </div>
+  </div>
+  <p-table [value]="value" [paginator]="!useExternalPaginator" [rows]="rows" [rowsPerPageOptions]="rowsPerPageOptions"
+           [responsiveLayout]="'stack'" [styleClass]="compact ? 'p-datatable-sm' : 'custom-table'"
+           [loading]="loading" [stripedRows]="false" [rowHover]="false"
+           currentPageReportTemplate="Pagina {first} a {last} de {totalRecords} registros">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let c of columns">{{ c }}</th>
+        <th style="width: 10%">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+      <tr [ngClass]="{'color-red': rowData?.activo == 0}">
+        <td *ngFor="let c of columns">{{ rowData[c] }}</td>
+        <td>
+          <div class="flex gap-2 justify-content-center">
+            <button pButton pRipple type="button" icon="pi pi-user-edit" pTooltip="Editar"
+                    class="p-button-rounded p-button-outlined p-button-warning p-button-sm"
+                    (click)="onEdit(rowData)"></button>
+            <button pButton pRipple type="button" icon="pi pi-eye" pTooltip="Ver detalles"
+                    class="p-button-rounded p-button-outlined p-button-info p-button-sm"
+                    (click)="onView(rowData)"></button>
+            <button pButton pRipple type="button" icon="pi pi-trash" pTooltip="Eliminar"
+                    class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
+                    (click)="onRemove(rowData)"></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="100%" class="text-center empty-message">No se encontraron registros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- External paginator (shared) -->
+  <div *ngIf="useExternalPaginator" class="pyre-paginator-bar">
+    <div class="pyre-paginator-wrap">
+      <app-paginator
+        [length]="length || totalRecords"
+        [pageSize]="rows"
+        [pageIndex]="pageIndex"
+        (pageChange)="onExternalPageChange($event)">
+      </app-paginator>
+    </div>
+  </div>
+</div>
