@@ -1,8 +1,8 @@
 <div class="paginator">
   <!-- Centro: flechas y número de página -->
   <div class="paginator-center" role="navigation" aria-label="Paginación">
-    <button title="Primera página" (click)="goTo(0)" [disabled]="pageIndex === 0">«</button>
-    <button title="Página anterior" (click)="prev()" [disabled]="pageIndex === 0">‹</button>
+  <button (click)="goTo(0)" [disabled]="pageIndex === 0" [ngbTooltip]="'Primera página'" container="body" tooltipClass="mi-tooltip" aria-label="Primera página">«</button>
+  <button (click)="prev()" [disabled]="pageIndex === 0" [ngbTooltip]="'Página anterior'" container="body" tooltipClass="mi-tooltip" aria-label="Página anterior">‹</button>
     <!-- Page buttons (center) -->
     <!-- Page buttons (center) -->
     <div class="page-buttons" role="group" aria-label="Seleccionar página">
@@ -11,12 +11,12 @@
 
     <!-- aria live region for screen readers -->
     <div aria-live="polite" class="sr-only">{{ ariaPageMessage }}</div>
-    <button title="Página siguiente" (click)="next()" [disabled]="pageIndex >= totalPages - 1">›</button>
-    <button title="Última página" (click)="goTo(totalPages - 1)" [disabled]="pageIndex >= totalPages - 1">»</button>
-    <!-- Move page indicator to the right of the last arrow -->
-    <span class="page-indicator" title="Página {{ pageIndex + 1 }} de {{ totalPages }}">Página {{ pageIndex + 1 }} de {{ totalPages }}</span>
+  <button (click)="next()" [disabled]="pageIndex >= totalPages - 1" [ngbTooltip]="'Página siguiente'" container="body" tooltipClass="mi-tooltip" aria-label="Página siguiente">›</button>
+  <button (click)="goTo(totalPages - 1)" [disabled]="pageIndex >= totalPages - 1" [ngbTooltip]="'Última página'" container="body" tooltipClass="mi-tooltip" aria-label="Última página">»</button>
   </div>
 
   <!-- Right side left empty (page size fixed) -->
-  <div class="paginator-right" aria-hidden="true"></div>
+  <div class="paginator-right" aria-hidden="false">
+  <span class="page-indicator" [ngbTooltip]="'Página ' + (pageIndex + 1) + ' de ' + totalPages" container="body" tooltipClass="mi-tooltip">Página {{ pageIndex + 1 }} de {{ totalPages }}</span>
+  </div>
 </div>

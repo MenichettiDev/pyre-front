@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 /**
  * Simple reusable paginator component.
@@ -14,14 +15,14 @@ import { CommonModule, NgFor } from '@angular/common';
 @Component({
   selector: 'app-paginator',
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, NgbTooltipModule],
   templateUrl: './paginator.component.html',
   styleUrls: ['./paginator.component.css']
 })
 export class PaginatorComponent {
   @Input() length = 0;
   // fixed page size across app (rows per page)
-  @Input() pageSize = 7;
+  @Input() pageSize = 6;
   @Input() pageIndex = 0; // zero-based
 
   @Output() pageChange = new EventEmitter<{ pageIndex: number; pageSize: number }>();

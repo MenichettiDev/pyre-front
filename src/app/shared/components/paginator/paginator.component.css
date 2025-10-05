@@ -5,65 +5,154 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  padding:10px 14px;
-  border-top:1px solid rgba(16,24,40,0.06);
-  background: var(--card-bg, #fff);
-  box-shadow: var(--card-shadow, none);
-  border-radius: 0 0 var(--radius,8px) var(--radius,8px);
+  gap:8px;
+  padding:8px 12px;
+  /* make transparent to integrate with surrounding bar */
+  border-top: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  position: relative;
+  z-index: 1; /* Ensure controls are above the table */
 }
 
 /* center area: pagination controls centered */
-:host .paginator-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center}
+:host .paginator-center{display:flex;align-items:center;gap:6px;flex:1;justify-content:center}
 
 :host .paginator-right{display:flex;align-items:center;gap:8px}
 :host .right-controls{display:flex;align-items:center;gap:8px}
-:host label{font-size:13px;color:var(--muted,#6b7280)}
-:host select{min-width:72px;padding:6px 8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);background:var(--input-bg,#fff)}
-:host .paginator-info{color:var(--muted,#6b7280);font-size:13px}
+:host label{font-size:12px;color:var(--muted,#64748b); font-weight:500;}
+:host select{
+  min-width:64px;
+  padding:5px 8px;
+  border-radius:8px;
+  border:1px solid rgba(16,24,40,0.1);
+  background:var(--input-bg,rgba(255,255,255,0.7));
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  color: #4b5563;
+  transition: all 0.2s ease;
+}
+:host select:hover {
+  background: rgba(255,255,255,0.9);
+  border-color: rgba(16,24,40,0.15);
+}
+:host .paginator-info{
+  color:var(--muted,#64748b);
+  font-size:12px;
+  font-weight: 500;
+}
 
 /* modern buttons */
 
 :host .paginator-center button{
-  padding:8px 12px;
-  border-radius:8px;
-  border:1px solid rgba(16,24,40,0.06);
-  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(250,250,250,0.8));
+  padding:4px 6px;
+  border-radius:9999px; /* pill look, softer */
+  border:1px solid transparent;
+  background: transparent;
   display:inline-flex;align-items:center;justify-content:center;
   gap:6px;cursor:pointer;
+  min-width:30px;min-height:30px;
 }
+
+/* Arrow/navigation buttons (first/prev/next/last) - higher contrast */
+:host .paginator-center > button{
+  min-width:36px;min-height:36px;padding:4px 8px;font-weight:600;color:var(--arrow-foreground,#5a6475); /* softer blue-gray for better contrast on gray bg */
+  border-radius:8px;border:1px solid rgba(16,24,40,0.12);
+  background-color: rgba(255,255,255,0.4); /* subtle white overlay for depth */
+  transition: all 0.18s ease;
+}
+:host .paginator-center > button:hover{
+  background:rgba(255,255,255,0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+}
+:host .paginator-center > button:focus-visible{box-shadow:0 0 0 4px rgba(14,65,110,0.12);outline:none}
 
 /* page number buttons container */
 :host .page-buttons{display:flex;gap:6px;align-items:center}
-:host .page-buttons button{min-width:38px;padding:6px 10px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);background:#fff}
+:host .page-buttons button{
+  min-width:30px;
+  height:30px;
+  padding:0 4px;
+  border-radius:8px;
+  border:1px solid rgba(155, 155, 155, 0.08);
+  background: rgba(255,255,255,0.5); /* subtle white bg for better contrast */
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:500;
+  color:var(--paginator-foreground, #4b5563); /* medium gray - softer than black */
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
 :host .page-buttons button.active{
-  background: var(--color-primary, #841618);
+  background: var(--color-primary, #a81f25);
   color: var(--color-white, #fff);
-  border-color: var(--color-primary-dark, #5a1011);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(168,31,37,0.12);
+  transform: translateY(-1px);
 }
 
 /* nicer hover for page buttons */
 :host .page-buttons button:hover{
-  filter: brightness(0.97);
+  background: rgba(255,255,255,0.89);
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  color: var(--paginator-hover-foreground, #374151); /* slightly darker on hover */
 }
 
 /* focus visible for accessibility */
 :host .page-buttons button:focus-visible{
-  outline: 3px solid rgba(132,22,24,0.12);
-  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(168,31,37,0.12);
+  outline: none;
+  background: rgba(255,255,255,0.85);
 }
 
+/* ensure icons/text inside buttons inherit contrasting color */
+:host .page-buttons button *{color:inherit}
+
 /* Move page-indicator near the arrows (left of center) */
-:host .page-indicator{min-width:130px;text-align:left;font-size:13px;color:var(--muted,#6b7280);margin-left:8px;margin-right:8px}
+:host .page-indicator{
+  min-width:85px;
+  text-align:right;
+  font-size:12px;
+  color:var(--muted,#64748b);
+  margin-left:6px;
+  margin-right:6px;
+  display:inline-block;
+  font-weight: 500;
+  background: rgba(255,255,255,0.28);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
 
 /* jump input */
-:host .jump-label{font-size:13px;color:var(--muted,#6b7280);margin-left:6px}
-:host .jump-input{width:72px;padding:6px 8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06);text-align:center}
- :host .jump-input[disabled]{opacity:.5;cursor:not-allowed;background:var(--disabled-bg,#f9fafb)}
+:host .jump-label{font-size:11px;color:var(--muted,#6b7280);margin-left:6px}
+:host .jump-input{
+  width:52px;
+  padding:4px 6px;
+  border-radius:8px;
+  border:1px solid rgba(16,24,40,0.1);
+  text-align:center;
+  background:rgba(255,255,255,0.7);
+  color: #4b5563;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+:host .jump-input:focus {
+  border-color: var(--color-primary, #a81f25);
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 3px rgba(168,31,37,0.1);
+  outline: none;
+}
+:host .jump-input[disabled]{
+  opacity:.6;
+  cursor:not-allowed;
+  background:rgba(245,245,245,0.5);
+}
  :host .page-indicator[title]{cursor:help}
 
+:host .paginator-right{display:flex;align-items:center;gap:8px}
 :host .paginator-right button:hover{filter:brightness(.98)}
 :host .paginator-right button:active{transform:translateY(1px)}
 
@@ -71,8 +160,9 @@
 
 :host .paginator-center button:focus-visible,
 :host select:focus-visible{
-  outline:3px solid color-mix(in srgb, var(--primary,#0d6efd) 20%, white);
-  outline-offset:2px;
+  box-shadow: 0 0 0 3px rgba(168,31,37,0.15);
+  outline: none;
+  border-color: var(--color-primary, #a81f25);
 }
 
 /* disabled */
