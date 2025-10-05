@@ -1,34 +1,33 @@
-<div class="user-list-container">
-  <h1>User List</h1>
-  <table class="user-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Render user rows dynamically -->
-      <tr *ngFor="let user of users">
-        <td>{{ user.id }}</td>
-        <td>{{ user.firstName }}</td> <!-- Changed from 'nombre' -->
-        <td>{{ user.lastName }}</td> <!-- Changed from 'apellido' -->
-        <td>{{ user.email }}</td>
-        <td>{{ user.role }}</td> <!-- Changed from 'rol' -->
-        <td>
-          <button (click)="editUser(user.id)">Edit</button>
-          <button (click)="deleteUser(user.id)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="pagination-controls">
-    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-    <span>Page {{ currentPage }}</span>
-    <button (click)="changePage(currentPage + 1)" [disabled]="users.length < pageSize">Next</button>
+<!-- Título y botón en la misma línea -->
+<div class="container-fluid page-shell page-header-container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="page-title mb-0" style="margin-left: 3rem;">Lista de Usuarios</h1>
+    <a class="btn btn-primary header-action" [routerLink]="['/user/create']">
+      <i class="bx bx-user-plus bx-tada me-1" aria-hidden="true"></i> Nuevo Usuario
+    </a>
+  </div>
+</div>
+
+<div class="user-list-container container-fluid page-shell mt-2">
+
+  <div *ngIf="loading" class="text-center py-4">Loading...</div>
+
+  <div *ngIf="!loading" class="soft-edge depth">
+
+    <div class="pyre-table-wrapper">
+      <app-table-shared
+        [value]="users"
+        [columns]="columns"
+        [rows]="pageSize"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [loading]="loading"
+        [useExternalPaginator]="true"
+        [pageIndex]="currentPage - 1"
+        [length]="totalItems"
+        (pageChange)="onPageChange($event)"
+        (edit)="editUser($event)"
+        (remove)="deleteUser($event)">
+      </app-table-shared>
+    </div>
   </div>
 </div>
