@@ -1,0 +1,19 @@
+/* Eliminación global de efectos hover y striping en la tabla de PrimeNG */
+.p-datatable.custom-table .p-datatable-tbody > tr:hover,
+.p-datatable.custom-table.p-datatable-hoverable-rows .p-datatable-tbody > tr:hover,
+.p-datatable.custom-table .p-datatable-tbody > tr {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Asegurarse que no hay filas alternadas (striping) */
+.p-datatable.custom-table .p-datatable-tbody > tr:nth-child(even),
+.p-datatable.custom-table .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: transparent !important;
+}
+
+/* Quitar bordes internos fuertes en PrimeNG */
+.p-datatable.custom-table .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid var(--color-border-light) !important;
+  padding: var(--spacing-md) !important;
+}

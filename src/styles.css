@@ -3,6 +3,8 @@
 /* ==========================================================
    CSS Custom Properties (Design Tokens)
    ========================================================== */
+@import './styles/prime-overrides.css';
+
 :root {
   /* Brand Colors */
   --color-primary: #841618;
@@ -64,6 +66,7 @@
   --border-radius-lg: 8px;
   --input-height: 45px;
   --button-height: 45px;
+  --content-padding: 1rem;
 
   /* Animation */
   --transition-fast: 0.15s ease-in-out;
@@ -95,6 +98,376 @@
   --button-hover: #0056b3; /* Azul más claro al hover */
   --button-disabled: #cccccc; /* Gris claro para estado deshabilitado */
 }
+
+/* ==========================================================
+   Import PrimeNG overrides (moved to top of file)
+   ========================================================== */
+
+/* Fondo global: reutiliza la imagen del login para todas las páginas */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/assets/images/backgrounds/fondo.png') center/cover no-repeat;
+  background-attachment: fixed;
+}
+
+/* Asegurar que el contenedor principal permita ver el fondo detrás */
+.app-container, .main-wrapper, app-root {
+  background: transparent;
+}
+
+/* Efecto 'blanch' para que el fondo se vea más claro/deslavado después del login
+   - Aplica un pseudo-overlay blanco con mezcla y blur opcional
+   - Añadir la clase `bg-blanch` al <body> (o a app-root) para activar
+   - Transición suave para no ser brusco */
+.bg-blanch {
+  /* Capa blanca semitransparente sobre la imagen */
+  --blanch-opacity: 0.55; /* ajuste: 0.0 - 1.0 */
+  position: relative;
+}
+
+.bg-blanch::before {
+  content: "";
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  background: rgba(255,255,255,var(--blanch-opacity));
+  pointer-events: none;
+  mix-blend-mode: lighten; /* intenta aclarar la imagen debajo */
+  backdrop-filter: blur(1px) saturate(1.05);
+  transition: opacity 300ms ease, backdrop-filter 300ms ease;
+  z-index: 0;
+}
+
+/* Si queremos un blanqueado más sutil */
+.bg-blanch--soft::before {
+  --blanch-opacity: 0.35;
+  backdrop-filter: blur(0.5px) saturate(1.02);
+}
+
+/* Para asegurar que el contenido se posicione por encima del overlay */
+app-root, .app-container, .main-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================
+   Table design system (global reusable)
+   - .pyre-table: modern table appearance without striped rows
+   - .pyre-table thead: subtle background
+   - .pyre-table tbody tr:hover: soft elevation/hover
+   - .btn-icon: small icon-only buttons
+   ========================================================== */
+
+:root {
+  --table-surface: var(--color-bg-surface);
+  --table-border: #ececec;
+  --table-row-hover: rgba(26, 54, 93, 0.04);
+  --table-row-divider: var(--table-border);
+  --soft-edge-border: rgba(0,0,0,0.06);
+  --soft-edge-shadow: 0 8px 24px rgba(15,15,15,0.06);
+  /* Sombras para sensación de profundidad */
+  --depth-shadow-1: 0 6px 18px rgba(15,15,15,0.06);
+  --depth-shadow-2: 0 12px 40px rgba(15,15,15,0.08);
+  --depth-halo: 0 24px 60px rgba(15,15,15,0.04);
+  --table-radius: 10px;
+  --icon-btn-bg: transparent;
+  --icon-btn-hover-bg: rgba(0,0,0,0.04);
+}
+
+.pyre-table-wrapper {
+  background: transparent; /* contenedor interno plano */
+  border: none;
+  border-radius: 0;
+  padding: 0.5rem;
+  box-shadow: none;
+}
+
+/* Clase utilitaria: bordes suaves / difuminados para contenedores
+   Aplica un borde sutil y una sombra difusa que crea el efecto de "borde difuminado" */
+.pyre-table-wrapper.soft-edge {
+  border-radius: var(--border-radius-lg);
+  background: var(--table-surface);
+  border: 1px solid var(--soft-edge-border);
+  box-shadow: var(--soft-edge-shadow);
+  padding: 0.75rem;
+}
+
+/* Sensación de profundidad: aplicar sombras múltiples y un halo difuso
+   usar junto con `.soft-edge` como `.pyre-table-wrapper.soft-edge.depth` */
+
+/* Sensación de profundidad: ahora aplicable también directamente sobre la tabla */
+.pyre-table.soft-edge.depth,
+.pyre-table-wrapper.soft-edge.depth {
+  box-shadow: var(--depth-shadow-1), var(--depth-shadow-2);
+  position: relative;
+}
+
+/* Halo difuso adicional usando pseudo-elemento para un glow sutil
+   Soportado tanto para el wrapper como para la tabla (cuando se aplica
+   la clase directamente sobre la tabla, el pseudo-elemento se posará
+   detrás de ésta gracias a z-index). */
+.pyre-table.soft-edge.depth::after,
+.pyre-table-wrapper.soft-edge.depth::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  bottom: -18px;
+  top: -8px;
+  z-index: -1;
+  border-radius: calc(var(--border-radius-lg) + 4px);
+  box-shadow: var(--depth-halo);
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.pyre-table {
+  width: 100%;
+  border-collapse: collapse; /* cambiar a collapse para que los bordes de celdas se muestren
+                               de forma consistente entre filas */
+  border-spacing: 0;
+  background: transparent;
+}
+
+/* Bordes redondeados suaves para la tabla interior */
+.pyre-table {
+  border-radius: 8px;
+  overflow: hidden; /* asegurar que las celdas no sobresalgan en las esquinas */
+}
+
+/* Encabezado y celdas de esquinas redondeadas para un acabado limpio */
+.pyre-table thead.dark-header th:first-child,
+.pyre-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.pyre-table thead.dark-header th:last-child,
+.pyre-table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Última fila: quitar el borde inferior en las celdas para que se vea la curvatura */
+.pyre-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Redondear esquinas inferiores en la última celda izquierda/derecha */
+.pyre-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.pyre-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.pyre-table thead th {
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  padding: 0.75rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--table-border);
+}
+
+/* Encabezado oscuro alternativo: fondo gris oscuro y texto blanco
+   Esta regla tiene mayor especificidad para facilitar su override cuando
+   se necesite mostrar un header con alto contraste visual. */
+.pyre-table thead.dark-header th,
+.pyre-table thead.dark-header tr th {
+  background: #2f2f34; /* gris oscuro neutro */
+  color: var(--color-white) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06); /* sutil separación sobre fondo oscuro */
+}
+
+/* Alternativa usando variables para un control más fácil */
+:root {
+  --table-header-dark-bg: #2f2f34;
+  --table-header-dark-color: var(--color-white);
+}
+
+.pyre-table thead.dark-bg th {
+  background: var(--table-header-dark-bg) !important;
+  color: var(--table-header-dark-color) !important;
+}
+
+/* Estilo para títulos de página: tipografía global y color suave */
+.page-title {
+  font-family: var(--font-family-primary);
+  font-size: 1.25rem; /* slightly larger than h4 */
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.75); /* color más suave que el texto principal */
+}
+
+/* Contenedor principal para páginas con espacio adecuado para el topbar fijo */
+.page-content {
+  padding-top: calc(var(--topbar-height, 70px) + 1rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Encabezado estándar para todas las páginas */
+.page-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Shell que deja 1cm de margen desde el sidebar/pantalla y hace ancho completo */
+/* page-shell: mantener el div exterior separado de los bordes mediante margin
+   en lugar de padding, para que el exterior no toque los bordes del viewport */
+.page-shell {
+  /* usamos padding para garantizar separación interna del viewport y del sidebar
+     esto evita que elementos anidados ocupen el espacio hasta el borde */
+  padding-left: 1cm;
+  padding-right: 1cm;
+  box-sizing: border-box;
+}
+
+/* En móviles reducimos el padding para no provocar scroll horizontal */
+@media (max-width: 767.98px) {
+  .page-shell {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Asegurar que la tabla use todo el ancho del shell disponible */
+.pyre-table {
+  width: 100%;
+}
+
+.pyre-table tbody tr {
+  background: var(--color-white);
+  transition: background 0.12s var(--transition-fast), transform 0.12s var(--transition-fast);
+}
+
+.pyre-table tbody tr + tr {
+  margin-top: 0; /* sin separación vertical, solo línea */
+}
+
+/* Eliminamos el efecto hover por defecto para filas: sin cambio de fondo ni elevación */
+.pyre-table tbody tr:hover {
+  background: inherit; /* mantener el fondo blanco por defecto */
+  transform: none; /* sin elevación ni desplazamiento */
+}
+
+/* Clase utilitaria: si en algún lugar queremos volver a activar hover, añadir `no-row-hover` a la tabla y usar `row-hover` */
+.pyre-table.row-hover tbody tr:hover {
+  background: var(--table-row-hover);
+  transform: translateY(-1px);
+}
+
+/* aplicar la línea suave en las celdas para que sea claramente visible */
+.pyre-table td {
+  /* eliminar border-bottom directo y usar pseudo-elemento en la fila */
+  padding: 1rem 1.25rem; /* más espacio horizontal para que el contenido no quede pegado */
+  vertical-align: middle;
+}
+
+/* Espacio extra en la primera columna (Legajo) */
+.pyre-table th:first-child,
+.pyre-table td:first-child {
+  padding-left: 3rem; /* aumentar separación para Legajo */
+}
+
+/* Espacio extra en la última columna (Acciones) */
+.pyre-table th:last-child,
+.pyre-table td:last-child,
+.pyre-table .text-end {
+  padding-right: 3rem; /* aumentar separación para Acciones */
+}
+
+/* Responsive: reducir padding en pantallas pequeñas para evitar overflow */
+@media (max-width: 767.98px) {
+  .pyre-table th:first-child,
+  .pyre-table td:first-child {
+    padding-left: 1rem;
+  }
+  .pyre-table th:last-child,
+  .pyre-table td:last-child,
+  .pyre-table .text-end {
+    padding-right: 1rem;
+  }
+}
+
+/* Separador sutil centrado: pseudo-elemento en cada fila que no llega a los bordes */
+.pyre-table tbody tr {
+  position: relative;
+}
+.pyre-table tbody tr::after {
+  content: "";
+  position: absolute;
+  left: 3rem; /* alinear con nuevo padding */
+  right: 3rem;
+  bottom: 0;
+  height: 1px;
+  background: var(--table-row-divider);
+}
+
+.pyre-table .text-end {
+  padding-right: 1rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--icon-btn-bg);
+  border: none;
+  color: var(--color-text);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: var(--icon-btn-hover-bg);
+  transform: translateY(-1px);
+}
+
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pyre-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pyre-badge.activo { background: var(--color-success); color: var(--color-white); }
+.pyre-badge.inactivo { background: var(--color-error); color: var(--color-white); }
+
+/* PrimeNG table specific helpers to match design */
+.p-datatable .p-datatable-thead > tr > th {
+  background: #474646 !important;
+  color: #ffffff !important;
+  font-size: 13px;
+  padding: .5rem !important;
+}
+
+.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+  background: #fbfbfb;
+}
+
+/* compact variant utilities */
+.table-compact td, .table-compact th {
+  padding: .25rem .5rem !important;
+  text-align: center;
+}
+
+.flex { display:flex; }
+.gap-2 { gap: 0.5rem; }
+.justify-content-center { justify-content: center; }
+
 
 /* ==========================================================
    Global Reset & Base Styles
@@ -144,6 +517,89 @@ a:hover {
 }
 
 /* ==========================================================
+   Global styles for ng-bootstrap tooltips (modern, soft edges)
+   These rules style the .tooltip and .tooltip-inner elements used
+   by ng-bootstrap. Use tooltipClass="mi-tooltip" on specific
+   tooltips if you prefer a named class (supported in newer ngb versions).
+   ========================================================== */
+
+.tooltip {
+  pointer-events: auto; /* allow hover/focus if needed */
+}
+
+.tooltip .tooltip-inner {
+  background-color: rgba(26, 54, 93, 0.95); /* slightly desaturated dark blue */
+  color: #ffffff;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px; /* soft rounded corners */
+  box-shadow: 0 6px 18px rgba(15,15,15,0.12);
+  transition: transform 160ms var(--transition-fast), opacity 160ms var(--transition-fast);
+  transform-origin: center;
+  opacity: 0.98;
+}
+
+/* Slight scale on show for a modern feel */
+.tooltip.show .tooltip-inner {
+  transform: scale(1.02);
+}
+
+.tooltip .tooltip-arrow {
+  width: 0.8rem;
+  height: 0.5rem; /* ensure arrow size matches inner radius */
+}
+
+.tooltip .tooltip-arrow::before {
+  border-top-color: rgba(26, 54, 93, 0.95); /* arrow color matching tooltip background */
+}
+
+/* Optional named class for targeted styling
+   (use [ngbTooltip]="text" tooltipClass="mi-tooltip") */
+.mi-tooltip .tooltip-inner {
+  background-color: var(--color-primary); /* brand primary */
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(13, 22, 24, 0.12);
+}
+
+/* Ensure small screens still show tooltips legibly */
+@media (max-width: 575.98px) {
+  .tooltip .tooltip-inner {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* PrimeNG tooltip styling to match ng-bootstrap mi-tooltip */
+.p-tooltip {
+  background: rgba(26, 54, 93, 0.95) !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  padding: 0.45rem 0.65rem !important;
+  box-shadow: 0 6px 18px rgba(15,15,15,0.12) !important;
+  font-size: 0.85rem !important;
+  transition: transform 160ms var(--transition-fast), opacity 160ms var(--transition-fast);
+  opacity: 0.98;
+}
+
+.p-tooltip .p-tooltip-arrow,
+.p-tooltip .p-tooltip-arrow::before {
+  border-top-color: rgba(26, 54, 93, 0.95) !important; /* arrow color */
+}
+
+/* If PrimeNG mounts the text in a different node */
+.p-tooltip .p-tooltip-text {
+  color: inherit !important;
+}
+
+/* Optional brand variant for PrimeNG tooltips */
+.p-tooltip.mi-tooltip {
+  background: var(--color-primary) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(13,22,24,0.12) !important;
+}
+
+/* ==========================================================
    SweetAlert2 Custom Theme (Corporate Branding)
    ========================================================== */
 
@@ -155,6 +611,72 @@ a:hover {
   padding: 1.5rem !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important; /* 🌟 Sombra intensa para alert */
   max-width: 520px; /* Cambiar aquí para ajustar ancho del modal */
+}
+
+/* ==================================================
+   Global PrimeNG table styles (moved from component)
+   These apply globally so all p-tables share the same look
+   ==================================================*/
+.p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(180deg,#3f3d3d 0%, #474646 100%) !important;
+  color: #ffffff !important;
+  font-size: 13px;
+  padding: .5rem !important;
+  border-bottom: 2px solid rgba(0,0,0,0.06);
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background: #ffffff;
+}
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #fbfbfb;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: #f1f5f9 !important;
+  transition: background-color 0.12s ease-in-out;
+}
+
+.p-datatable .p-datatable-tbody td {
+  color: #474646;
+  font-size: 12px;
+  padding: .5rem !important;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+
+.p-datatable .p-datatable-tbody td .flex { gap: 0.4rem; }
+
+/* sticky header: use high specificity and keep behavior global */
+:root .p-datatable-thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 480px) {
+  .p-datatable .p-datatable-tbody td,
+  .p-datatable .p-datatable-thead th {
+    padding: .25rem .35rem !important;
+    font-size: 11px;
+  }
+}
+
+/* Wrapper for shared pyre tables: rounded borders and subtle shadow */
+.pyre-table-shell {
+  background: var(--color-bg-surface, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(18, 38, 63, 0.06);
+  padding: 1.5rem 1.5rem 1.5rem 1.5rem; /* top, right, bottom, left - increase top/left/right spacing */
+  margin-bottom: 1rem;
+  margin-left: 1cm;
+  margin-right: 1cm;
+}
+
+/* If you want the table to be full-bleed inside the shell, remove table's margin */
+.pyre-table-shell .p-datatable {
+  margin: 0;
 }
 
 /* TÍTULO PRINCIPAL - Color institucional primario */
@@ -294,4 +816,11 @@ a:hover {
   background-color: #B71C1C !important;
   background: #B71C1C !important;
   color: #ffffff !important;
+}
+
+/* Clase utilitaria: desactivar transiciones/animaciones en listas para evitar
+   reflows/performance issues durante debugging de múltiples requests */
+.no-animations * {
+	transition: none !important;
+	animation: none !important;
 }
