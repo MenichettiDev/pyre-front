@@ -1,41 +1,35 @@
-/* Reset básico */
+/* Reset básico (mantener) */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: var(--font-family-primary); /* 🎯 ¡Usamos variable! */
+    font-family: var(--font-family-primary);
 }
 
-/* Fondo con imagen */
+/* El fondo ahora es global (ver src/styles.css). Aquí solo nos aseguramos
+   de que los contenedores del login sean transparentes para dejar ver
+   la imagen de fondo aplicable a todo el sitio. */
+.login-page, .fullscreen-background, .container {
+    background: transparent;
+}
+
+/* Centrar el formulario en el viewport */
 .fullscreen-background {
+    /* Asegurar que ocupe todo el viewport y centre el formulario */
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-        url('/assets/images/backgrounds/fondo.png') center/cover no-repeat;
-    background-attachment: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-html,
-body {
-    height: 100%;
-    width: 100%;
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-        url('/assets/images/backgrounds/fondo.png') center/cover no-repeat;
-    background-attachment: fixed;
-    overflow: hidden;
+    padding: 1rem; /* espacio en móviles */
+    min-height: 100vh; /* garantizar altura completa incluso con mobile browsers */
+    z-index: 2; /* estar por encima del overlay global (ver src/styles.css .bg-blanch) */
 }
 
 /* Container con más contraste para destacar sobre la imagen */
 .container {
     width: 400px;
+    max-width: calc(100% - 2rem); /* asegurar margen en pantallas pequeñas */
     background: var(--card-background);           /* 🎯 ¡Usamos variable! */
     color: var(--text-color);                    /* 🎯 ¡Usamos variable! */
     padding: var(--spacing-xl) var(--spacing-lg); /* 🎯 ¡Espaciado con variables! */
@@ -44,6 +38,12 @@ body {
     position: relative;
     border: 1px solid var(--white);
     backdrop-filter: blur(5px);
+}
+
+/* Garantizar que el formulario tenga prioridad en stacking context para inputs/modals internos */
+.container * {
+    position: relative;
+    z-index: 3;
 }
 
 /* Header section corporativo */
@@ -102,7 +102,8 @@ body {
 .form-group i {
     position: absolute;
     right: 15px;
-    top: 32px; /* Posición fija basada en el label + margen */
+    top: 50%; /* centrar respecto al alto del input/label */
+    transform: translateY(-50%); /* centrado vertical preciso */
     font-size: var(--font-size-lg);     /* 🎯 ¡Tamaño consistente! */
     color: var(--text-light);           /* 🎯 ¡Color claro! */
     pointer-events: none; /* Para que no interfiera con clicks */
@@ -120,7 +121,8 @@ body {
 .password-toggle-icon {
     position: absolute;
     right: 15px;
-    top: 32px; /* Posición fija basada en el label + margen */
+    top: 50%; /* centrar respecto al input */
+    transform: translateY(-50%);
     font-size: var(--font-size-xl);       /* 🎯 ¡Tamaño grande! */
     cursor: pointer;
     user-select: none;
@@ -176,6 +178,18 @@ input[name="employee-id"] {
     letter-spacing: 1px;
 }
 
+/* Tamaño aumentado para el campo de legajo y su icono */
+input[name="employee-id"] {
+    height: 54px; /* un poco más alto que el input estándar */
+    font-size: 16px;
+    padding: 0 50px 0 16px; /* dar espacio extra para el icono */
+}
+
+.form-group i.employee-icon {
+    font-size: 20px; /* icono más grande */
+    right: 14px;
+}
+
 /* Prevenir zoom en móviles para campos numéricos */
 input[inputmode="numeric"] {
     font-size: 16px;
@@ -200,6 +214,20 @@ input[inputmode="numeric"] {
     /* Ajustar posición de íconos en móviles */
     .form-group i, .password-toggle-icon {
         top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ajustes para legajo en pantallas pequeñas */
+    input[name="employee-id"] {
+        height: 48px;
+        font-size: 15px;
+        padding: 0 44px 0 12px;
+    }
+
+    .form-group i.employee-icon {
+        font-size: 18px;
+        right: 12px;
     }
 }
 

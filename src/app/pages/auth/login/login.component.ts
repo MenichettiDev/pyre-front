@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginService } from '../../../core/services/login.service';
@@ -9,7 +10,7 @@ declare var Swal: any;
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, NgbTooltipModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

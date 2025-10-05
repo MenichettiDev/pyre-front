@@ -55,7 +55,7 @@
                     (mouseleave)="onMouseLeavePassword()"
                     (touchstart)="onTouchStartPassword($event)"
                     (touchend)="onTouchEndPassword($event)"
-                    title="Mantener presionado para ver la contraseña">
+                    [ngbTooltip]="'Mantener presionado para ver la contraseña'" container="body" tooltipClass="mi-tooltip">
                 </i>
             </div>
 
