@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.css'],
   standalone: true,
-  imports: [CommonModule, NgIf]
+  imports: [CommonModule, NgIf, NgbTooltipModule]
 })
 export class TopbarComponent {
   @Input() isLoggedIn: boolean = false;
@@ -18,6 +19,9 @@ export class TopbarComponent {
   // New props: mostrar número de legajo en el topbar
   @Input() userLegajo: string | null = null;
   @Input() displayLegajo: string | null = null;
+  // Nuevo: tipo de perfil (ej: 'admin', 'operador')
+  @Input() userRole: string | null = null;
+  @Input() displayRole: string | null = null;
   // Etiqueta descriptiva a mostrar (ej: "Legajo: 12345 — Nombre Apellido")
   @Input() userLabel: string | null = null;
 
@@ -29,6 +33,13 @@ export class TopbarComponent {
 
   isPerfilModalVisible: boolean = false;
   private el = inject(ElementRef);
+
+  // Tooltip dinámico para el pill (legajo + rol)
+  get pillTooltip(): string {
+    const leg = this.userLegajo || this.displayLegajo || '';
+    const role = this.displayRole || this.userRole || '';
+    return role ? `${leg} — ${role}` : leg;
+  }
 
   togglePerfilModal(): void {
     this.isPerfilModalVisible = !this.isPerfilModalVisible;

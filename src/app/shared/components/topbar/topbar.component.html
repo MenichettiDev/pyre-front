@@ -3,16 +3,22 @@
   <!-- Layout para Desktop -->
   <div class="topbar-desktop" *ngIf="!isSmallScreen">
     <div class="topbar-center">
-      <h4 class="app-title">Sistema de Gestión de Herramientas</h4>
     </div>
 
     <div class="topbar-right">
       <div class="user-info">
-        <div class="user-email-pill" *ngIf="userLabel" [title]="userLabel">
+        <!-- Mostrar Legajo y tipo de perfil (role) y un icono de Perfil separado -->
+  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole">
           <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
-          <span class="email-text">{{ userLabel || displayLegajo || 'Usuario' }}</span>
+          <span class="email-text legajo-text">{{ userLegajo || displayLegajo || '—' }}</span>
+          <!-- Icono del rol colocado antes del texto para mejor lectura -->
+          <span class="role-pill" *ngIf="userRole || displayRole">
+            <i class="bi bi-shield-lock role-icon" aria-hidden="true"></i>
+            <span class="role-text">{{ (displayRole || userRole) | titlecase }}</span>
+          </span>
+          <!-- Icono de perfil adicional eliminado para evitar redundancia; el icono circular abre el dropdown -->
         </div>
-        <span class="profile-toggle" (click)="togglePerfilModal()" title="Ver perfil y opciones">
+  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body" tooltipClass="mi-tooltip">
           <i class="bi bi-person-circle profile-icon"></i>
         </span>
         <!-- Dropdown de perfil -->
@@ -43,11 +49,13 @@
 
     <div class="topbar-right">
         <div class="user-info">
-        <div class="user-email-pill" *ngIf="userLabel" [title]="userLabel">
+  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole" [ngbTooltip]="pillTooltip" container="body" tooltipClass="mi-tooltip">
           <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
-          <span class="email-text">{{ userLabel || displayLegajo || '' }}</span>
+          <span class="email-text legajo-text">{{ userLegajo || displayLegajo || '' }}</span>
+          <span class="role-text" *ngIf="userRole || displayRole">{{ (displayRole || userRole) | titlecase }}</span>
+          <!-- Icono de perfil adicional eliminado en mobile para evitar redundancia -->
         </div>
-        <span class="profile-toggle" (click)="togglePerfilModal()" title="Ver perfil y opciones">
+  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body" tooltipClass="mi-tooltip">
           <i class="bi bi-person-circle profile-icon"></i>
         </span>
       </div>

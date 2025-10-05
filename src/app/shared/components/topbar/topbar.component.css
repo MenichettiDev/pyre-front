@@ -1,25 +1,40 @@
 /* Estilos para el componente Topbar */
 .top-bar {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background-color: var(--color-bg-alt, #f8f9fa);
+  border-bottom: 1px solid var(--color-border-light, #dee2e6);
   padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+  min-width: 100%;
+  box-sizing: border-box;
+  height: 65px; /* Altura reducida */
 }
 
 .topbar-desktop {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; /* asegurar centrado vertical */
+  /* Usar la altura del contenedor padre para evitar inconsistencias */
+  height: 100%;
 }
 
 .topbar-mobile {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* Mantener consistencia con .top-bar usando 100% de altura */
+  height: 100%;
+  width: 100%;
 }
 
 .user-info {
   display: flex;
-  align-items: center;
+  align-items: center; /* centrar verticalmente los elementos internos */
   position: relative; /* Necesario para el positioning del dropdown */
 }
 
@@ -28,15 +43,19 @@
   align-items: center;
   background-color: #e9ecef;
   border-radius: 15px;
-  padding: 0.25rem 0.5rem;
-  margin-right: 0.5rem;
+  padding: 0.3rem 0.65rem; /* más espacio para legajo + rol */
+  margin-right: 0.6rem;
   cursor: default; /* No debe parecer clickeable */
+  min-width: 180px; /* asegurar que quepa la info */
 }
+
+/* El botón `.profile-pill` fue eliminado del HTML para evitar icono redundante */
 
 .profile-toggle {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center; /* garantizar centrado dentro del toggle */
   border-radius: 6px;
   padding: 0.25rem;
   transition: background-color 0.2s ease;
@@ -47,8 +66,26 @@
 }
 
 .profile-icon {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   color: #495057;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+  /* ajuste extra para asegurar pixel-perfect centrado si hace falta */
+  transform: translateY(0%);
+}
+
+/* Pequeño ajuste vertical: subir ligeramente la etiqueta de legajo y el icono
+   para que queden perfectamente centrados respecto a la barra superior. */
+.user-email-pill, .profile-toggle {
+  transform: translateY(-3px);
+}
+
+/* Reducir el nudge en pantallas muy pequeñas para evitar solapamientos */
+@media (max-width: 575.98px) {
+  .user-email-pill, .profile-toggle {
+    transform: translateY(-2px);
+  }
 }
 
 .profile-dropdown {
@@ -92,22 +129,53 @@
 
 /* Estilos para los iconos del email */
 .email-icon {
-  font-size: 0.9rem;
+  font-size: 1.05rem; /* ligeramente mayor */
   color: #6c757d;
-  margin-right: 0.25rem;
+  margin-right: 0.35rem;
 }
 
 .email-text {
-  font-size: 0.85rem;
+  font-size: 0.95rem; /* texto un poco más legible */
   color: #495057;
   max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.legajo-text { font-weight: 600; margin-right: 0.25rem; }
+
+.role-text {
+  font-size: 0.95rem;
+  color: #495057; /* mismo color que el texto principal */
+  margin-left: 0.25rem;
+  text-transform: none; /* respetar mayúsculas tal como vienen (SuperAdmin) */
+  white-space: nowrap;
+  max-width: 110px; /* un poco más de ancho para roles cortos/medios */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600; /* hacer el rol igual de prominente que el legajo */
+}
+
+/* Pill visual para el role: icono + texto */
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0,0,0,0.02);
+  padding: 0.12rem 0.3rem;
+  border-radius: 10px;
+  margin-left: 0.35rem;
+}
+
+.role-icon {
+  font-size: 0.95rem;
+  color: #495057;
+  margin-right: 0.35rem;
+}
+
 /* Estilos específicos para mobile */
 .topbar-mobile .user-email-pill {
-  max-width: 120px;
+  max-width: 140px;
+  min-width: 120px;
 }
 
 .topbar-mobile .email-text {
@@ -118,12 +186,22 @@
 .app-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #495057;
+  color: var(--color-text, #495057);
   margin: 0;
 }
 
 .topbar-mobile .app-title {
   font-size: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .topbar-mobile {
+    height: 60px; /* Altura reducida en móviles */
+  }
+
+  .top-bar {
+    height: 55px; /* Altura reducida en móviles */
+  }
 }
 
 /* Logo pequeño para mobile */
@@ -142,4 +220,37 @@
 .hamburger-menu i {
   font-size: 1.5rem;
   color: #495057;
+}
+
+/* Estilos responsivos para el topbar */
+@media (max-width: 767.98px) {
+  .top-bar {
+    padding: 0.3rem 0.5rem;
+  }
+
+  .topbar-mobile {
+    height: 60px; /* Altura reducida en móviles */
+  }
+
+  .logo-container img {
+    max-height: 40px; /* Logo más pequeño en móviles */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .top-bar {
+    padding: 0.2rem 0.5rem;
+  }
+
+  .profile-toggle, .notification-toggle {
+    padding: 0.15rem;
+  }
+
+  .hamburger-menu {
+    margin-left: 0.25rem;
+  }
+
+  .email-icon { font-size: 1rem; margin-right: 0.3rem; }
+  .email-text { font-size: 0.88rem; }
+  .profile-icon { font-size: 1.4rem; }
 }
