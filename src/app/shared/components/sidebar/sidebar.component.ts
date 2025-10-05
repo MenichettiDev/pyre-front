@@ -46,6 +46,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Nuevo: legajo
   userLegajo: string = '';
   displayLegajo: string = '';
+  // Nuevo: role
+  displayRole: string = '';
   // Etiqueta descriptiva que se mostrará en el topbar: "Legajo: 12345 — Nombre Apellido"
   displayUserLabel: string = '';
 
@@ -72,9 +74,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 12, descripcion: 'Historial de Herramienta', icono: 'bi bi-clock-history', link: '/movimientos/historial', grupo: 'GM03', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 13, descripcion: 'Movimientos por Operario', icono: 'bi bi-person-lines-fill', link: '/movimientos/operario', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
-    // Gestión de Usuarios
+  // Gestión de Usuarios
   { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-  { id: 15, descripcion: 'Listado de Empleados', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+  { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
   { id: 16, descripcion: 'Alta / Edición de Usuario', icono: 'bi bi-person-plus', link: '/user/create', grupo: 'GM04', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
   { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
@@ -165,6 +167,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
       const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
       this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario';
+  // role (si viene en la respuesta del usuario)
+  const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
+  this.displayRole = roleName ? String(roleName) : '';
     } else {
       // Sin usuario: ocultar menú y mostrar nombre por defecto
       this.id_acceso = 0;
