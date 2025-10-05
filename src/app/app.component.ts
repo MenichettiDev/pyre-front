@@ -40,6 +40,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loggedInSubscription = this.authService.loggedIn$.subscribe(
       (loggedInStatus) => {
         this.isLoggedIn = loggedInStatus;
+        // Cuando el usuario está logueado, aplicamos una clase al body para
+        // mostrar el efecto 'más blanqueado' del fondo. Al desloguear, la quitamos.
+        try {
+          if (loggedInStatus) {
+            document.body.classList.add('bg-blanch');
+          } else {
+            document.body.classList.remove('bg-blanch');
+          }
+        } catch (e) {
+          // En entornos donde document no está disponible (SSR/tests), evitamos fallos
+          // console.warn('No se pudo modificar body class:', e);
+        }
       }
     );
 

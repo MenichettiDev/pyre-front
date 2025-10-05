@@ -33,7 +33,7 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'usuarios',
+        path: 'user',
         loadChildren: () => import('./pages/users/user.routes').then(m => m.userRoutes),
         canActivate: [authGuard],
         data: { requiredAccess: [1, 2, 3, 4] } // Todos los roles pueden acceder

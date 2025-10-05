@@ -9,11 +9,12 @@
 }
 
 .main-wrapper {
-  min-height: calc(100vh - var(--topbar-height)); /* Ajustar altura para el topbar */
-  padding-top: var(--topbar-height); /* Reservar espacio para el topbar fijo sin empujar contenido */
+  min-height: calc(100vh - var(--topbar-height, 70px)); /* Ajustar altura para el topbar */
+  padding-top: calc(var(--topbar-height, 70px) + 10px); /* Reservar espacio para el topbar fijo y añadir espacio adicional */
   transition: margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   width: 100%;
   box-sizing: border-box;
+  position: relative;
 }
 
 /* Cuando el sidebar está visible, ajustar el margen */
@@ -35,7 +36,11 @@
 
 @media (max-width: 575.98px) {
   .main-wrapper {
-    margin-top: 60px; /* Topbar más pequeño en móviles */
+    padding-top: calc(60px + 10px); /* Topbar más pequeño en móviles + espacio adicional */
     min-height: calc(100vh - 60px);
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 }
