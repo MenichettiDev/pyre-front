@@ -479,3 +479,14 @@
 .action-toggle-track.is-checked .action-toggle-thumb { transform: translateY(-50%) translateX(20px); background: #16a34a; }
 .action-toggle[aria-label] { position: relative; }
 
+/* Variante compacta del toggle: más pequeña y sutil */
+.action-toggle--small {
+  width: 34px;
+  height: 20px;
+  padding: 1px;
+  border-radius: 12px;
+}
+.action-toggle--small .action-toggle-track { border-radius: 12px; }
+.action-toggle--small .action-toggle-thumb { width: 12px; height: 12px; left: 3px; }
+.action-toggle--small .action-toggle-track.is-checked .action-toggle-thumb { transform: translateY(-50%) translateX(12px); }
+

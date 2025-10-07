@@ -153,6 +153,34 @@ export class UserListComponent implements OnInit {
       });
   }
 
+  // Alterna el estado activo/inactivo de un usuario desde la lista
+  toggleUserActive(item: any): void {
+    const id = item?.id ?? null;
+    if (id == null) return;
+
+    const current = (item?.estado ?? '').toString().toLowerCase() === 'activo';
+    const targetState = !current;
+
+    const actionText = targetState ? 'activar' : 'desactivar';
+    this.alertService.confirm(`¿Estás seguro de que deseas ${actionText} este usuario?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Usuario`)
+      .then((result: any) => {
+        if (result && result.isConfirmed) {
+          this.userService.toggleActivo(Number(id)).subscribe({
+            next: (resp) => {
+              const pastText = targetState ? 'activado' : 'desactivado';
+              this.alertService.success(`Usuario ${pastText} correctamente.`, '¡Hecho!');
+              // Refrescar la lista para obtener el estado actualizado desde backend
+              this.fetchUsers();
+            },
+            error: (err) => {
+              console.error('[UserList] toggleUserActive error', err);
+              this.alertService.error('No se pudo cambiar el estado del usuario. Intente nuevamente.');
+            }
+          });
+        }
+      });
+  }
+
   onConfirmModal(): void {
     // No-op: kept for backward compatibility if called elsewhere
   }

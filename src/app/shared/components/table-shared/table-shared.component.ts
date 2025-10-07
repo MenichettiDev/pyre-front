@@ -60,6 +60,13 @@ export class TableSharedComponent {
   @Output() edit = new EventEmitter<any>();
   @Output() view = new EventEmitter<any>();
   @Output() remove = new EventEmitter<any>();
+  // Emit when the estado toggle control is changed
+  @Output() toggle = new EventEmitter<any>();
+  /**
+   * Tamaño del toggle visual: 'normal' (por defecto) o 'small'.
+   * Permite usar una variante más compacta en tablas.
+   */
+  @Input() toggleSize: 'normal' | 'small' = 'normal';
   // Control para mostrar/ocultar el botón 'Ver detalles'
   @Input() showView: boolean = true;
 
@@ -83,6 +90,13 @@ export class TableSharedComponent {
 
   onRemove(item: any) {
     this.remove.emit(item);
+  }
+
+  // Emitted when the estado checkbox/switch is toggled in a row
+  onToggle(item: any, event: Event) {
+    // evitar que el evento afecte otras interacciones de la fila
+    event.stopPropagation();
+    this.toggle.emit(item);
   }
 
   /**

@@ -40,10 +40,10 @@
         <td *ngFor="let c of columns">
           <ng-container *ngIf="c === 'estado'; else defaultCell">
             <!-- Toggle visual en columna ESTADO, ligado solo a la representación visual -->
-            <label class="action-toggle" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
+       <label class="action-toggle" [class.action-toggle--small]="toggleSize === 'small'" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
                    [ngbTooltip]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'" placement="top">
               <input type="checkbox" class="action-toggle-input" aria-hidden="true"
-                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" />
+                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" (change)="onToggle(rowData, $event)" />
               <span class="action-toggle-track" [class.is-checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')">
                 <span class="action-toggle-thumb"></span>
               </span>

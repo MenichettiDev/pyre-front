@@ -17,6 +17,7 @@
     <div class="pyre-table-wrapper">
       <app-table-shared
         [value]="users"
+        [toggleSize]="'small'"
         [columns]="columns"
         [rows]="pageSize"
         [rowsPerPageOptions]="rowsPerPageOptions"
@@ -27,7 +28,8 @@
         [showView]="false"
   (pageChange)="onPageChange($event)"
         (edit)="editUser($event)"
-        (remove)="deleteUser($event)">
+        (remove)="deleteUser($event)"
+        (toggle)="toggleUserActive($event)">
       </app-table-shared>
     </div>
   </div>
