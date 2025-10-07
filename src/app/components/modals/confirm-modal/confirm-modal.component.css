@@ -5,8 +5,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(71, 0, 99, 0.85), rgba(255, 222, 4, 0.15));
-    /* violeta-amarillo */
+    /* Usar overlay global para coherencia con la app */
+    background: var(--color-overlay, rgba(0,0,0,0.45));
     display: flex;
     justify-content: center;
     align-items: center;
@@ -24,34 +24,30 @@
 
 /* Contenedor del modal */
 .modal-container {
-    background: linear-gradient(135deg, #4a1766 90%, #ffde04 100%);
-    padding: 24px 20px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(71, 0, 99, 0.25), 0 2px 8px #ffde04;
+    background: var(--color-bg-surface, #ffffff);
+    padding: 20px 18px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     text-align: center;
     max-width: 420px;
     width: 100%;
     transform-origin: center;
-    border: 2px solid #ffde04;
+    border: 1px solid var(--color-border, #ddd);
 }
 
 /* Cambio de color del texto */
 .modal-container h2 {
-    color: #ffde04;
-    /* Título en gris oscuro */
-    font-size: 1.6rem;
-    margin-bottom: 10px;
+    color: var(--color-text, #333333);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
     font-family: 'Oswald', sans-serif;
-    text-shadow: 2px 2px 8px #4a1766;
 }
 
 .modal-container p {
-    color: #fff;
-    /* Mensaje en gris medio */
-    font-size: 1.05rem;
-    margin-bottom: 22px;
+    color: var(--color-text-secondary, #666666);
+    font-size: 1rem;
+    margin-bottom: 18px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-shadow: 1px 1px 4px #4a1766;
 }
 
 /* Estilos de los botones */
@@ -65,41 +61,37 @@
     font-weight: 600;
     transition: all 0.3s ease;
     /* Transición suave para el hover */
-    box-shadow: 0 2px 8px rgba(71, 0, 99, 0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     letter-spacing: 0.5px;
 }
 
 .modal-actions button:first-child {
-    background: linear-gradient(90deg, #4CAF50, #45a049);
-    /* Verde */
-    color: #fff;
-    border: 1px solid #4CAF50;
+    background: linear-gradient(90deg, var(--color-success, #4CAF50), var(--color-success-dark, #2E7D32));
+    color: var(--color-white, #ffffff);
+    border: 1px solid var(--color-success, #4CAF50);
 }
 
 .modal-actions button:last-child {
-    background: linear-gradient(135deg, #f44336, #e53935 60%);
-    /* Rojo */
-    color: #fff;
-    border: 1px solid #f44336;
+    background: linear-gradient(135deg, var(--color-error, #DC3545), var(--color-error-dark, #a71b18));
+    color: var(--color-white, #ffffff);
+    border: 1px solid var(--color-error, #DC3545);
 }
 
 /* Efecto hover para los botones */
 .modal-actions button:hover {
     transform: scale(1.07);
     /* Aumenta ligeramente el tamaño */
-    box-shadow: 0 4px 16px #4a1766;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     /* Sombra al pasar el mouse */
 }
 
 .modal-actions button:first-child:hover {
-    background: linear-gradient(90deg, #45a049, #388e3c);
-    /* Verde más oscuro */
+    background: linear-gradient(90deg, var(--color-success-dark, #2E7D32), var(--color-success, #4CAF50));
     color: #fff;
 }
 
 .modal-actions button:last-child:hover {
-    background: linear-gradient(135deg, #e53935 40%, #b71c1c 100%);
-    /* Rojo más oscuro */
+    background: linear-gradient(135deg, var(--color-error-dark, #a71b18) 40%, var(--color-error, #DC3545) 100%);
     color: #fff;
 }
 

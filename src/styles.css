@@ -152,6 +152,12 @@ app-root, .app-container, .main-wrapper {
   z-index: 1;
 }
 
+/* Utility: desactivar scroll de fondo (usar cuando se muestra un modal) */
+.no-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
 /* ==========================================================
    Table design system (global reusable)
    - .pyre-table: modern table appearance without striped rows
@@ -516,81 +522,7 @@ a:hover {
   overflow-x: hidden;
 }
 
-/* ==========================================================
-   Global styles for ng-bootstrap tooltips (modern, soft edges)
-   These rules style the .tooltip and .tooltip-inner elements used
-   by ng-bootstrap. Use tooltipClass="mi-tooltip" on specific
-   tooltips if you prefer a named class (supported in newer ngb versions).
-   ========================================================== */
 
-.tooltip {
-  pointer-events: auto; /* allow hover/focus if needed */
-}
-
-.tooltip .tooltip-inner {
-  background-color: rgba(26, 54, 93, 0.95); /* slightly desaturated dark blue */
-  color: #ffffff;
-  font-size: 0.85rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: 10px; /* soft rounded corners */
-  box-shadow: 0 6px 18px rgba(15,15,15,0.12);
-  transition: transform 160ms var(--transition-fast), opacity 160ms var(--transition-fast);
-  transform-origin: center;
-  opacity: 0.98;
-}
-
-/* Slight scale on show for a modern feel */
-.tooltip.show .tooltip-inner {
-  transform: scale(1.02);
-}
-
-.tooltip .tooltip-arrow {
-  width: 0.8rem;
-  height: 0.5rem; /* ensure arrow size matches inner radius */
-}
-
-.tooltip .tooltip-arrow::before {
-  border-top-color: rgba(26, 54, 93, 0.95); /* arrow color matching tooltip background */
-}
-
-/* Optional named class for targeted styling
-   (use [ngbTooltip]="text" tooltipClass="mi-tooltip") */
-.mi-tooltip .tooltip-inner {
-  background-color: var(--color-primary); /* brand primary */
-  color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(13, 22, 24, 0.12);
-}
-
-/* Ensure small screens still show tooltips legibly */
-@media (max-width: 575.98px) {
-  .tooltip .tooltip-inner {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-  }
-}
-
-/* PrimeNG tooltip styling to match ng-bootstrap mi-tooltip */
-.p-tooltip {
-  background: rgba(26, 54, 93, 0.95) !important;
-  color: #fff !important;
-  border-radius: 10px !important;
-  padding: 0.45rem 0.65rem !important;
-  box-shadow: 0 6px 18px rgba(15,15,15,0.12) !important;
-  font-size: 0.85rem !important;
-  transition: transform 160ms var(--transition-fast), opacity 160ms var(--transition-fast);
-  opacity: 0.98;
-}
-
-.p-tooltip .p-tooltip-arrow,
-.p-tooltip .p-tooltip-arrow::before {
-  border-top-color: rgba(26, 54, 93, 0.95) !important; /* arrow color */
-}
-
-/* If PrimeNG mounts the text in a different node */
-.p-tooltip .p-tooltip-text {
-  color: inherit !important;
-}
 
 /* Optional brand variant for PrimeNG tooltips */
 .p-tooltip.mi-tooltip {
@@ -824,3 +756,103 @@ a:hover {
 	transition: none !important;
 	animation: none !important;
 }
+
+/* ==========================================================
+   Tooltips nativos de Bootstrap/ng-bootstrap - Asegurar estilos básicos
+   ========================================================== */
+.tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: block;
+  margin: 0;
+  font-family: var(--bs-font-sans-serif);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  white-space: normal;
+  line-break: auto;
+  font-size: 0.875rem;
+  word-wrap: break-word;
+  opacity: 0;
+}
+
+.tooltip.show {
+  opacity: 0.9;
+}
+
+.tooltip .tooltip-arrow {
+  position: absolute;
+  display: block;
+  width: 0.8rem;
+  height: 0.4rem;
+}
+
+.tooltip .tooltip-arrow::before {
+  position: absolute;
+  content: "";
+  border-color: transparent;
+  border-style: solid;
+}
+
+.tooltip-bs-tooltip-top .tooltip-arrow, .bs-tooltip-top .tooltip-arrow {
+  bottom: 0;
+}
+
+.tooltip-bs-tooltip-top .tooltip-arrow::before, .bs-tooltip-top .tooltip-arrow::before {
+  top: 0;
+  border-width: 0.4rem 0.4rem 0;
+  border-top-color: #000;
+}
+
+.tooltip-bs-tooltip-end .tooltip-arrow, .bs-tooltip-end .tooltip-arrow {
+  left: 0;
+  width: 0.4rem;
+  height: 0.8rem;
+}
+
+.tooltip-bs-tooltip-end .tooltip-arrow::before, .bs-tooltip-end .tooltip-arrow::before {
+  right: 0;
+  border-width: 0.4rem 0.4rem 0.4rem 0;
+  border-right-color: #000;
+}
+
+.tooltip-bs-tooltip-bottom .tooltip-arrow, .bs-tooltip-bottom .tooltip-arrow {
+  top: 0;
+}
+
+.tooltip-bs-tooltip-bottom .tooltip-arrow::before, .bs-tooltip-bottom .tooltip-arrow::before {
+  bottom: 0;
+  border-width: 0 0.4rem 0.4rem;
+  border-bottom-color: #000;
+}
+
+.tooltip-bs-tooltip-start .tooltip-arrow, .bs-tooltip-start .tooltip-arrow {
+  right: 0;
+  width: 0.4rem;
+  height: 0.8rem;
+}
+
+.tooltip-bs-tooltip-start .tooltip-arrow::before, .bs-tooltip-start .tooltip-arrow::before {
+  left: 0;
+  border-width: 0.4rem 0 0.4rem 0.4rem;
+  border-left-color: #000;
+}
+
+.tooltip-inner {
+  max-width: 200px;
+  padding: 0.25rem 0.5rem;
+  color: #fff;
+  text-align: center;
+  background-color: #000;
+  border-radius: 0.375rem;
+}
+
+
