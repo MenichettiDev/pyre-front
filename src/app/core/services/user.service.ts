@@ -101,6 +101,18 @@ export class UserService {
     return this.http.post(`${this.baseUrl}/validate`, { legajo, password });
   }
 
+  /**
+   * Alterna el estado activo/inactivo del usuario en el backend.
+   * Llama a PATCH /Usuario/{id}/toggle-activo
+   * El endpoint solo espera el id en la URL y realiza el toggle server-side.
+   * No se envía body (se pasa null) para respetar la API que no requiere payload.
+   */
+  toggleActivo(id: number): Observable<any> {
+    const url = `${this.baseUrl}/${id}/toggle-activo`;
+    // No enviamos body: el backend hará el toggle basándose únicamente en el id.
+    return this.http.patch(url, null);
+  }
+
   deleteUser(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
