@@ -37,18 +37,31 @@
 
     <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
       <tr [ngClass]="{'color-red': rowData?.activo == 0}">
-        <td *ngFor="let c of columns">{{ rowData[c] }}</td>
+        <td *ngFor="let c of columns">
+          <ng-container *ngIf="c === 'estado'; else defaultCell">
+            <!-- Toggle visual en columna ESTADO, ligado solo a la representación visual -->
+            <label class="action-toggle" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
+                   [ngbTooltip]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'" placement="top">
+              <input type="checkbox" class="action-toggle-input" aria-hidden="true"
+                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" />
+              <span class="action-toggle-track" [class.is-checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')">
+                <span class="action-toggle-thumb"></span>
+              </span>
+            </label>
+          </ng-container>
+          <ng-template #defaultCell>{{ rowData[c] }}</ng-template>
+        </td>
         <td>
           <div class="flex gap-2 justify-content-center">
-            <button pButton pRipple type="button" icon="pi pi-user-edit" pTooltip="Editar"
-                    class="p-button-rounded p-button-outlined p-button-warning p-button-sm"
-                    (click)="onEdit(rowData)"></button>
-            <button pButton pRipple type="button" icon="pi pi-eye" pTooltip="Ver detalles"
-                    class="p-button-rounded p-button-outlined p-button-info p-button-sm"
-                    (click)="onView(rowData)"></button>
-            <button pButton pRipple type="button" icon="pi pi-trash" pTooltip="Eliminar"
-                    class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
-                    (click)="onRemove(rowData)"></button>
+      <button pButton pRipple type="button" icon="pi pi-user-edit" [ngbTooltip]="'Ver / Editar'" container="body"
+        class="p-button-rounded p-button-outlined p-button-warning p-button-sm"
+        (click)="onEdit(rowData)"></button>
+      <button *ngIf="showView" pButton pRipple type="button" icon="pi pi-eye" [ngbTooltip]="'Ver detalles'" container="body"
+        class="p-button-rounded p-button-outlined p-button-info p-button-sm"
+        (click)="onView(rowData)"></button>
+      <button pButton pRipple type="button" icon="pi pi-trash" [ngbTooltip]="'Eliminar'" container="body"
+        class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
+        (click)="onRemove(rowData)"></button>
           </div>
         </td>
       </tr>

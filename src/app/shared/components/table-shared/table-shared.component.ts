@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
-import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
 import { RippleModule } from 'primeng/ripple';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PaginatorComponent } from '../paginator/paginator.component'; // Tu paginador personalizado
 
 @Component({
@@ -18,7 +18,7 @@ import { PaginatorComponent } from '../paginator/paginator.component'; // Tu pag
     TableModule,
     PaginatorModule,
     ButtonModule,
-    TooltipModule,
+    NgbTooltipModule,
     TagModule,
     RippleModule,
     PaginatorComponent, // Componente personalizado del paginador
@@ -60,6 +60,8 @@ export class TableSharedComponent {
   @Output() edit = new EventEmitter<any>();
   @Output() view = new EventEmitter<any>();
   @Output() remove = new EventEmitter<any>();
+  // Control para mostrar/ocultar el botón 'Ver detalles'
+  @Input() showView: boolean = true;
 
   // Search/filter output: emit criteria object { nombre, legajo, estado }
   @Output() search = new EventEmitter<{ nombre?: string; legajo?: string; estado?: string }>();
