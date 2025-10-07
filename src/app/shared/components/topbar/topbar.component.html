@@ -18,7 +18,7 @@
           </span>
           <!-- Icono de perfil adicional eliminado para evitar redundancia; el icono circular abre el dropdown -->
         </div>
-  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body" tooltipClass="mi-tooltip">
+  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body">
           <i class="bi bi-person-circle profile-icon"></i>
         </span>
         <!-- Dropdown de perfil -->
@@ -49,13 +49,13 @@
 
     <div class="topbar-right">
         <div class="user-info">
-  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole" [ngbTooltip]="pillTooltip" container="body" tooltipClass="mi-tooltip">
+  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole" [ngbTooltip]="pillTooltip" container="body">
           <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
           <span class="email-text legajo-text">{{ userLegajo || displayLegajo || '' }}</span>
           <span class="role-text" *ngIf="userRole || displayRole">{{ (displayRole || userRole) | titlecase }}</span>
           <!-- Icono de perfil adicional eliminado en mobile para evitar redundancia -->
         </div>
-  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body" tooltipClass="mi-tooltip">
+  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body">
           <i class="bi bi-person-circle profile-icon"></i>
         </span>
       </div>
