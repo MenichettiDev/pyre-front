@@ -77,7 +77,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Gestión de Usuarios
   { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
   { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-  { id: 16, descripcion: 'Alta / Edición de Usuario', icono: 'bi bi-person-plus', link: '/user/create', grupo: 'GM04', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
   { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Reportes
