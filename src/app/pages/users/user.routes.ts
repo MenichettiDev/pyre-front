@@ -5,21 +5,32 @@ export const userRoutes: Routes = [
   {
     path: '',
     redirectTo: 'list',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'list',
-    loadComponent: () => import('./list/user-list.component').then(m => m.UserListComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-  },
-  {
-    path: 'create', // Changed from 'alta' to 'create'
-    loadComponent: () => import('./alta/alta.component').then(m => m.AltaComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
+    loadComponent: () =>
+      import('./list/user-list.component').then((m) => m.UserListComponent),
+    data: {
+      requiredAccess: [
+        Roles.SuperAdmin,
+        Roles.Operario,
+        Roles.Supervisor,
+        Roles.Administrativo,
+      ],
+    },
   },
   {
     path: 'roles',
-    loadComponent: () => import('./roles/roles.component').then(m => m.RolesComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-  }
+    loadComponent: () =>
+      import('./roles/roles.component').then((m) => m.RolesComponent),
+    data: {
+      requiredAccess: [
+        Roles.SuperAdmin,
+        Roles.Operario,
+        Roles.Supervisor,
+        Roles.Administrativo,
+      ],
+    },
+  },
 ];

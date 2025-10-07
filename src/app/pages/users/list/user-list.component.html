@@ -2,7 +2,7 @@
 <div class="container-fluid page-shell page-header-container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="page-title mb-0" style="margin-left: 3rem;">Lista de Usuarios</h1>
-    <a class="btn btn-primary header-action" [routerLink]="['/user/create']">
+    <a class="btn btn-primary header-action" (click)="createNewUser()" role="button">
       <i class="bx bx-user-plus bx-tada me-1" aria-hidden="true"></i> Nuevo Usuario
     </a>
   </div>
@@ -24,10 +24,25 @@
         [useExternalPaginator]="true"
         [pageIndex]="currentPage - 1"
         [length]="totalItems"
-        (pageChange)="onPageChange($event)"
+        [showView]="false"
+  (pageChange)="onPageChange($event)"
         (edit)="editUser($event)"
         (remove)="deleteUser($event)">
       </app-table-shared>
     </div>
   </div>
+
+    <!-- Instancia del modal de usuario -->
+    <app-user-modal *ngIf="showUserModal"
+      [initialData]="modalInitialData"
+      [mode]="modalMode"
+      (submit)="onModalSubmit($event)"
+      (close)="closeUserModal()"></app-user-modal>
+
+    <!-- ✅ Modal de detalles del usuario -->
+    <app-user-details *ngIf="showDetailsModal"
+      [userData]="detailsData"
+      (close)="closeDetailsModal()"></app-user-details>
+
+    <!-- Confirm modal removed: using SweetAlert2 via AlertService.confirm -->
 </div>
