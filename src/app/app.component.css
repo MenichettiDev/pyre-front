@@ -3,18 +3,22 @@
    ========================================================== */
 .app-container {
   width: 100%;
-  /* Evitar scrollbar permanente: considerar topbar fijo */
-  min-height: calc(100vh - 70px);
-  overflow-x: hidden; /* Prevenir scroll horizontal */
+  /* NO forzar altura mínima que podría causar scroll */
+  height: auto;
+  min-height: auto;
+  overflow: hidden; /* Prevenir scroll en cualquier dirección */
 }
 
 .main-wrapper {
-  min-height: calc(100vh - var(--topbar-height, 70px)); /* Ajustar altura para el topbar */
-  padding-top: calc(var(--topbar-height, 70px) + 10px); /* Reservar espacio para el topbar fijo y añadir espacio adicional */
+  /* Eliminar altura mínima para evitar scroll innecesario */
+  height: auto;
+  min-height: auto;
+  padding-top: calc(var(--topbar-height, 70px) + 10px); /* Reservar espacio para el topbar fijo */
   transition: margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  overflow: hidden; /* Prevenir scroll innecesario en el wrapper */
 }
 
 /* Cuando el sidebar está visible, ajustar el margen */
@@ -30,6 +34,8 @@
   .main-wrapper.with-sidebar {
     margin-left: 0;
     width: 100%;
+    height: auto;
+    min-height: 0;
     /* El margin-top ya está aplicado globalmente para el topbar */
   }
 }
@@ -37,10 +43,12 @@
 @media (max-width: 575.98px) {
   .main-wrapper {
     padding-top: calc(60px + 10px); /* Topbar más pequeño en móviles + espacio adicional */
-    min-height: calc(100vh - 60px);
+    height: auto; /* Altura basada en contenido */
+    min-height: 0; /* No forzar altura mínima */
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
   }
 }

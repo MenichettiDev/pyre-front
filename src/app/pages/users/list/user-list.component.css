@@ -96,6 +96,11 @@
   width: 100%;
   /* Reducir el espacio superior que añade la clase mt-2 en el HTML */
   margin-top: -1rem !important;
+  /* Evitar que el contenedor genere scroll innecesario - forzar altura automática */
+  overflow: hidden;
+  height: auto !important;
+  min-height: 0 !important; /* Evitar forzar altura que provoque scroll */
+  max-height: none !important; /* Evitar altura máxima que limite contenido */
 }
 
 .container-fluid.page-shell {

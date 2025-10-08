@@ -118,8 +118,6 @@ export class UserListComponent implements OnInit {
     );
   }
 
-  // El botón 'Ver detalles' fue eliminado — use Editar para inspeccionar y editar.
-
   // closeDetailsModal removed
 
   deleteUser(item: any): void {

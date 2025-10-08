@@ -8,13 +8,13 @@
   </div>
 </div>
 
-<div class="user-list-container container-fluid page-shell mt-2">
+<div class="user-list-container container-fluid page-shell mt-2" style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
 
   <div *ngIf="loading" class="text-center py-4">Loading...</div>
 
-  <div *ngIf="!loading" class="soft-edge depth">
+  <div *ngIf="!loading" class="soft-edge depth" style="overflow: hidden; height: auto; min-height: 0;">
 
-    <div class="pyre-table-wrapper">
+    <div class="pyre-table-wrapper" style="overflow: hidden;">
       <app-table-shared
         [value]="users"
         [toggleSize]="'small'"
@@ -26,7 +26,7 @@
         [pageIndex]="currentPage - 1"
         [length]="totalItems"
         [showView]="false"
-  (pageChange)="onPageChange($event)"
+        (pageChange)="onPageChange($event)"
         (edit)="editUser($event)"
         (remove)="deleteUser($event)"
         (toggle)="toggleUserActive($event)">
