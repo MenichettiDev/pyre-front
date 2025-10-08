@@ -41,10 +41,7 @@
       (submit)="onModalSubmit($event)"
       (close)="closeUserModal()"></app-user-modal>
 
-    <!-- ✅ Modal de detalles del usuario -->
-    <app-user-details *ngIf="showDetailsModal"
-      [userData]="detailsData"
-      (close)="closeDetailsModal()"></app-user-details>
+    <!-- Modal de detalles eliminado: usar el modal de editar/visualizar en su lugar -->
 
     <!-- Confirm modal removed: using SweetAlert2 via AlertService.confirm -->
 </div>

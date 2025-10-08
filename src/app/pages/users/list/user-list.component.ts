@@ -5,7 +5,6 @@ import { UserService } from '../../../core/services/user.service';
 import { Router } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
 import { UserModalComponent } from '../user-modal/user-modal.component';
-import { DetailsComponent } from '../details/details.component';
 // ConfirmModalComponent removed in favor of SweetAlert2
 import { AlertService } from '../../../core/services/alert.service';
 import { switchMap } from 'rxjs/operators';
@@ -29,9 +28,8 @@ interface DisplayUser {
   imports: [
     CommonModule,
     RouterModule,
-    TableSharedComponent,
-    UserModalComponent,
-    DetailsComponent,
+  TableSharedComponent,
+  UserModalComponent,
     // ConfirmModalComponent removed - not imported
   ],
   templateUrl: './user-list.component.html',
@@ -52,9 +50,7 @@ export class UserListComponent implements OnInit {
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
-  // Details modal control
-  showDetailsModal = false;
-  detailsData: any = null;
+  // Details modal removed - no longer used
 
   // Confirm modal removed - using SweetAlert2 via AlertService
 
@@ -124,11 +120,7 @@ export class UserListComponent implements OnInit {
 
   // El botón 'Ver detalles' fue eliminado — use Editar para inspeccionar y editar.
 
-  // ✅ Cerrar modal de detalles
-  closeDetailsModal(): void {
-    this.showDetailsModal = false;
-    this.detailsData = null;
-  }
+  // closeDetailsModal removed
 
   deleteUser(item: any): void {
     const id = item?.id ?? null;
