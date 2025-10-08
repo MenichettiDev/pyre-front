@@ -2,8 +2,16 @@
   <div class="modal-wrapper" [class.readonly]="!editingEnabled">
     <div class="modal-content" [class.open]="visible">
       <div class="modal-header">
-        <h3>{{ mode === 'edit' ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
-        <span *ngIf="mode === 'edit' && !editingEnabled" class="readonly-badge">Solo lectura</span>
+        <!-- Header: switch colocado donde estaba el título; el texto 'Modo ...' actúa como título en modo edit -->
+        <div class="header-controls">
+          <div *ngIf="mode === 'edit'" class="mode-switch-wrapper">
+            <button type="button" class="mode-switch" (click)="toggleEditing()" [attr.aria-pressed]="editingEnabled" [attr.aria-label]="editingEnabled ? 'Desactivar edición' : 'Activar edición'">
+              <span class="switch-track" [class.on]="editingEnabled"><span class="switch-thumb" [class.on]="editingEnabled"></span></span>
+            </button>
+          </div>
+          <h3 class="modal-title">{{ mode === 'edit' ? (editingEnabled ? 'Modo edición' : 'Modo lectura') : 'Nuevo Usuario' }}</h3>
+        </div>
+
         <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
           <span class="pi pi-times" aria-hidden="true"></span>
         </button>
@@ -121,9 +129,10 @@
 
         <div class="actions">
           <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
-          <!-- En modo edit mostramos botón Editar que activa campos, y luego el submit actualizará -->
-          <button *ngIf="mode === 'edit' && !editingEnabled" type="button" class="btn-edit" (click)="enableEditing()">Editar</button>
-          <button *ngIf="mode === 'edit' && editingEnabled" type="submit" class="btn-submit">Actualizar</button>
+          <!-- Mostrar siempre Actualizar en modo edit; estará deshabilitado hasta activar edición -->
+          <span [ngbTooltip]="!editingEnabled ? 'Pasa a modo edición para poder actualizar' : null" placement="top" container="body">
+            <button *ngIf="mode === 'edit'" [disabled]="!editingEnabled" type="submit" class="btn-submit">Actualizar</button>
+          </span>
           <button *ngIf="mode !== 'edit'" type="submit" class="btn-submit">Crear</button>
         </div>
       </form>

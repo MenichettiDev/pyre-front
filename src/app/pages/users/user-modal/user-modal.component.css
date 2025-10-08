@@ -69,6 +69,19 @@
   background: #f9f9f9;
 }
 
+.header-controls{display:flex;align-items:center;gap:10px}
+.mode-switch-wrapper{display:flex;align-items:center;gap:8px}
+.mode-switch{background:transparent;border:none;padding:0;cursor:pointer}
+.switch-track{display:inline-block;width:44px;height:24px;background:#e5e7eb;border-radius:999px;position:relative;transition:background .18s ease}
+.switch-track.on{background:#bbf7d0}
+.switch-thumb{position:absolute;top:50%;left:4px;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.12);transition:transform .18s ease}
+.switch-thumb.on{transform:translateY(-50%) translateX(20px);background:#10b981}
+.mode-label{font-size:0.9rem;font-weight:600;color:#374151}
+.readonly-badge.editing{background:#ecfdf5;color:#065f46;border-color:#bbf7d0}
+.readonly-badge.reading{background:var(--color-bg-alt,#f8f9fa);color:var(--color-text-secondary,#666666)}
+.readonly-badge.editing{background:#ecfdf5;color:#065f46;border-color:#bbf7d0}
+.readonly-badge.reading{background:var(--color-bg-alt,#f8f9fa);color:var(--color-text-secondary,#666666)}
+
 .modal-header h3 {
   margin: 0;
   font-size: 1.25rem;
@@ -147,10 +160,16 @@
   font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 0.35rem;
+  margin-top: 0.45rem; /* Añadido: un poco de espacio superior para separar del borde/elementos superiores */
   color: #374151;
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+/* Si la etiqueta está en un grid compacto, otorgar más espacio superior para mejorar separación visual */
+.compact-form-grid .field-group label {
+  margin-top: 0.6rem;
 }
 
 .modal-form label.required::after {
@@ -199,6 +218,8 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 4px 12px rgba(37, 99, 235, 0.15);
   transform: translateY(-1px);
 }
+
+
 
 .modal-form input:not([style*="display:none"]):hover:not(:focus),
 .modal-form select:hover:not(:focus),

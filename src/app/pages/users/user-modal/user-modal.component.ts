@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Output, OnInit, Input, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Roles } from '../../../shared/enums/roles';
 import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-user-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
   templateUrl: './user-modal.component.html',
   styleUrls: ['./user-modal.component.css']
 })
@@ -87,6 +88,19 @@ export class UserModalComponent implements OnInit, OnChanges {
       const firstInput = this.elementRef.nativeElement.querySelector('input:not([disabled])');
       if (firstInput) firstInput.focus();
     }, 50);
+  }
+
+  // Alterna entre modo lectura y edición desde el header
+  toggleEditing(): void {
+    this.editingEnabled = !this.editingEnabled;
+    this.setControlsDisabled(!this.editingEnabled);
+    if (this.editingEnabled) {
+      // focus al primer input editable
+      setTimeout(() => {
+        const firstInput = this.elementRef.nativeElement.querySelector('input:not([disabled])');
+        if (firstInput) firstInput.focus();
+      }, 50);
+    }
   }
 
   private setControlsDisabled(disabled: boolean) {
