@@ -1,0 +1,73 @@
+<div class="modal-overlay" *ngIf="visible" role="dialog" aria-modal="true" (click)="onClose()">
+    <div class="modal-wrapper">
+        <div class="modal-content" (click)="$event.stopPropagation()" [class.open]="visible">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span class="pi pi-truck"></span>
+                    Detalles del Proveedor
+                </h2>
+                <button #firstFocusable type="button" class="close-btn" (click)="onClose()" aria-label="Cerrar">
+                    <span class="pi pi-times" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="proveedorData">
+                <div class="details-grid">
+                    <div class="section">
+                        <h3 class="section-title">
+                            <span class="pi pi-id-card" aria-hidden="true"></span>
+                            Información Principal
+                        </h3>
+                        <div class="detail-row">
+                            <label>Nombre:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.nombreProveedor) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Contacto:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.contacto) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>CUIT:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.cuit) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Teléfono:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.telefono) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Email:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.email) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Dirección:</label>
+                            <span class="value">{{ getDisplayValue(proveedorData?.direccion) }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Estado:</label>
+                            <span class="value" [class]="proveedorData?.activo ? 'status-active' : 'status-inactive'">
+                                <span [class]="proveedorData?.activo ? 'pi pi-check-circle' : 'pi pi-times-circle'"
+                                    aria-hidden="true"></span>
+                                {{ getActivoLabel(proveedorData?.activo) }}
+                            </span>
+                        </div>
+                        <div class="detail-row" *ngIf="proveedorData?.idProveedor">
+                            <label>ID Proveedor:</label>
+                            <span class="value">{{ proveedorData?.idProveedor }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body no-data" *ngIf="!proveedorData">
+                <div class="empty-state">
+                    <span class="pi pi-exclamation-triangle" aria-hidden="true"></span>
+                    <p>No hay datos del proveedor disponibles</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="onClose()">
+                    <span class="pi pi-times" aria-hidden="true"></span>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

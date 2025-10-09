@@ -1,0 +1,60 @@
+<div class="modal-overlay" *ngIf="visible" role="dialog" aria-modal="true">
+    <div class="modal-wrapper" [class.readonly]="!editingEnabled">
+        <div class="modal-content" [class.open]="visible">
+            <div class="modal-header">
+                <h3>{{ mode === 'edit' ? 'Editar Obra' : 'Nueva Obra' }}</h3>
+                <span *ngIf="mode === 'edit' && !editingEnabled" class="readonly-badge">Solo lectura</span>
+                <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
+                    <span class="pi pi-times" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div *ngIf="mode === 'edit' && !initialData" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando datos de la obra...</p>
+            </div>
+
+            <form *ngIf="mode === 'create' || initialData" [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form"
+                autocomplete="off">
+                <div class="compact-form-grid">
+                    <div class="field-group"
+                        [class.has-error]="form.get('codigo')?.invalid && form.get('codigo')?.touched">
+                        <label class="required">Código</label>
+                        <input formControlName="codigo" placeholder="Código de obra" maxlength="20"
+                            [class.error]="form.get('codigo')?.invalid && form.get('codigo')?.touched" />
+                        <div *ngIf="form.get('codigo')?.invalid && form.get('codigo')?.touched" class="error-text">El
+                            código es requerido (máx 20)</div>
+                    </div>
+                    <div class="field-group"
+                        [class.has-error]="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched">
+                        <label class="required">Nombre Obra</label>
+                        <input formControlName="nombreObra" placeholder="Nombre de la obra" maxlength="150"
+                            [class.error]="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched" />
+                        <div *ngIf="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched"
+                            class="error-text">El nombre es requerido (máx 150)</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Ubicación</label>
+                        <input formControlName="ubicacion" placeholder="Ubicación" maxlength="200" />
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Fecha Inicio</label>
+                        <input formControlName="fechaInicio" type="date" />
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Fecha Fin</label>
+                        <input formControlName="fechaFin" type="date" />
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
+                    <button *ngIf="mode === 'edit' && !editingEnabled" type="button" class="btn-edit"
+                        (click)="enableEditing()">Editar</button>
+                    <button *ngIf="mode === 'edit' && editingEnabled" type="submit"
+                        class="btn-submit">Actualizar</button>
+                    <button *ngIf="mode !== 'edit'" type="submit" class="btn-submit">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

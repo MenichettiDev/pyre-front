@@ -1,0 +1,73 @@
+<div class="modal-overlay" *ngIf="visible" role="dialog" aria-modal="true">
+    <div class="modal-wrapper" [class.readonly]="!editingEnabled">
+        <div class="modal-content" [class.open]="visible">
+            <div class="modal-header">
+                <h3>{{ mode === 'edit' ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h3>
+                <span *ngIf="mode === 'edit' && !editingEnabled" class="readonly-badge">Solo lectura</span>
+                <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
+                    <span class="pi pi-times" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div *ngIf="mode === 'edit' && !initialData" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando datos del proveedor...</p>
+            </div>
+
+            <form *ngIf="mode === 'create' || initialData" [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form"
+                autocomplete="off">
+                <div class="compact-form-grid">
+                    <div class="field-group"
+                        [class.has-error]="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched">
+                        <label class="required">Nombre Proveedor</label>
+                        <input formControlName="nombreProveedor" placeholder="Nombre del proveedor"
+                            [class.error]="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched" />
+                        <div *ngIf="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched"
+                            class="error-text">El nombre es requerido</div>
+                    </div>
+                    <div class="field-group"
+                        [class.has-error]="form.get('contacto')?.invalid && form.get('contacto')?.touched">
+                        <label class="required">Contacto</label>
+                        <input formControlName="contacto" placeholder="Nombre del contacto"
+                            [class.error]="form.get('contacto')?.invalid && form.get('contacto')?.touched" />
+                        <div *ngIf="form.get('contacto')?.invalid && form.get('contacto')?.touched" class="error-text">
+                            El contacto es requerido</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">CUIT</label>
+                        <input formControlName="cuit" placeholder="CUIT" />
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Teléfono</label>
+                        <input formControlName="telefono" placeholder="Teléfono" />
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Email</label>
+                        <input formControlName="email" type="email" placeholder="Email" />
+                        <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error-text">Formato
+                            de email inválido</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="optional">Dirección</label>
+                        <input formControlName="direccion" placeholder="Dirección" />
+                    </div>
+                    <div class="field-group">
+                        <label class="required">Activo</label>
+                        <select formControlName="activo">
+                            <option [value]="true">Activo</option>
+                            <option [value]="false">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
+                    <button *ngIf="mode === 'edit' && !editingEnabled" type="button" class="btn-edit"
+                        (click)="enableEditing()">Editar</button>
+                    <button *ngIf="mode === 'edit' && editingEnabled" type="submit"
+                        class="btn-submit">Actualizar</button>
+                    <button *ngIf="mode !== 'edit'" type="submit" class="btn-submit">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

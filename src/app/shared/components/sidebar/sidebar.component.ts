@@ -7,7 +7,7 @@ import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
 import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
 import { SidebarService } from '../../../core/services/sidebar.service';
-  // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
+// Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
   id: number;
@@ -55,8 +55,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // Menú hardcodeado basado en tu estructura
   private readonly allMenuItems: MenuItem[] = [
-  // Dashboard
-  { id: 1, descripcion: 'Dashboard', icono: 'bi bi-speedometer2', link: '/dashboard', grupo: 'GM01', principal: true, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] },
+    // Dashboard
+    { id: 1, descripcion: 'Dashboard', icono: 'bi bi-speedometer2', link: '/dashboard', grupo: 'GM01', principal: true, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] },
     { id: 2, descripcion: 'Resumen General', icono: 'bi bi-graph-up', link: '/dashboard/resumen', grupo: 'GM01', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 3, descripcion: 'Alertas Pendientes', icono: 'bi bi-bell', link: '/dashboard/alertas', grupo: 'GM01', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
 
@@ -74,10 +74,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 12, descripcion: 'Historial de Herramienta', icono: 'bi bi-clock-history', link: '/movimientos/historial', grupo: 'GM03', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 13, descripcion: 'Movimientos por Operario', icono: 'bi bi-person-lines-fill', link: '/movimientos/operario', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
-  // Gestión de Usuarios
-  { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-  { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-  { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // Gestión de Usuarios
+    { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Reportes
     { id: 18, descripcion: 'Reportes', icono: 'bi bi-bar-chart', link: '/reportes', grupo: 'GM05', principal: true, orden: 5, estado: true, requiredAccess: [1, 2, 3, 4] },
@@ -86,11 +86,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 21, descripcion: 'Uso por Operario', icono: 'bi bi-person-check', link: '/reportes/operario', grupo: 'GM05', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 22, descripcion: 'Movimientos por Fecha / Herramienta', icono: 'bi bi-calendar-range', link: '/reportes/movimientos', grupo: 'GM05', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
-  // Configuración (solo Administrador)
-  { id: 23, descripcion: 'Configuración', icono: 'bi bi-gear', link: '/configuracion', grupo: 'GM06', principal: true, orden: 6, estado: true, requiredAccess: [Roles.SuperAdmin] },
-  { id: 24, descripcion: 'Parámetros Generales', icono: 'bi bi-sliders', link: '/configuracion/parametros', grupo: 'GM06', principal: false, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin] },
-  { id: 25, descripcion: 'Tipos de Estado', icono: 'bi bi-tags', link: '/configuracion/estados', grupo: 'GM06', principal: false, orden: 2, estado: true, requiredAccess: [Roles.SuperAdmin] },
-  { id: 26, descripcion: 'Alertas y Notificaciones', icono: 'bi bi-bell-fill', link: '/configuracion/alertas', grupo: 'GM06', principal: false, orden: 3, estado: true, requiredAccess: [Roles.SuperAdmin] },
+    // Configuración (solo Administrador)
+    { id: 23, descripcion: 'Configuración', icono: 'bi bi-gear', link: '/configuracion', grupo: 'GM06', principal: true, orden: 6, estado: true, requiredAccess: [Roles.SuperAdmin] },
+    { id: 24, descripcion: 'Parámetros Generales', icono: 'bi bi-sliders', link: '/configuracion/parametros', grupo: 'GM06', principal: false, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin] },
+    { id: 25, descripcion: 'Tipos de Estado', icono: 'bi bi-tags', link: '/configuracion/estados', grupo: 'GM06', principal: false, orden: 2, estado: true, requiredAccess: [Roles.SuperAdmin] },
+    { id: 26, descripcion: 'Alertas y Notificaciones', icono: 'bi bi-bell-fill', link: '/configuracion/alertas', grupo: 'GM06', principal: false, orden: 3, estado: true, requiredAccess: [Roles.SuperAdmin] },
+
+    // Recursos
+    { id: 27, descripcion: 'Recursos', icono: 'bi bi-truck', link: '/recursos', grupo: 'GM07', principal: true, orden: 7, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 28, descripcion: 'Proveedores', icono: 'bi bi-truck', link: '/recursos/proveedores', grupo: 'GM07', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 29, descripcion: 'Obras', icono: 'bi bi-card-list', link: '/recursos/obras', grupo: 'GM07', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
   ];
 
   // Servicios inyectados
@@ -154,21 +159,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const nombre = user.nombre || '';
       const apellido = user.apellido || '';
       this.nombreCompleto = `${nombre} ${apellido}`.trim() || 'Usuario';
-  // email (legacy)
-  this.userEmail = user.email || '';
-  this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
+      // email (legacy)
+      this.userEmail = user.email || '';
+      this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
 
-  // legajo (preferir legajo en raw si existe)
-  const legajo = user.legajo ?? user.raw?.legajo ?? user.id ?? null;
-  this.userLegajo = legajo != null ? String(legajo) : '';
-  this.displayLegajo = this.userLegajo && this.userLegajo.length > 12 ? this.userLegajo.slice(0, 9) + '...' : this.userLegajo;
+      // legajo (preferir legajo en raw si existe)
+      const legajo = user.legajo ?? user.raw?.legajo ?? user.id ?? null;
+      this.userLegajo = legajo != null ? String(legajo) : '';
+      this.displayLegajo = this.userLegajo && this.userLegajo.length > 12 ? this.userLegajo.slice(0, 9) + '...' : this.userLegajo;
       // Construir etiqueta descriptiva: incluir legajo y nombre completo si están disponibles
       const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
       const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
       this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario';
-  // role (si viene en la respuesta del usuario)
-  const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
-  this.displayRole = roleName ? String(roleName) : '';
+      // role (si viene en la respuesta del usuario)
+      const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
+      this.displayRole = roleName ? String(roleName) : '';
     } else {
       // Sin usuario: ocultar menú y mostrar nombre por defecto
       this.id_acceso = 0;
