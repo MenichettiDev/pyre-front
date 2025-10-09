@@ -51,6 +51,10 @@ export const routes: Routes = [
         data: { requiredAccess: [1] } // Solo administradores
     },
     {
+        path: 'recursos',
+        loadChildren: () => import('./pages/recursos/recursos.routes').then(m => m.recursosRoutes)
+    },
+    {
         path: 'acceso-denegado',
         loadComponent: () => import('./shared/components/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
     },

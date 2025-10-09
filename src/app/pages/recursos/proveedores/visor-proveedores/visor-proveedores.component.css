@@ -1,0 +1,79 @@
+/* Estilos para el componente de lista de proveedores */
+:host {
+    display: block;
+}
+
+.page-header-container {
+    padding-top: 1.75rem;
+    margin-top: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    font-family: var(--font-family-primary);
+}
+
+.header-action {
+    margin-right: 3rem;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    color: var(--color-primary, #0d6efd);
+    text-decoration: none;
+}
+
+.header-action:hover,
+.header-action:focus {
+    background: rgba(13, 110, 253, 0.08);
+    text-decoration: none;
+    outline: none;
+}
+
+.header-action i {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1rem;
+    color: inherit;
+}
+
+.header-action i.me-1 {
+    margin-right: .25rem;
+}
+
+.proveedor-list-container {
+    margin-bottom: 2rem;
+    width: 100%;
+    margin-top: -1rem !important;
+}
+
+.container-fluid.page-shell {
+    width: 100%;
+    display: block;
+    padding: 0;
+}
+
+.soft-edge.depth {
+    /* Puedes agregar estilos de borde/sombra si lo deseas */
+}
+
+.pyre-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
