@@ -152,8 +152,11 @@
 
 .role-select,
 .status-select {
-  width: auto;
-  min-width: 180px;
+  color: inherit; /* Match text color with other inputs */
+  font-style: italic; /* Add italic style */
+  background: rgba(255, 255, 255, 0.7); /* Ensure consistent background */
+  border: 1px solid rgba(16, 24, 40, 0.1); /* Match border style */
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); /* Match shadow */
 }
 
 .reset-button {

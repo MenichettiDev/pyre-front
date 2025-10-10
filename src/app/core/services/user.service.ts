@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CreateUserDTO } from '../../models/user.dto';
 
@@ -9,18 +9,58 @@ import { CreateUserDTO } from '../../models/user.dto';
   providedIn: 'root',
 })
 export class UserService {
-  // Use environment.apiUrl for dev/prod and apuntar al endpoint real '/Usuario'
-  private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/Usuario';
+  // Use environment.apiUrl for dev/prod y apuntar al endpoint real '/usuario' (lowercase según backend)
+  private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/usuario';
 
   constructor(private http: HttpClient) {}
 
-  getUsers(page: number = 1, pageSize: number = 10): Observable<{ data: any[]; total: number }> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
+  /**
+   * Obtiene usuarios paginados y opcionalmente filtrados.
+   * Parámetros de filtro aceptados (opcionales): legajo, estado, nombre, apellido, rol
+   * Ejemplo:
+   *   // Desde el frontend pueden llamar:
+   *   userService.getUsers(1, 10, { nombre: 'Juan', estado: true });
+   * Equivalente a GET /api/usuario?page=1&pageSize=10&nombre=Juan&estado=true
+   */
+  getUsers(
+    page: number = 1,
+    pageSize: number = 10,
+    filters?: { legajo?: string; estado?: boolean; nombre?: string; apellido?: string; rol?: number }
+  ): Observable<{ data: any[]; total: number }> {
+    let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
+
+    // Añadir filtros opcionales si fueron provistos
+    if (filters) {
+      if (filters.legajo !== undefined && filters.legajo !== null && String(filters.legajo).trim() !== '') {
+        params = params.set('legajo', String(filters.legajo));
+      }
+      if (filters.estado !== undefined && filters.estado !== null) {
+        // enviar como 'true' / 'false'
+        params = params.set('estado', String(filters.estado));
+      }
+      if (filters.nombre !== undefined && filters.nombre !== null && String(filters.nombre).trim() !== '') {
+        params = params.set('nombre', String(filters.nombre));
+      }
+      if (filters.apellido !== undefined && filters.apellido !== null && String(filters.apellido).trim() !== '') {
+        params = params.set('apellido', String(filters.apellido));
+      }
+      if (filters.rol !== undefined && filters.rol !== null && filters.rol !== 0) {
+        params = params.set('rol', String(filters.rol));
+      }
+    }
 
     // Solicitamos la respuesta completa para leer headers (p. ej. X-Total-Count)
+    // DEBUG: logear URL con params para ayudar a diagnosticar filtros
+    try {
+      const debugUrl = `${this.baseUrl}?${params.toString()}`;
+      // usar console.debug para no ensuciar demasiado la consola en producción
+      console.debug('[UserService] GET URL:', debugUrl);
+    } catch (e) {
+      // ignore
+    }
+
     return this.http.get<any>(`${this.baseUrl}`, { params, observe: 'response' as const }).pipe(
+      tap((r: any) => console.debug('[UserService] raw response:', r)),
       map(resp => {
         const body = resp.body ?? {};
         // Intenta leer header 'X-Total-Count' o 'x-total-count'

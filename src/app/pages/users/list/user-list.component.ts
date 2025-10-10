@@ -45,6 +45,13 @@ export class UserListComponent implements OnInit {
   loading = false;
   totalItems = 0;
 
+  // Filtros actuales
+  filtroLegajo: string = '';
+  filtroNombre: string = '';
+  filtroApellido: string = '';
+  filtroRol: string = '';
+  filtroEstado: boolean | null = null; // true = activo, false = inactivo, null = cualquiera
+
   // Modal control
   showUserModal = false;
   modalInitialData: any = null;
@@ -63,8 +70,18 @@ export class UserListComponent implements OnInit {
   fetchUsers(): void {
     this.loading = true;
     console.log(`[UserList] fetchUsers page=${this.currentPage} size=${this.pageSize}`);
-    this.userService.getUsers(this.currentPage, this.pageSize).subscribe(
+    // Construir objeto de filtros para enviar al servicio
+    const filters: any = {};
+    if (this.filtroLegajo && String(this.filtroLegajo).trim() !== '') filters.legajo = this.filtroLegajo.trim();
+    if (this.filtroNombre && String(this.filtroNombre).trim() !== '') filters.nombre = this.filtroNombre.trim();
+    if (this.filtroApellido && String(this.filtroApellido).trim() !== '') filters.apellido = this.filtroApellido.trim();
+    if (this.filtroRol && String(this.filtroRol).trim() !== '') filters.rol = Number(this.filtroRol.trim());
+    if (this.filtroEstado !== null) filters.estado = this.filtroEstado;
+
+    this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe(
       (resp) => {
+        console.debug('[UserList] fetchUsers - filtros enviados:', filters);
+        console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
         // Resp tiene la forma { data: any[], total: number }
         const rawList: UserRaw[] = Array.isArray(resp.data) ? resp.data : (resp.data || []);
         this.totalItems = resp.total ?? rawList.length ?? 0;
@@ -92,6 +109,47 @@ export class UserListComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  // Handler que recibe el objeto { legajo?, nombre?, apellido?, rol?, estado? } desde app-table-shared
+  onSearch(criteria: { legajo?: string; nombre?: string; apellido?: string; rol?: string | number; estado?: string | null }) {
+    // Normalizar y almacenar filtros
+    this.filtroLegajo = criteria?.legajo ?? '';
+    this.filtroNombre = criteria?.nombre ?? '';
+    this.filtroApellido = criteria?.apellido ?? '';
+    this.filtroRol = criteria?.rol ? criteria.rol.toString() : '';
+
+    // El componente table-shared emite estado como string; normalizamos a boolean|null
+    const estadoRaw = criteria?.estado ?? null;
+    if (estadoRaw === null || estadoRaw === undefined || String(estadoRaw).trim() === '') {
+      this.filtroEstado = null;
+    } else {
+      const s = String(estadoRaw).toLowerCase();
+      if (s === 'true' || s === 'activo' || s === '1') this.filtroEstado = true;
+      else if (s === 'false' || s === 'inactivo' || s === '0') this.filtroEstado = false;
+      else this.filtroEstado = null;
+    }
+
+    // Reiniciar a primera página al aplicar filtros
+    this.currentPage = 1;
+    this.fetchUsers();
+  }
+
+  // Handler para resetear filtros
+  onResetFilters() {
+    this.filtroLegajo = '';
+    this.filtroNombre = '';
+    this.filtroApellido = '';
+    this.filtroRol = '';
+    this.filtroEstado = null;
+    this.currentPage = 1;
+    this.fetchUsers();
+  }
+
+  // Método helper para obtener el estado como string para el template
+  getEstadoAsString(): string | null {
+    if (this.filtroEstado === null || this.filtroEstado === undefined) return null;
+    return this.filtroEstado === true ? 'activo' : 'inactivo';
   }
 
   // Ahora recibimos el objeto emitido por la tabla y extraemos el id

@@ -26,7 +26,10 @@
         [pageIndex]="currentPage - 1"
         [length]="totalItems"
         [showView]="false"
+        [filterValues]="{ legajo: filtroLegajo, nombre: filtroNombre, apellido: filtroApellido, rol: filtroRol, estado: getEstadoAsString() }"
         (pageChange)="onPageChange($event)"
+        (search)="onSearch($event)"
+        (resetFilters)="onResetFilters()"
         (edit)="editUser($event)"
         (remove)="deleteUser($event)"
         (toggle)="toggleUserActive($event)">
