@@ -55,11 +55,14 @@ export class VisorProveedoresComponent implements OnInit {
 
   fetchProveedores(): void {
     this.loading = true;
-    this.proveedoresService.getProveedores().subscribe({
+    this.proveedoresService.getProveedores(this.currentPage, this.pageSize).subscribe({
       next: (resp) => {
-        // Mapear los datos para que coincidan con las columnas esperadas
-        const rawList = Array.isArray(resp.data) ? resp.data : (resp.data || []);
-        this.totalItems = rawList.length ?? 0;
+        // Ajuste para la estructura de respuesta del backend
+        const pagedData = resp?.data ?? {};
+        const rawList = Array.isArray(pagedData.data) ? pagedData.data : [];
+        this.totalItems = pagedData.totalRecords ?? rawList.length ?? 0;
+        this.currentPage = pagedData.page ?? 1;
+        this.pageSize = pagedData.pageSize ?? this.pageSize;
         this.proveedores = rawList.map((p: any) => ({
           idProveedor: p.idProveedor,
           nombreProveedor: p.nombreProveedor,

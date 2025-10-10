@@ -23,8 +23,9 @@ export class ProveedoresService {
 
   constructor(private http: HttpClient) { }
 
-  getProveedores(): Observable<{ data: ProveedorDto[]; total: number }> {
-    return this.http.get<{ data: ProveedorDto[]; total: number }>(`${this.baseUrl}`);
+  getProveedores(page: number = 1, pageSize: number = 10): Observable<any> {
+    // El backend espera parámetros de paginación
+    return this.http.get<any>(`${this.baseUrl}?page=${page}&pageSize=${pageSize}`);
   }
 
   getProveedorById(id: number): Observable<{ data: ProveedorDto }> {
