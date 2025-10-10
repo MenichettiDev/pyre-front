@@ -41,7 +41,8 @@ export class ObrasService {
     return this.http.delete<any>(`${this.baseUrl}/${id}`);
   }
 
-  getObrasPaged(page: number, pageSize: number): Observable<{ data: ObraDto[]; total: number }> {
-    return this.http.get<{ data: ObraDto[]; total: number }>(`${this.baseUrl}/paged?page=${page}&pageSize=${pageSize}`);
+  getObrasPaged(page: number = 1, pageSize: number = 10): Observable<any> {
+    // El backend devuelve un objeto con 'data' que contiene 'data', 'page', 'pageSize', etc.
+    return this.http.get<any>(`${this.baseUrl}?page=${page}&pageSize=${pageSize}`);
   }
 }

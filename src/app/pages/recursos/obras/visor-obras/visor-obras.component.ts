@@ -24,7 +24,7 @@ export class VisorObrasComponent implements OnInit {
   columns: string[] = ['codigo', 'nombreObra', 'ubicacion', 'fechaInicio', 'fechaFin'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
-  pageSize = 5;
+  pageSize = 10;
   loading = false;
   totalItems = 0;
 
@@ -43,10 +43,14 @@ export class VisorObrasComponent implements OnInit {
 
   fetchObras(): void {
     this.loading = true;
-    this.obrasService.getObras().subscribe({
+    this.obrasService.getObrasPaged(this.currentPage, this.pageSize).subscribe({
       next: (resp) => {
-        const rawList = Array.isArray(resp.data) ? resp.data : (resp.data || []);
-        this.totalItems = rawList.length ?? 0;
+        // Ajuste para la estructura de respuesta del backend
+        const pagedData = resp?.data ?? {};
+        const rawList = Array.isArray(pagedData.data) ? pagedData.data : [];
+        this.totalItems = pagedData.totalRecords ?? rawList.length ?? 0;
+        this.currentPage = pagedData.page ?? 1;
+        this.pageSize = pagedData.pageSize ?? this.pageSize;
         this.obras = rawList.map((o: any) => ({
           idObra: o.idObra,
           codigo: o.codigo,
