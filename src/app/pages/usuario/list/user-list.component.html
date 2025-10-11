@@ -1,0 +1,50 @@
+<!-- Título y botón en la misma línea -->
+<div class="container-fluid page-shell page-header-container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="page-title mb-0" style="margin-left: 3rem;">Lista de Usuarios</h1>
+    <a class="btn btn-primary header-action" (click)="createNewUser()" role="button">
+      <i class="bx bx-user-plus bx-tada me-1" aria-hidden="true"></i> Nuevo Usuario
+    </a>
+  </div>
+</div>
+
+<div class="user-list-container container-fluid page-shell mt-2" style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
+
+  <div *ngIf="loading" class="text-center py-4">Loading...</div>
+
+  <div *ngIf="!loading" class="soft-edge depth" style="overflow: hidden; height: auto; min-height: 0;">
+
+    <div class="pyre-table-wrapper" style="overflow: hidden;">
+      <app-table-shared
+        [value]="users"
+        [toggleSize]="'small'"
+        [columns]="columns"
+        [rows]="pageSize"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [loading]="loading"
+        [useExternalPaginator]="true"
+        [pageIndex]="currentPage - 1"
+        [length]="totalItems"
+        [showView]="false"
+        [filterValues]="{ legajo: filtroLegajo, nombre: filtroNombre, apellido: filtroApellido, rol: filtroRol, estado: getEstadoAsString() }"
+        (pageChange)="onPageChange($event)"
+        (search)="onSearch($event)"
+        (resetFilters)="onResetFilters()"
+        (edit)="editUser($event)"
+        (remove)="deleteUser($event)"
+        (toggle)="toggleUserActive($event)">
+      </app-table-shared>
+    </div>
+  </div>
+
+    <!-- Instancia del modal de usuario -->
+    <app-user-modal *ngIf="showUserModal"
+      [initialData]="modalInitialData"
+      [mode]="modalMode"
+      (submit)="onModalSubmit($event)"
+      (close)="closeUserModal()"></app-user-modal>
+
+    <!-- Modal de detalles eliminado: usar el modal de editar/visualizar en su lugar -->
+
+    <!-- Confirm modal removed: using SweetAlert2 via AlertService.confirm -->
+</div>

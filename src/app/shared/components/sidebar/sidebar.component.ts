@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, inject, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { AlertService } from '../../../core/services/alert.service';
+import { AuthService } from '../../../services/auth.service';
+import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
 import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
-import { SidebarService } from '../../../core/services/sidebar.service';
+import { SidebarService } from '../../../services/sidebar.service';
 // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
@@ -62,7 +62,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     // Gestión de Herramientas
     { id: 4, descripcion: 'Gestión de Herramientas', icono: 'bi bi-tools', link: '/herramientas', grupo: 'GM02', principal: true, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/herramientas/listado', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/tool/list', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 6, descripcion: 'Registro / Alta de Herramienta', icono: 'bi bi-plus-circle', link: '/herramientas/alta', grupo: 'GM02', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 7, descripcion: 'Estados de Herramientas', icono: 'bi bi-check2-circle', link: '/herramientas/estados', grupo: 'GM02', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 8, descripcion: 'Ubicación Física', icono: 'bi bi-geo-alt', link: '/herramientas/ubicacion', grupo: 'GM02', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
@@ -100,7 +100,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // Servicios inyectados
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
+  private alertaService = inject(AlertaService);
   private router = inject(Router);
   private el = inject(ElementRef);
   private sidebarService = inject(SidebarService);
@@ -286,7 +286,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.isPerfilModalVisible = false;
 
     // Usar AlertService (wrapper de SweetAlert2). Devuelve la promesa de Swal.fire
-    this.alertService
+    this.alertaService
       .confirm('¿Estás seguro de que deseas cerrar sesión?', '¿Cerrar sesión?')
       .then((result: any) => {
         if (result && result.isConfirmed) {

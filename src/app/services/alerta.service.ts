@@ -1,0 +1,84 @@
+import { Injectable } from '@angular/core';
+
+
+declare const Swal: any;
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AlertaService {
+
+  constructor() { }
+
+
+  // Modal de confirmación
+  confirm(message: string, title: string = '¿Estás seguro?'): Promise<any> {
+    return Swal.fire({
+      title,
+      text: message,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, confirmar',
+      cancelButtonText: 'Cancelar',
+      // Evitar que SweetAlert2 enfoque automáticamente el botón confirmar
+      focusConfirm: false,
+      // Al abrir el modal, desenfocar cualquier elemento que pudiera venir seleccionado
+      // (esto evita que el botón aparezca 'seleccionado' inicialmente).
+      didOpen: () => {
+        try {
+          // Small timeout to allow Swal internals a terminar su trabajo
+          setTimeout(() => {
+            const active = document.activeElement as HTMLElement | null;
+            if (active && typeof active.blur === 'function') {
+              active.blur();
+            }
+          }, 0);
+        } catch (e) {
+          // Silenciar errores de compatibilidad
+        }
+      },
+      customClass: {
+        popup: 'swal2-popup swal2-themed',
+        title: 'swal2-title',
+        confirmButton: 'swal2-confirm',
+        cancelButton: 'swal2-cancel',
+      },
+    });
+  }
+
+  // Modal de éxito
+  success(message: string, title: string = '¡Éxito!'): void {
+    Swal.fire({
+      title,
+      text: message,
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      focusConfirm: false,
+      didOpen: () => {
+        try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) { }
+      },
+      customClass: {
+        popup: 'swal2-popup swal2-themed',
+        title: 'swal2-title',
+        confirmButton: 'swal2-confirm',
+      },
+    });
+  }
+
+  // Modal de error
+  error(message: string, title: string = 'Error'): void {
+    Swal.fire({
+      title,
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'Aceptar',
+      focusConfirm: false,
+      didOpen: () => { try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) { } },
+      customClass: {
+        popup: 'swal2-popup swal2-themed',
+        title: 'swal2-title',
+        confirmButton: 'swal2-confirm',
+      },
+    });
+  }
+}

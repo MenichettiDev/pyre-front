@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProveedoresService } from '../../../../core/services/proveedores.service';
+import { ProveedoresService } from '../../../../services/proveedores.service';
 import { TableSharedComponent } from '../../../../shared/components/table-shared/table-shared.component';
-import { AlertService } from '../../../../core/services/alert.service';
+import { AlertaService } from '../../../../services/alerta.service';
 import { ModalProveedorComponent } from '../modal-proveedor/modal-proveedor.component';
 import { DetailsProveedoresComponent } from '../details-proveedores/details-proveedores.component';
 
@@ -47,7 +47,7 @@ export class VisorProveedoresComponent implements OnInit {
   showDetailsModal = false;
   detailsData: any = null;
 
-  constructor(private proveedoresService: ProveedoresService, private alertService: AlertService) { }
+  constructor(private proveedoresService: ProveedoresService, private alertService: AlertaService) { }
 
   ngOnInit(): void {
     this.fetchProveedores();

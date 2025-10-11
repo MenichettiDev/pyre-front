@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ObrasService, ObraDto } from '../../../../core/services/obras.service';
+import { ObrasService, ObraDto } from '../../../../services/obras.service';
 import { TableSharedComponent } from '../../../../shared/components/table-shared/table-shared.component';
-import { AlertService } from '../../../../core/services/alert.service';
+import { AlertaService } from '../../../../services/alerta.service';
 import { ModalObrasComponent } from '../modal-obras/modal-obras.component';
 import { DetailsObrasComponent } from '../details-obras/details-obras.component';
 
@@ -35,7 +35,7 @@ export class VisorObrasComponent implements OnInit {
   showDetailsModal = false;
   detailsData: any = null;
 
-  constructor(private obrasService: ObrasService, private alertService: AlertService) { }
+  constructor(private obrasService: ObrasService, private alertService: AlertaService) { }
 
   ngOnInit(): void {
     this.fetchObras();

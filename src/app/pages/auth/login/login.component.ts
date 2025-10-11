@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { LoginService } from '../../../core/services/login.service';
+import { AuthService } from '../../../services/auth.service';
+import { LoginService } from '../../../services/login.service';
 
 declare var Swal: any;
 
