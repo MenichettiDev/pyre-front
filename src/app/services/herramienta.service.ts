@@ -9,7 +9,8 @@ import { environment } from '../../environments/environment';
 })
 export class HerramientaService {
 
-  private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/Herramienta/paged';
+  private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/Herramienta';
+
 
   constructor(private http: HttpClient) { }
 
@@ -23,7 +24,7 @@ export class HerramientaService {
       params = params.set('search', search.trim());
     }
 
-    return this.http.get<any>(`${this.baseUrl}`, { params }).pipe(
+    return this.http.get<any>(`${this.baseUrl + '/paged'}`, { params }).pipe(
       map((resp: any) => {
         // El backend devuelve { success, data: { data: [...], totalRecords, ... }, message }
         const payload = resp?.data ?? resp;
@@ -57,5 +58,25 @@ export class HerramientaService {
   // Opcional: alternar estado activo/inactivo si el backend lo soporta
   toggleActivo(id: number): Observable<any> {
     return this.http.patch(`/api/tools/${id}/toggle-activo`, {});
+  }
+
+  // GET /api/Herramienta/herramientas-totales
+  getHerramientasTotales(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramientas-totales`);
+  }
+
+  // GET /api/Herramienta/herramientas-disponibles
+  getHerramientasDisponibles(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramientas-disponibles`);
+  }
+
+  // GET /api/Herramienta/herramientas-en-prestamo
+  getHerramientasEnPrestamo(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramientas-en-prestamo`);
+  }
+
+  // GET /api/Herramienta/herramientas-en-reparacion
+  getHerramientasEnReparacion(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramientas-en-reparacion`);
   }
 }
