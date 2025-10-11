@@ -61,22 +61,22 @@ export class HerramientaService {
   }
 
   // GET /api/Herramienta/herramientas-totales
-  getHerramientasTotales(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/herramientas-totales`);
+  getCountHerramientasTotales(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/count-herramientas-totales`);
   }
 
   // GET /api/Herramienta/herramientas-disponibles
-  getHerramientasDisponibles(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/herramientas-disponibles`);
+  getCountHerramientasDisponibles(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/count-herramientas-disponibles`);
   }
 
   // GET /api/Herramienta/herramientas-en-prestamo
-  getHerramientasEnPrestamo(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/herramientas-en-prestamo`);
+  getCountHerramientasEnPrestamo(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/count-herramientas-en-prestamo`);
   }
 
   // GET /api/Herramienta/herramientas-en-reparacion
-  getHerramientasEnReparacion(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/herramientas-en-reparacion`);
+  getCountHerramientasEnReparacion(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/count-herramientas-en-reparacion`);
   }
 }

@@ -23,22 +23,22 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.herramientaService.getHerramientasTotales().subscribe((resp: any) => {
+    this.herramientaService.getCountHerramientasTotales().subscribe((resp: any) => {
       this.herramientasTotales = resp?.data ?? 0;
     });
-    this.herramientaService.getHerramientasDisponibles().subscribe((resp: any) => {
+    this.herramientaService.getCountHerramientasDisponibles().subscribe((resp: any) => {
       this.herramientasDisponibles = resp?.data ?? 0;
     });
-    this.herramientaService.getHerramientasEnPrestamo().subscribe((resp: any) => {
+    this.herramientaService.getCountHerramientasEnPrestamo().subscribe((resp: any) => {
       this.herramientasEnPrestamo = resp?.data ?? 0;
     });
-    this.herramientaService.getHerramientasEnReparacion().subscribe((resp: any) => {
+    this.herramientaService.getCountHerramientasEnReparacion().subscribe((resp: any) => {
       this.herramientasEnReparacion = resp?.data ?? 0;
     });
-    this.alertaService.getAlertasPendientes().subscribe((resp: any) => {
+    this.alertaService.getCountAlertasPendientes().subscribe((resp: any) => {
       this.alertasPendientes = resp?.data ?? 0;
     });
-    this.alertaService.getAlertasVencidas().subscribe((resp: any) => {
+    this.alertaService.getCountAlertasVencidas().subscribe((resp: any) => {
       this.alertasVencidas = resp?.data ?? 0;
     });
   }

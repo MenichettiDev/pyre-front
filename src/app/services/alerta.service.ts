@@ -85,12 +85,12 @@ export class AlertaService {
   }
 
   // GET /api/Alerta/alertas-pendientes
-  getAlertasPendientes() {
-    return this.http.get<any>(`${this.apiUrl}/Alerta/alertas-pendientes`);
+  getCountAlertasPendientes() {
+    return this.http.get<any>(`${this.apiUrl}/Alerta/count-alertas-pendientes`);
   }
 
   // GET /api/Alerta/alertas-vencidas
-  getAlertasVencidas() {
-    return this.http.get<any>(`${this.apiUrl}/Alerta/alertas-vencidas`);
+  getCountAlertasVencidas() {
+    return this.http.get<any>(`${this.apiUrl}/Alerta/count-alertas-vencidas`);
   }
 }
