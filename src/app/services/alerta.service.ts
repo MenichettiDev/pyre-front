@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 declare const Swal: any;
 
@@ -7,8 +8,9 @@ declare const Swal: any;
   providedIn: 'root'
 })
 export class AlertaService {
+  private apiUrl = environment.apiUrl;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
 
   // Modal de confirmación
@@ -80,5 +82,15 @@ export class AlertaService {
         confirmButton: 'swal2-confirm',
       },
     });
+  }
+
+  // GET /api/Alerta/alertas-pendientes
+  getAlertasPendientes() {
+    return this.http.get<any>(`${this.apiUrl}/Alerta/alertas-pendientes`);
+  }
+
+  // GET /api/Alerta/alertas-vencidas
+  getAlertasVencidas() {
+    return this.http.get<any>(`${this.apiUrl}/Alerta/alertas-vencidas`);
   }
 }
