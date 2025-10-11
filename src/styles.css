@@ -11,6 +11,10 @@
   --color-primary-dark: #5a1011;
   --color-primary-alt: #dc261b;
 
+  /* Layout Dimensions */
+  --sidebar-width: 260px;
+  --content-left-offset: 130px; /* La mitad del sidebar para centrado visual */
+
   /* UI Colors */
   --color-blue: #007BFF;
   --color-blue-dark: #0056b3;
@@ -104,18 +108,32 @@
    ========================================================== */
 
 /* Fondo global: reutiliza la imagen del login para todas las páginas */
-html, body {
+html {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevenir scroll en todas direcciones */
+}
+
+body {
+  /* Altura exactamente del viewport sin exceder */
+  height: 100vh;
   width: 100%;
   margin: 0;
   padding: 0;
   background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/assets/images/backgrounds/fondo.png') center/cover no-repeat;
   background-attachment: fixed;
+  overflow: auto; /* Permitir scroll solo cuando sea necesario */
 }
 
 /* Asegurar que el contenedor principal permita ver el fondo detrás */
 .app-container, .main-wrapper, app-root {
   background: transparent;
+  /* Evitar scroll vertical innecesario */
+  height: auto;
+  min-height: auto;
+  overflow: hidden;
 }
 
 /* Efecto 'blanch' para que el fondo se vea más claro/deslavado después del login
@@ -126,6 +144,11 @@ html, body {
   /* Capa blanca semitransparente sobre la imagen */
   --blanch-opacity: 0.55; /* ajuste: 0.0 - 1.0 */
   position: relative;
+  /* No forzar tamaño que pueda generar scroll innecesario */
+  height: auto;
+  min-height: auto;
+  /* Solo permitir overflow cuando sea necesario */
+  overflow: auto;
 }
 
 .bg-blanch::before {
@@ -208,6 +231,10 @@ app-root, .app-container, .main-wrapper {
 .pyre-table-wrapper.soft-edge.depth {
   box-shadow: var(--depth-shadow-1), var(--depth-shadow-2);
   position: relative;
+  /* Evitar scroll innecesario */
+  overflow: hidden;
+  height: auto;
+  min-height: 0;
 }
 
 /* Halo difuso adicional usando pseudo-elemento para un glow sutil
@@ -320,6 +347,8 @@ app-root, .app-container, .main-wrapper {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  /* Evitar scroll causado por un tamaño fijo excesivo */
+  min-height: auto;
 }
 
 /* Shell que deja 1cm de margen desde el sidebar/pantalla y hace ancho completo */
@@ -331,6 +360,11 @@ app-root, .app-container, .main-wrapper {
   padding-left: 1cm;
   padding-right: 1cm;
   box-sizing: border-box;
+  /* Evitar scroll innecesario */
+  overflow: hidden;
+  height: auto;
+  min-height: 0;
+  max-height: none;
 }
 
 /* En móviles reducimos el padding para no provocar scroll horizontal */
@@ -338,6 +372,27 @@ app-root, .app-container, .main-wrapper {
   .page-shell {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
+  }
+}
+
+/* Ajuste para centrar modales y diálogos en el área de contenido (sin sidebar) */
+/* Esto afecta a cualquier modal o diálogo que use posición fixed y cubra toda la pantalla */
+.swal2-container,
+.p-dialog-mask,
+.p-toast-container,
+.modal-overlay,
+.dialog-overlay {
+  padding-left: var(--content-left-offset, 130px) !important; /* Desplaza el contenido hacia la derecha */
+}
+
+/* Ajustes responsivos: en pantallas pequeñas el sidebar suele colapsar, así que reseteamos el offset */
+@media (max-width: 991.98px) {
+  .swal2-container,
+  .p-dialog-mask,
+  .p-toast-container,
+  .modal-overlay,
+  .dialog-overlay {
+    padding-left: 0 !important;
   }
 }
 

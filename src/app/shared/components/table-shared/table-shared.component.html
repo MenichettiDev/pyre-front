@@ -3,23 +3,40 @@
   <div class="pyre-filter-bar">
     <div class="filter-row">
       <div class="filter-item">
-        <label>Nombre</label>
-        <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre" />
+        <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" (keyup.enter)="onSearch()" />
       </div>
       <div class="filter-item">
-        <label>Legajo</label>
-        <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" />
+        <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre" (keyup.enter)="onSearch()" />
       </div>
       <div class="filter-item">
-        <label>Estado</label>
-        <select [(ngModel)]="filtroEstado">
-          <option value="">-- Todos --</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
+        <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido" (keyup.enter)="onSearch()" />
+      </div>
+      <div class="filter-item">
+        <select [(ngModel)]="filtroRol">
+          <option value="">Todos los roles</option>
+          <option *ngFor="let rol of getRolesOptions()" [value]="rol.value">{{ rol.label }}</option>
         </select>
       </div>
+      <div class="filter-item filter-item-with-reset">
+        <div class="filter-input-group">
+          <select [(ngModel)]="filtroEstado">
+            <option value="">Todos los estados</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+          <button *ngIf="hasActiveFilters()" pButton type="button" icon="pi pi-filter-slash"
+                  [ngbTooltip]="'Limpiar todos los filtros'"
+                  placement="top"
+                  class="p-button-text p-button-rounded reset-button-inline"
+                  (click)="onResetFilters()"
+                  [attr.aria-label]="'Limpiar filtros aplicados'"></button>
+        </div>
+      </div>
       <div class="filter-actions">
-        <button pButton type="button" icon="pi pi-search" label="Buscar" class="p-button-primary search-button" (click)="onSearch()"></button>
+        <button pButton type="button" icon="pi pi-search" [ngbTooltip]="hasActiveFilters() ? 'Buscar' : 'Seleccione al menos un filtro'" placement="top" container="body"
+                class="p-button-primary search-button" (click)="onSearch()"
+                [disabled]="!hasActiveFilters()" [attr.aria-disabled]="!hasActiveFilters()"
+                [attr.aria-label]="'Buscar con los filtros aplicados'"></button>
       </div>
     </div>
   </div>
@@ -40,10 +57,10 @@
         <td *ngFor="let c of columns">
           <ng-container *ngIf="c === 'estado'; else defaultCell">
             <!-- Toggle visual en columna ESTADO, ligado solo a la representación visual -->
-            <label class="action-toggle" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
+       <label class="action-toggle" [class.action-toggle--small]="toggleSize === 'small'" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
                    [ngbTooltip]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'" placement="top">
               <input type="checkbox" class="action-toggle-input" aria-hidden="true"
-                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" />
+                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" (change)="onToggle(rowData, $event)" />
               <span class="action-toggle-track" [class.is-checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')">
                 <span class="action-toggle-thumb"></span>
               </span>

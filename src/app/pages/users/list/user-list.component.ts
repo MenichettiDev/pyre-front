@@ -5,7 +5,6 @@ import { UserService } from '../../../core/services/user.service';
 import { Router } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
 import { UserModalComponent } from '../user-modal/user-modal.component';
-import { DetailsComponent } from '../details/details.component';
 // ConfirmModalComponent removed in favor of SweetAlert2
 import { AlertService } from '../../../core/services/alert.service';
 import { switchMap } from 'rxjs/operators';
@@ -29,9 +28,8 @@ interface DisplayUser {
   imports: [
     CommonModule,
     RouterModule,
-    TableSharedComponent,
-    UserModalComponent,
-    DetailsComponent,
+  TableSharedComponent,
+  UserModalComponent,
     // ConfirmModalComponent removed - not imported
   ],
   templateUrl: './user-list.component.html',
@@ -47,14 +45,19 @@ export class UserListComponent implements OnInit {
   loading = false;
   totalItems = 0;
 
+  // Filtros actuales
+  filtroLegajo: string = '';
+  filtroNombre: string = '';
+  filtroApellido: string = '';
+  filtroRol: string = '';
+  filtroEstado: boolean | null = null; // true = activo, false = inactivo, null = cualquiera
+
   // Modal control
   showUserModal = false;
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
-  // Details modal control
-  showDetailsModal = false;
-  detailsData: any = null;
+  // Details modal removed - no longer used
 
   // Confirm modal removed - using SweetAlert2 via AlertService
 
@@ -67,8 +70,18 @@ export class UserListComponent implements OnInit {
   fetchUsers(): void {
     this.loading = true;
     console.log(`[UserList] fetchUsers page=${this.currentPage} size=${this.pageSize}`);
-    this.userService.getUsers(this.currentPage, this.pageSize).subscribe(
+    // Construir objeto de filtros para enviar al servicio
+    const filters: any = {};
+    if (this.filtroLegajo && String(this.filtroLegajo).trim() !== '') filters.legajo = this.filtroLegajo.trim();
+    if (this.filtroNombre && String(this.filtroNombre).trim() !== '') filters.nombre = this.filtroNombre.trim();
+    if (this.filtroApellido && String(this.filtroApellido).trim() !== '') filters.apellido = this.filtroApellido.trim();
+    if (this.filtroRol && String(this.filtroRol).trim() !== '') filters.rol = Number(this.filtroRol.trim());
+    if (this.filtroEstado !== null) filters.estado = this.filtroEstado;
+
+    this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe(
       (resp) => {
+        console.debug('[UserList] fetchUsers - filtros enviados:', filters);
+        console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
         // Resp tiene la forma { data: any[], total: number }
         const rawList: UserRaw[] = Array.isArray(resp.data) ? resp.data : (resp.data || []);
         this.totalItems = resp.total ?? rawList.length ?? 0;
@@ -98,6 +111,47 @@ export class UserListComponent implements OnInit {
     );
   }
 
+  // Handler que recibe el objeto { legajo?, nombre?, apellido?, rol?, estado? } desde app-table-shared
+  onSearch(criteria: { legajo?: string; nombre?: string; apellido?: string; rol?: string | number; estado?: string | null }) {
+    // Normalizar y almacenar filtros
+    this.filtroLegajo = criteria?.legajo ?? '';
+    this.filtroNombre = criteria?.nombre ?? '';
+    this.filtroApellido = criteria?.apellido ?? '';
+    this.filtroRol = criteria?.rol ? criteria.rol.toString() : '';
+
+    // El componente table-shared emite estado como string; normalizamos a boolean|null
+    const estadoRaw = criteria?.estado ?? null;
+    if (estadoRaw === null || estadoRaw === undefined || String(estadoRaw).trim() === '') {
+      this.filtroEstado = null;
+    } else {
+      const s = String(estadoRaw).toLowerCase();
+      if (s === 'true' || s === 'activo' || s === '1') this.filtroEstado = true;
+      else if (s === 'false' || s === 'inactivo' || s === '0') this.filtroEstado = false;
+      else this.filtroEstado = null;
+    }
+
+    // Reiniciar a primera página al aplicar filtros
+    this.currentPage = 1;
+    this.fetchUsers();
+  }
+
+  // Handler para resetear filtros
+  onResetFilters() {
+    this.filtroLegajo = '';
+    this.filtroNombre = '';
+    this.filtroApellido = '';
+    this.filtroRol = '';
+    this.filtroEstado = null;
+    this.currentPage = 1;
+    this.fetchUsers();
+  }
+
+  // Método helper para obtener el estado como string para el template
+  getEstadoAsString(): string | null {
+    if (this.filtroEstado === null || this.filtroEstado === undefined) return null;
+    return this.filtroEstado === true ? 'activo' : 'inactivo';
+  }
+
   // Ahora recibimos el objeto emitido por la tabla y extraemos el id
   editUser(item: any): void {
     const id = item?.id ?? null;
@@ -122,13 +176,7 @@ export class UserListComponent implements OnInit {
     );
   }
 
-  // El botón 'Ver detalles' fue eliminado — use Editar para inspeccionar y editar.
-
-  // ✅ Cerrar modal de detalles
-  closeDetailsModal(): void {
-    this.showDetailsModal = false;
-    this.detailsData = null;
-  }
+  // closeDetailsModal removed
 
   deleteUser(item: any): void {
     const id = item?.id ?? null;
@@ -147,6 +195,34 @@ export class UserListComponent implements OnInit {
             error: (err) => {
               console.error('[UserList] deleteUser error', err);
               this.alertService.error('No se pudo eliminar el usuario. Intente nuevamente.');
+            }
+          });
+        }
+      });
+  }
+
+  // Alterna el estado activo/inactivo de un usuario desde la lista
+  toggleUserActive(item: any): void {
+    const id = item?.id ?? null;
+    if (id == null) return;
+
+    const current = (item?.estado ?? '').toString().toLowerCase() === 'activo';
+    const targetState = !current;
+
+    const actionText = targetState ? 'activar' : 'desactivar';
+    this.alertService.confirm(`¿Estás seguro de que deseas ${actionText} este usuario?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Usuario`)
+      .then((result: any) => {
+        if (result && result.isConfirmed) {
+          this.userService.toggleActivo(Number(id)).subscribe({
+            next: (resp) => {
+              const pastText = targetState ? 'activado' : 'desactivado';
+              this.alertService.success(`Usuario ${pastText} correctamente.`, '¡Hecho!');
+              // Refrescar la lista para obtener el estado actualizado desde backend
+              this.fetchUsers();
+            },
+            error: (err) => {
+              console.error('[UserList] toggleUserActive error', err);
+              this.alertService.error('No se pudo cambiar el estado del usuario. Intente nuevamente.');
             }
           });
         }

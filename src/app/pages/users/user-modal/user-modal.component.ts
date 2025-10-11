@@ -1,13 +1,15 @@
-import { Component, EventEmitter, Output, OnInit, Input, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { Subscription, debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Roles } from '../../../shared/enums/roles';
 import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-user-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
   templateUrl: './user-modal.component.html',
   styleUrls: ['./user-modal.component.css']
 })
@@ -28,6 +30,15 @@ export class UserModalComponent implements OnInit, OnChanges {
   rolesList: Array<{ id: number; label: string }> = [];
   showPassword = false;
   showConfirm = false;
+  // Flag para indicar si las contraseñas coinciden
+  passwordsMatch: boolean | null = null;
+  // Mensajes específicos para cada campo
+  passwordFeedback: string = '';
+  confirmFeedback: string = '';
+  // Mensajes devueltos por el servidor para campos (p.ej. "Dni ya existe")
+  serverErrors: { [key: string]: string } = {};
+  // Subscriptions guardadas para limpiar en ngOnDestroy
+  private subscriptions: Subscription[] = [];
   // Controla si los campos están habilitados para edición en modo 'edit'
   editingEnabled: boolean = true;
 
@@ -89,11 +100,31 @@ export class UserModalComponent implements OnInit, OnChanges {
     }, 50);
   }
 
+  // Alterna entre modo lectura y edición desde el header
+  toggleEditing(): void {
+    this.editingEnabled = !this.editingEnabled;
+    this.setControlsDisabled(!this.editingEnabled);
+    if (this.editingEnabled) {
+      // focus al primer input editable
+      setTimeout(() => {
+        const firstInput = this.elementRef.nativeElement.querySelector('input:not([disabled])');
+        if (firstInput) firstInput.focus();
+      }, 50);
+    }
+  }
+
   private setControlsDisabled(disabled: boolean) {
     if (!this.form) return;
     Object.keys(this.form.controls).forEach(key => {
       const control = this.form.get(key);
       if (!control) return;
+
+      // PasswordConfirm tiene lógica especial: solo se habilita cuando Password >= 6 chars
+      if (key === 'PasswordConfirm') {
+        // No modificar PasswordConfirm aquí, se maneja en subscribePasswordChanges
+        return;
+      }
+
       if (disabled) {
         control.disable({ emitEvent: false });
       } else {
@@ -108,17 +139,21 @@ export class UserModalComponent implements OnInit, OnChanges {
 
   private buildForm() {
     this.form = this.fb.group({
-      Nombre: ['', [Validators.required]],
-      Apellido: ['', [Validators.required]],
-      Legajo: ['', [Validators.required]],
-      Dni: ['', [Validators.required]],
-      Email: ['', [Validators.required, Validators.email]],
-      Telefono: [''],
-      RolId: [Roles.Administrativo, [Validators.required]],
-      AccedeAlSistema: [true],
-      Password: ['', [Validators.required, Validators.minLength(6)]],
-      PasswordConfirm: ['', [Validators.required, Validators.minLength(6)]]
+  Nombre: ['', [Validators.required, Validators.maxLength(100)]],
+  Apellido: ['', [Validators.required, Validators.maxLength(100)]],
+      Legajo: ['', [Validators.required, Validators.maxLength(5)]],
+      Dni: ['', [Validators.required, Validators.maxLength(20)]],
+      Email: ['', [Validators.email, Validators.maxLength(150)]],
+      Telefono: ['', [Validators.maxLength(50)]],
+  // Inicialmente vacío para forzar la selección por parte del usuario
+  RolId: ['', [Validators.required]],
+      AccedeAlSistema: [false],
+      Avatar: ['', [Validators.maxLength(45)]],
+      Password: ['', [Validators.minLength(6)]],
+      PasswordConfirm: ['', [Validators.minLength(6)]]
     });
+    // Inicialmente deshabilitamos el campo Confirm hasta que Password tenga al menos 6 chars
+    this.form.get('PasswordConfirm')?.disable({ emitEvent: false });
   }
 
   private updatePasswordValidators() {
@@ -126,17 +161,217 @@ export class UserModalComponent implements OnInit, OnChanges {
     const passwordConfirmControl = this.form.get('PasswordConfirm');
 
     if (this.mode === 'edit') {
-      // ✅ En modo edición: contraseña opcional
+      // En modo edición: contraseña opcional
       passwordControl?.setValidators([Validators.minLength(6)]);
       passwordConfirmControl?.setValidators([Validators.minLength(6)]);
     } else {
-      // ✅ En modo creación: contraseña obligatoria
-      passwordControl?.setValidators([Validators.required, Validators.minLength(6)]);
-      passwordConfirmControl?.setValidators([Validators.required, Validators.minLength(6)]);
+      // En modo creación: contraseña opcional según DTO, pero UI puede exigir 6 chars si se proporciona
+      // Mantendremos la validación mínima en cliente pero no obligatoria para permitir workflows con creación sin password si lo desea el backend
+      passwordControl?.setValidators([Validators.minLength(6)]);
+      passwordConfirmControl?.setValidators([Validators.minLength(6)]);
     }
 
     passwordControl?.updateValueAndValidity();
     passwordConfirmControl?.updateValueAndValidity();
+
+    // Asegurar que PasswordConfirm esté deshabilitado inicialmente
+    if (passwordConfirmControl && !passwordConfirmControl.disabled) {
+      passwordConfirmControl.disable({ emitEvent: false });
+    }
+
+    // Suscribir cambios para validación en tiempo real
+    this.subscribePasswordChanges();
+  }
+
+  private subscribePasswordChanges() {
+    if (!this.form) return;
+
+    const pw = this.form.get('Password');
+    const pwc = this.form.get('PasswordConfirm');
+
+    if (!pw || !pwc) return;
+
+    // Limpiar subs previas para evitar duplicados
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions = [];
+
+    // Debounce más largo para el primer campo (1.5 segundos) para mostrar mensaje de longitud
+    const sub1 = pw.valueChanges.pipe(debounceTime(1500)).subscribe((val: any) => {
+      const len = (val || '').length;
+      if (len >= 6) {
+        // habilitar confirm si está deshabilitado
+        if (pwc.disabled) {
+          // establecer validadores según modo
+          if (this.mode === 'edit') {
+            pwc.setValidators([Validators.minLength(6)]);
+          } else {
+            pwc.setValidators([Validators.required, Validators.minLength(6)]);
+          }
+          pwc.updateValueAndValidity({ emitEvent: false });
+          pwc.enable({ emitEvent: false });
+        }
+        // limpiar mensajes de ambos campos al habilitar confirm
+        this.passwordsMatch = null;
+        this.passwordFeedback = '';
+        this.confirmFeedback = '';
+        this.clearPasswordErrors();
+      } else if (len > 0) {
+        // si tiene contenido pero menos de 6, mostrar mensaje después del debounce SOLO en el primer campo
+        this.passwordsMatch = null;
+        this.passwordFeedback = 'La contraseña debe tener al menos 6 caracteres';
+        this.confirmFeedback = '';
+        this.form.get('Password')?.setErrors({ minlength: true });
+        // mantener confirm deshabilitado
+        if (!pwc.disabled) {
+          pwc.disable({ emitEvent: false });
+          pwc.setValue('', { emitEvent: false });
+        }
+      } else {
+        // campo vacío, limpiar estado
+        this.passwordsMatch = null;
+        this.passwordFeedback = '';
+        this.confirmFeedback = '';
+        this.clearPasswordErrors();
+        if (!pwc.disabled) {
+          pwc.disable({ emitEvent: false });
+          pwc.setValue('', { emitEvent: false });
+        }
+      }
+
+      // Si ambos cumplen longitud, comprobar coincidencia
+      if (len >= 6 && (pwc.value || '').length >= 6) {
+        this.checkPasswordsMatch();
+      }
+    });
+
+    const sub2 = pwc.valueChanges.pipe(debounceTime(300)).subscribe((val: any) => {
+      const pwLen = (pw.value || '').length;
+      const pwcLen = (val || '').length;
+
+      if (pwcLen === 0) {
+        // limpiar estado si el usuario borró confirm
+        this.passwordsMatch = null;
+        this.confirmFeedback = '';
+        this.clearPasswordErrors();
+      } else if (pwcLen > 0 && pwcLen < 6) {
+        // validación individual del segundo campo: mínimo 6 caracteres - mostrar SOLO en el segundo campo
+        this.passwordsMatch = null;
+        this.confirmFeedback = 'La confirmación debe tener al menos 6 caracteres';
+        this.form.get('PasswordConfirm')?.setErrors({ minlength: true });
+      } else if (pwLen >= 6 && pwcLen >= 6) {
+        // ambos tienen al menos 6, comparar coincidencia - mostrar resultado en el segundo campo
+        this.checkPasswordsMatch();
+      }
+    });
+
+    this.subscriptions.push(sub1, sub2);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions = [];
+  }
+
+  // Manejar errores devueltos por el backend (p.ej. Dni o Legajo duplicados)
+  private handleServerErrors(error: any) {
+    try {
+      this.serverErrors = {};
+      const payload = error?.error ?? error;
+      // Estructura posible: { errors: { Dni: ['...'], Legajo: ['...'] } }
+      if (payload?.errors && typeof payload.errors === 'object') {
+        Object.keys(payload.errors).forEach((k: string) => {
+          const val = payload.errors[k];
+          // val puede ser array o string
+          this.serverErrors[k] = Array.isArray(val) ? String(val[0]) : String(val);
+          const control = this.form.get(k) || this.form.get(this.toFormKey(k));
+          if (control) {
+            control.setErrors({ server: true });
+            control.markAsTouched();
+          }
+        });
+        return;
+      }
+
+      // Estructura alternativa: { message: 'Detalle: Dni ya existe' }
+      const msg = payload?.message || payload?.detail || payload?.error;
+      if (msg && typeof msg === 'string') {
+        // Intentar detectar campo en el mensaje
+        if (/dni/i.test(msg)) {
+          this.serverErrors['Dni'] = msg;
+          this.form.get('Dni')?.setErrors({ server: true });
+          this.form.get('Dni')?.markAsTouched();
+        } else if (/legaj/i.test(msg)) {
+          this.serverErrors['Legajo'] = msg;
+          this.form.get('Legajo')?.setErrors({ server: true });
+          this.form.get('Legajo')?.markAsTouched();
+        } else {
+          // fallback: mostrar error general
+          this.alertService.error(msg);
+        }
+      }
+    } catch (e) {
+      console.warn('handleServerErrors parse failed', e, error);
+      this.alertService.error('Ocurrió un error al procesar la respuesta del servidor');
+    }
+  }
+
+  private toFormKey(serverKey: string): string {
+    // Mapear posibles claves del servidor a nombres de formulario si difieren
+    const map: any = {
+      'legajo': 'Legajo',
+      'dni': 'Dni',
+      'Nombre': 'Nombre',
+      'apellido': 'Apellido'
+    };
+    return map[serverKey] ?? serverKey;
+  }
+
+  private checkPasswordsMatch() {
+    if (!this.form) return;
+    const pw = this.form.get('Password')?.value || '';
+    const pwc = this.form.get('PasswordConfirm')?.value || '';
+
+    // Si ambos campos vacíos consideramos que no hay un estado de coincidencia
+    if (!pw && !pwc) {
+      this.passwordsMatch = null;
+      this.confirmFeedback = '';
+      this.clearPasswordErrors();
+      return;
+    }
+
+    // Ambos campos ya tienen al menos 6 caracteres, validar coincidencia
+    if (pw === pwc) {
+      this.passwordsMatch = true;
+      this.confirmFeedback = 'Las contraseñas coinciden';
+      this.clearPasswordErrors();
+    } else {
+      // No coinciden - mostrar mensaje en el segundo campo
+      this.passwordsMatch = false;
+      this.confirmFeedback = 'Las contraseñas no coinciden';
+      this.form.get('Password')?.setErrors({ mismatch: true });
+      this.form.get('PasswordConfirm')?.setErrors({ mismatch: true });
+    }
+  }
+
+  private clearPasswordErrors() {
+    const pwControl = this.form.get('Password');
+    const pwcControl = this.form.get('PasswordConfirm');
+    if (pwControl) {
+      const errs = pwControl.errors;
+      if (errs) {
+        const { mismatch, minlength, ...rest } = errs as any;
+        const remaining = Object.keys(rest).length ? rest : null;
+        pwControl.setErrors(remaining);
+      }
+    }
+    if (pwcControl) {
+      const errs2 = pwcControl.errors;
+      if (errs2) {
+        const { mismatch, minlength, ...rest2 } = errs2 as any;
+        const remaining2 = Object.keys(rest2).length ? rest2 : null;
+        pwcControl.setErrors(remaining2);
+      }
+    }
   }
 
   private initRoles() {
@@ -163,8 +398,9 @@ export class UserModalComponent implements OnInit, OnChanges {
       Dni: data?.dni ?? data?.Dni ?? '',
       Email: data?.email ?? data?.Email ?? '',
       Telefono: data?.telefono ?? data?.Telefono ?? '',
-      // Para RolId necesitamos mapear desde rolNombre o crear un mapeo
-      RolId: this.getRolIdFromRolNombre(data?.rolNombre) ?? data?.RolId ?? data?.rolId ?? Roles.Administrativo,
+  // Para RolId necesitamos mapear desde rolNombre o crear un mapeo
+  // Si no viene rol, dejamos el control vacío para que el usuario deba seleccionar uno
+  RolId: this.getRolIdFromRolNombre(data?.rolNombre) ?? data?.RolId ?? data?.rolId ?? '',
       AccedeAlSistema: data?.accedeAlSistema ?? data?.AccedeAlSistema ?? true,
       Password: '', // Siempre vacío para seguridad
       PasswordConfirm: '' // Siempre vacío para seguridad
@@ -178,14 +414,24 @@ export class UserModalComponent implements OnInit, OnChanges {
   }
 
   private getRolIdFromRolNombre(rolNombre: string): number | null {
-    // Mapear nombres de roles a IDs del enum
-    const roleMap: {[key: string]: number} = {
-      'SuperAdmin': Roles.SuperAdmin,
-      'Administrativo': Roles.Administrativo,
-      'Supervisor': Roles.Supervisor,
-      'Operario': Roles.Operario
+    if (!rolNombre) return null;
+    // Normalizar string: quitar espacios, lowercase y reemplazar caracteres acentuados
+    const normalize = (s: string) => s.toString().trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    const key = normalize(rolNombre);
+
+    const roleMapNorm: {[key: string]: number} = {
+      'superadmin': Roles.SuperAdmin,
+      'super-admin': Roles.SuperAdmin,
+      'super admin': Roles.SuperAdmin,
+      'administrativo': Roles.Administrativo,
+      'administrador': Roles.Administrativo,
+      'admin': Roles.Administrativo,
+      'supervisor': Roles.Supervisor,
+      'operario': Roles.Operario,
+      'operador': Roles.Operario
     };
-    return roleMap[rolNombre] ?? null;
+
+    return roleMapNorm[key] ?? null;
   }
 
   onSubmit(): void {

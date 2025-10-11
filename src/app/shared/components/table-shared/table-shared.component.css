@@ -281,21 +281,42 @@
 }
 :host .pyre-filter-bar .filter-row{
   display:flex;
-  gap:16px;
-  align-items:flex-end;
+  gap:12px; /* Reducido para acomodar más filtros */
+  align-items:center; /* Cambiado de flex-end a center sin labels */
   flex-wrap:wrap;
   position: relative; /* Para posicionar correctamente el botón */
-  padding-right: 150px; /* Espacio para el botón fijo */
+  padding-right: 60px; /* Reducido: solo para el botón de buscar compacto */
 }
-:host .pyre-filter-bar .filter-item{display:flex;flex-direction:column;min-width:180px}
-:host .pyre-filter-bar label{
+:host .pyre-filter-bar .filter-item{display:flex;min-width:160px;flex:1} /* Sin flex-direction column - sin labels */
+
+/* Estilo especial para el filter-item que contiene el botón de reset */
+:host .pyre-filter-bar .filter-item-with-reset{
+  display:flex;
+  min-width:200px; /* Un poco más ancho para acomodar el botón */
+  flex:1;
+}
+
+/* Contenedor para el select y el botón de reset */
+:host .pyre-filter-bar .filter-input-group{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* Hacer que el select ocupe el espacio disponible */
+:host .pyre-filter-bar .filter-input-group select{
+  flex: 1;
+}
+/* Labels removidos para interfaz más limpia - los placeholders son suficientes */
+/*:host .pyre-filter-bar label{
   font-size:13px;
   font-weight:600;
   color:var(--color-text-secondary);
   margin-bottom:8px;
   text-transform:uppercase;
   letter-spacing:0.5px;
-}
+}*/
 
 :host .pyre-filter-bar input,
 :host .pyre-filter-bar select{
@@ -320,6 +341,7 @@
   transform: translateY(-50%); /* Ajustar la posición vertical perfectamente */
   display: flex;
   align-items: center;
+  gap: 8px; /* Espaciado entre botones */
 }
 
 :host .pyre-filter-bar .filter-actions button {
@@ -332,23 +354,23 @@
   border-radius: 6px;
 }
 
-/* Estilo moderno para el botón de búsqueda */
+/* Estilo moderno para el botón de búsqueda - solo icono */
 :host .pyre-filter-bar .filter-actions .search-button {
   background: #3b82f6 !important; /* Azul moderno (blue-500 de Tailwind) */
   border: none !important;
   color: white !important;
-  padding: 10px 20px !important;
+  padding: 12px !important; /* Padding uniforme para botón cuadrado */
   border-radius: 8px !important;
   font-weight: 600 !important;
   font-size: 14px !important;
-  letter-spacing: 0.3px !important;
-  min-width: 120px !important;
+  min-width: 44px !important; /* Ancho mínimo reducido */
+  max-width: 44px !important; /* Ancho máximo para mantener forma cuadrada */
+  height: 44px !important; /* Altura fija para botón cuadrado */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(59, 130, 246, 0.2) !important;
   transition: all 0.2s ease-in-out !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;
 }
 
 :host .pyre-filter-bar .filter-actions .search-button:hover {
@@ -363,10 +385,102 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Mejorar el icono dentro del botón */
+/* Mejorar el icono dentro del botón - optimizado para botón solo con icono */
 :host .pyre-filter-bar .filter-actions .pi-search {
-  font-size: 16px !important; /* Icono más grande */
-  margin-right: 2px !important;
+  font-size: 16px !important; /* Icono tamaño adecuado */
+  margin: 0 !important; /* Sin margen ya que no hay texto */
+}
+
+/* Estilo para el botón de reset - más sutil y estético */
+:host .pyre-filter-bar .filter-actions .reset-button {
+  background: transparent !important;
+  border: none !important;
+  color: #9ca3af !important; /* Gris más suave */
+  padding: 8px !important;
+  border-radius: 50% !important; /* Botón circular */
+  font-weight: 400 !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  height: 36px !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 4px !important;
+  opacity: 0.7 !important;
+  animation: fadeInScale 0.3s ease-out !important;
+}
+
+:host .pyre-filter-bar .filter-actions .reset-button:hover {
+  background: #f3f4f6 !important; /* Fondo gris muy claro al hover */
+  color: #6b7280 !important;
+  opacity: 1 !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host .pyre-filter-bar .filter-actions .reset-button:active {
+  transform: scale(0.95) !important;
+  background: #e5e7eb !important;
+}
+
+/* Icono del botón reset */
+:host .pyre-filter-bar .filter-actions .pi-times {
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+/* Estilo para el botón de reset inline - al lado del último filtro */
+:host .pyre-filter-bar .reset-button-inline {
+  background: transparent !important;
+  border: none !important;
+  color: #9ca3af !important; /* Gris más suave */
+  padding: 6px !important;
+  border-radius: 50% !important; /* Botón circular */
+  font-weight: 400 !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.6 !important;
+  animation: fadeInScale 0.3s ease-out !important;
+  flex-shrink: 0; /* No se encoge */
+}
+
+:host .pyre-filter-bar .reset-button-inline:hover {
+  background: #f3f4f6 !important; /* Fondo gris muy claro al hover */
+  color: #6b7280 !important;
+  opacity: 1 !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host .pyre-filter-bar .reset-button-inline:active {
+  transform: scale(0.95) !important;
+  background: #e5e7eb !important;
+}
+
+/* Icono del botón reset inline */
+:host .pyre-filter-bar .pi-filter-slash {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+/* Animación para la aparición del botón de reset */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0.7;
+    transform: scale(1);
+  }
 }
 
 @media (max-width:520px){
@@ -374,12 +488,29 @@
     flex-direction: column;
     align-items: stretch;
     padding-right: 0; /* Quitar padding en móvil */
-    padding-bottom: 60px; /* Espacio para el botón abajo */
+    padding-bottom: 70px; /* Más espacio para el botón abajo */
+    gap: 16px; /* Más espacio entre filtros en móvil */
   }
 
   :host .pyre-filter-bar .filter-item{
     min-width: unset;
     width: 100%;
+  }
+
+  :host .pyre-filter-bar .filter-item-with-reset{
+    min-width: unset;
+    width: 100%;
+  }
+
+  :host .pyre-filter-bar .filter-input-group{
+    gap: 12px; /* Un poco más de espacio en móvil */
+  }
+
+  :host .pyre-filter-bar .reset-button-inline {
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px !important;
+    padding: 8px !important;
   }
 
   :host .pyre-filter-bar .filter-actions{
@@ -396,9 +527,32 @@
 
   :host .pyre-filter-bar .filter-actions .search-button {
     width: auto; /* Ancho automático en lugar de 100% */
-    min-width: 120px; /* Mantener ancho mínimo */
+    min-width: 48px !important; /* Ancho mínimo reducido para móvil */
+    max-width: 48px !important; /* Ancho máximo para móvil */
+    height: 48px !important; /* Altura para móvil */
     justify-content: center;
-    padding: 12px;
+    padding: 14px !important; /* Padding ligeramente mayor en móvil */
+  }
+
+  :host .pyre-filter-bar .filter-actions .reset-button {
+    padding: 10px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* Estilos para pantallas medianas - mejor distribución de filtros */
+@media (max-width: 1200px) and (min-width: 521px) {
+  :host .pyre-filter-bar .filter-item{
+    min-width: 140px; /* Más pequeño en pantallas medianas */
+  }
+  :host .pyre-filter-bar .filter-item-with-reset{
+    min-width: 180px;
+  }
+  :host .pyre-filter-bar .filter-row{
+    gap: 10px; /* Gap más pequeño */
+    padding-right: 55px; /* Ajustado para el botón más pequeño */
   }
 }
 
@@ -478,4 +632,82 @@
 .action-toggle-track.is-checked { background: #d1fae5; }
 .action-toggle-track.is-checked .action-toggle-thumb { transform: translateY(-50%) translateX(20px); background: #16a34a; }
 .action-toggle[aria-label] { position: relative; }
+
+/* Variante compacta del toggle: más pequeña y sutil */
+.action-toggle--small {
+  width: 34px;
+  height: 20px;
+  padding: 1px;
+  border-radius: 12px;
+}
+.action-toggle--small .action-toggle-track { border-radius: 12px; }
+.action-toggle--small .action-toggle-thumb { width: 12px; height: 12px; left: 3px; }
+.action-toggle--small .action-toggle-track.is-checked .action-toggle-thumb { transform: translateY(-50%) translateX(12px); }
+
+/* Variante suave (por defecto) aplicada cuando el host tiene .soft-dropdown */
+:host.soft-dropdown ::ng-deep .p-dropdown,
+:host.soft-dropdown select {
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #ffffff;
+  box-shadow: none;
+  transition: box-shadow 0.14s ease, border-color 0.14s ease, transform 0.08s ease;
+}
+
+/* Focus/active más sutil */
+:host.soft-dropdown ::ng-deep .p-dropdown:focus-within,
+:host.soft-dropdown select:focus {
+  box-shadow: 0 6px 18px rgba(11, 45, 77, 0.06);
+  border-color: rgba(11,45,77,0.12);
+  outline: none;
+}
+
+/* Panel desplegable (PrimeNG suele renderizarlo fuera del host) */
+:host.soft-dropdown ::ng-deep .p-dropdown-panel {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 12px 30px rgba(11,45,77,0.06);
+  padding: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* Items del panel: padding y hover sutil */
+:host.soft-dropdown ::ng-deep .p-dropdown-items .p-dropdown-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+/* Hover y seleccionado con color más tenue */
+:host.soft-dropdown ::ng-deep .p-dropdown-items .p-dropdown-item:hover,
+:host.soft-dropdown ::ng-deep .p-dropdown-items .p-dropdown-item.p-highlight {
+  background-color: rgba(0,123,255,0.06); /* azul muy tenue */
+  color: rgba(11,94,198,1);
+}
+
+/* Ajustes para la flecha / trigger del dropdown */
+:host.soft-dropdown ::ng-deep .p-dropdown .p-dropdown-trigger {
+  opacity: 0.9;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+:host.soft-dropdown ::ng-deep .p-dropdown:hover .p-dropdown-trigger {
+  opacity: 1;
+}
+
+/* Variante compacta (menor padding y tamaño de fuente) */
+:host.compact-dropdown ::ng-deep .p-dropdown,
+:host.compact-dropdown select {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.92rem;
+}
+:host.compact-dropdown ::ng-deep .p-dropdown-panel {
+  border-radius: 6px;
+  padding: 4px;
+}
+:host.compact-dropdown ::ng-deep .p-dropdown-items .p-dropdown-item {
+  padding: 6px 8px;
+  font-size: 0.9rem;
+}
 

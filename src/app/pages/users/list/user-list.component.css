@@ -96,6 +96,11 @@
   width: 100%;
   /* Reducir el espacio superior que añade la clase mt-2 en el HTML */
   margin-top: -1rem !important;
+  /* Evitar que el contenedor genere scroll innecesario - forzar altura automática */
+  overflow: hidden;
+  height: auto !important;
+  min-height: 0 !important; /* Evitar forzar altura que provoque scroll */
+  max-height: none !important; /* Evitar altura máxima que limite contenido */
 }
 
 .container-fluid.page-shell {
@@ -147,8 +152,11 @@
 
 .role-select,
 .status-select {
-  width: auto;
-  min-width: 180px;
+  color: inherit; /* Match text color with other inputs */
+  font-style: italic; /* Add italic style */
+  background: rgba(255, 255, 255, 0.7); /* Ensure consistent background */
+  border: 1px solid rgba(16, 24, 40, 0.1); /* Match border style */
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); /* Match shadow */
 }
 
 .reset-button {
