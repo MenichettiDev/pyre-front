@@ -3,8 +3,8 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from "./shared/components/sidebar/sidebar.component";
 import { Subscription } from 'rxjs';
-import { AuthService } from './core/services/auth.service';
-import { SidebarService } from './core/services/sidebar.service';
+import { AuthService } from './services/auth.service';
+import { SidebarService } from './services/sidebar.service';
 
 @Component({
   selector: 'app-root',

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { UserService } from '../../../core/services/user.service';
+import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
 import { UserModalComponent } from '../user-modal/user-modal.component';
 // ConfirmModalComponent removed in favor of SweetAlert2
-import { AlertService } from '../../../core/services/alert.service';
+import { AlertaService } from '../../../services/alerta.service';
 import { switchMap } from 'rxjs/operators';
 
 interface UserRaw {
@@ -28,18 +28,18 @@ interface DisplayUser {
   imports: [
     CommonModule,
     RouterModule,
-  TableSharedComponent,
-  UserModalComponent,
+    TableSharedComponent,
+    UserModalComponent,
     // ConfirmModalComponent removed - not imported
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css'],
-  providers: [UserService]
+  providers: [UsuarioService]
 })
 export class UserListComponent implements OnInit {
   users: DisplayUser[] = [];
-  columns: string[] = ['legajo','nombre','apellido','rol','estado'];
-  rowsPerPageOptions: number[] = [5,10,20,40];
+  columns: string[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
+  rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
   pageSize = 5;
   loading = false;
@@ -61,7 +61,7 @@ export class UserListComponent implements OnInit {
 
   // Confirm modal removed - using SweetAlert2 via AlertService
 
-  constructor(private userService: UserService, private router: Router, private alertService: AlertService) {}
+  constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService) { }
 
   ngOnInit(): void {
     this.fetchUsers();

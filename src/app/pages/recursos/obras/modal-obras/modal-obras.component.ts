@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input, OnInit, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { AlertService } from '../../../../core/services/alert.service';
+import { AlertaService } from '../../../../services/alerta.service';
 
 export interface ObraDto {
   idObra: number;
@@ -41,7 +41,7 @@ export class ModalObrasComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private elementRef: ElementRef,
-    private alertService: AlertService
+    private alertService: AlertaService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event'])

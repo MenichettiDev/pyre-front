@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Roles } from '../../../shared/enums/roles';
-import { AlertService } from '../../../core/services/alert.service';
+import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-user-modal',
@@ -50,8 +50,8 @@ export class UserModalComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private elementRef: ElementRef,
-    private alertService: AlertService
-  ) {}
+    private alertService: AlertaService
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event'])
   onEscapeKey(event: KeyboardEvent) {
@@ -139,14 +139,14 @@ export class UserModalComponent implements OnInit, OnChanges {
 
   private buildForm() {
     this.form = this.fb.group({
-  Nombre: ['', [Validators.required, Validators.maxLength(100)]],
-  Apellido: ['', [Validators.required, Validators.maxLength(100)]],
+      Nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      Apellido: ['', [Validators.required, Validators.maxLength(100)]],
       Legajo: ['', [Validators.required, Validators.maxLength(5)]],
       Dni: ['', [Validators.required, Validators.maxLength(20)]],
       Email: ['', [Validators.email, Validators.maxLength(150)]],
       Telefono: ['', [Validators.maxLength(50)]],
-  // Inicialmente vacío para forzar la selección por parte del usuario
-  RolId: ['', [Validators.required]],
+      // Inicialmente vacío para forzar la selección por parte del usuario
+      RolId: ['', [Validators.required]],
       AccedeAlSistema: [false],
       Avatar: ['', [Validators.maxLength(45)]],
       Password: ['', [Validators.minLength(6)]],
@@ -398,9 +398,9 @@ export class UserModalComponent implements OnInit, OnChanges {
       Dni: data?.dni ?? data?.Dni ?? '',
       Email: data?.email ?? data?.Email ?? '',
       Telefono: data?.telefono ?? data?.Telefono ?? '',
-  // Para RolId necesitamos mapear desde rolNombre o crear un mapeo
-  // Si no viene rol, dejamos el control vacío para que el usuario deba seleccionar uno
-  RolId: this.getRolIdFromRolNombre(data?.rolNombre) ?? data?.RolId ?? data?.rolId ?? '',
+      // Para RolId necesitamos mapear desde rolNombre o crear un mapeo
+      // Si no viene rol, dejamos el control vacío para que el usuario deba seleccionar uno
+      RolId: this.getRolIdFromRolNombre(data?.rolNombre) ?? data?.RolId ?? data?.rolId ?? '',
       AccedeAlSistema: data?.accedeAlSistema ?? data?.AccedeAlSistema ?? true,
       Password: '', // Siempre vacío para seguridad
       PasswordConfirm: '' // Siempre vacío para seguridad
@@ -419,7 +419,7 @@ export class UserModalComponent implements OnInit, OnChanges {
     const normalize = (s: string) => s.toString().trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     const key = normalize(rolNombre);
 
-    const roleMapNorm: {[key: string]: number} = {
+    const roleMapNorm: { [key: string]: number } = {
       'superadmin': Roles.SuperAdmin,
       'super-admin': Roles.SuperAdmin,
       'super admin': Roles.SuperAdmin,

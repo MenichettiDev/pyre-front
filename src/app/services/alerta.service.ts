@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 
+
 declare const Swal: any;
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class AlertService {
-  constructor() {}
+export class AlertaService {
+
+  constructor() { }
+
 
   // Modal de confirmación
   confirm(message: string, title: string = '¿Estás seguro?'): Promise<any> {
@@ -52,7 +55,7 @@ export class AlertService {
       confirmButtonText: 'Aceptar',
       focusConfirm: false,
       didOpen: () => {
-        try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) {}
+        try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) { }
       },
       customClass: {
         popup: 'swal2-popup swal2-themed',
@@ -70,7 +73,7 @@ export class AlertService {
       icon: 'error',
       confirmButtonText: 'Aceptar',
       focusConfirm: false,
-      didOpen: () => { try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) {} },
+      didOpen: () => { try { setTimeout(() => { const active = document.activeElement as HTMLElement | null; if (active && typeof active.blur === 'function') active.blur(); }, 0); } catch (e) { } },
       customClass: {
         popup: 'swal2-popup swal2-themed',
         title: 'swal2-title',

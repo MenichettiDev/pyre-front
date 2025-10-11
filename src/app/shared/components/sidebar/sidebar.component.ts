@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, inject, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { AlertService } from '../../../core/services/alert.service';
+import { AuthService } from '../../../services/auth.service';
+import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
 import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
-import { SidebarService } from '../../../core/services/sidebar.service';
+import { SidebarService } from '../../../services/sidebar.service';
 // Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
@@ -100,7 +100,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // Servicios inyectados
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
+  private alertaService = inject(AlertaService);
   private router = inject(Router);
   private el = inject(ElementRef);
   private sidebarService = inject(SidebarService);
@@ -286,7 +286,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.isPerfilModalVisible = false;
 
     // Usar AlertService (wrapper de SweetAlert2). Devuelve la promesa de Swal.fire
-    this.alertService
+    this.alertaService
       .confirm('¿Estás seguro de que deseas cerrar sesión?', '¿Cerrar sesión?')
       .then((result: any) => {
         if (result && result.isConfirmed) {

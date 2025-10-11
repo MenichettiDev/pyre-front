@@ -2,15 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class ToolService {
+export class HerramientaService {
+
   private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/Herramienta/paged';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene herramientas paginadas. Parámetros disponibles: page, pageSize, search
@@ -58,4 +59,3 @@ export class ToolService {
     return this.http.patch(`/api/tools/${id}/toggle-activo`, {});
   }
 }
-

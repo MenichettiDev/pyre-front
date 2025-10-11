@@ -3,7 +3,7 @@ import { Subscription, debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { AlertService } from '../../../core/services/alert.service';
+import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-tool-modal',
@@ -37,8 +37,8 @@ export class ToolModalComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private elementRef: ElementRef,
-    private alertService: AlertService
-  ) {}
+    private srvAlerta: AlertaService
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event'])
   onEscapeKey(event: KeyboardEvent) {
@@ -138,10 +138,10 @@ export class ToolModalComponent implements OnInit, OnChanges, OnDestroy {
       }
       const msg = payload?.message || payload?.detail || payload?.error;
       if (msg && typeof msg === 'string') {
-        this.alertService.error(msg);
+        this.srvAlerta.error(msg);
       }
     } catch (e) {
-      this.alertService.error('Ocurrió un error al procesar la respuesta del servidor');
+      this.srvAlerta.error('Ocurrió un error al procesar la respuesta del servidor');
     }
   }
 
@@ -188,7 +188,7 @@ export class ToolModalComponent implements OnInit, OnChanges, OnDestroy {
       mode: this.mode,
       data: value,
       onSuccess: () => {
-        this.alertService.success(
+        this.srvAlerta.success(
           `La herramienta ha sido ${this.mode === 'create' ? 'creada' : 'actualizada'} exitosamente`,
           `¡Herramienta ${this.mode === 'create' ? 'Creada' : 'Actualizada'}!`
         );
@@ -198,7 +198,7 @@ export class ToolModalComponent implements OnInit, OnChanges, OnDestroy {
       },
       onError: (error: any) => {
         const errorMessage = error?.error?.message || error?.message || 'Ocurrió un error inesperado';
-        this.alertService.error(
+        this.srvAlerta.error(
           `Error al ${this.mode === 'create' ? 'crear' : 'actualizar'} la herramienta: ${errorMessage}`,
           `Error al ${this.mode === 'create' ? 'Crear' : 'Actualizar'} Herramienta`
         );
