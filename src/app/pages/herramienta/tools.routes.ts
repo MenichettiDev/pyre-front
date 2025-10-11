@@ -1,20 +1,16 @@
 import { Routes } from '@angular/router';
 import { Roles } from '../../shared/enums/roles';
 
-export const herramientasRoutes: Routes = [
+export const toolRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'listado',
+    redirectTo: 'list',
     pathMatch: 'full'
   },
   {
-    path: 'alta',
-    loadComponent: () => import('./alta/alta.component').then(m => m.AltaComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-  },
-  {
-    path: 'estados',
-    loadComponent: () => import('./estados/estados.component').then(m => m.EstadosComponent),
+    path: 'list',
+    loadComponent: () =>
+      import('./list/tool-list.component').then(m => m.ToolListComponent),
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
   },
   {

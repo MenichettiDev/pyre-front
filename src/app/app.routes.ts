@@ -23,8 +23,8 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'herramientas',
-        loadChildren: () => import('./pages/tools/herramientas.routes').then(m => m.herramientasRoutes),
+        path: 'tool',
+        loadChildren: () => import('./pages/tools/tools.routes').then(m => m.toolRoutes),
         canActivate: [authGuard]
     },
     {
