@@ -62,7 +62,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     // Gestión de Herramientas
     { id: 4, descripcion: 'Gestión de Herramientas', icono: 'bi bi-tools', link: '/herramientas', grupo: 'GM02', principal: true, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/tool/list', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/herramientas/lista', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 6, descripcion: 'Registro / Alta de Herramienta', icono: 'bi bi-plus-circle', link: '/herramientas/alta', grupo: 'GM02', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 7, descripcion: 'Estados de Herramientas', icono: 'bi bi-check2-circle', link: '/herramientas/estados', grupo: 'GM02', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 8, descripcion: 'Ubicación Física', icono: 'bi bi-geo-alt', link: '/herramientas/ubicacion', grupo: 'GM02', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     // Gestión de Usuarios
     { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/usuarios/lista', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Reportes

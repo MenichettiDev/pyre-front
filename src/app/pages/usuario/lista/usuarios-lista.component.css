@@ -91,7 +91,7 @@
 }
 
 /* Contenedor principal */
-.user-list-container {
+.usuarios-lista-container {
   margin-bottom: 2rem;
   width: 100%;
   /* Reducir el espacio superior que añade la clase mt-2 en el HTML */

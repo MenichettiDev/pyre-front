@@ -2,12 +2,12 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="page-title mb-0" style="margin-left: 3rem;">Listado de Herramientas</h1>
     <a class="btn btn-primary header-action" (click)="createNewTool()" role="button">
-      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Nueva Herramienta
+      <i class="bx bx-plus-circle bx-tada me-1" aria-hidden="true"></i> Nueva Herramienta
     </a>
   </div>
 </div>
 
-<div class="tool-list-container container-fluid page-shell mt-2"
+<div class="herramientas-lista-container container-fluid page-shell mt-2"
   style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
 
   <div *ngIf="loading" class="text-center py-4">Loading...</div>
@@ -25,6 +25,6 @@
   </div>
 
   <!-- Modal de herramienta -->
-  <app-tool-modal *ngIf="showToolModal" [initialData]="modalInitialData" [mode]="modalMode"
-    (submit)="onModalSubmit($event)" (close)="closeToolModal()"></app-tool-modal>
+  <app-herramientas-modal *ngIf="showToolModal" [initialData]="modalInitialData" [mode]="modalMode"
+    (submit)="onModalSubmit($event)" (close)="closeToolModal()"></app-herramientas-modal>
 </div>

@@ -4,13 +4,13 @@ import { Roles } from '../../shared/enums/roles';
 export const userRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'list',
+    redirectTo: 'lista',
     pathMatch: 'full',
   },
   {
-    path: 'list',
+    path: 'lista',
     loadComponent: () =>
-      import('./list/user-list.component').then((m) => m.UserListComponent),
+      import('./lista/usuarios-lista.component').then((m) => m.UserListComponent),
     data: {
       requiredAccess: [
         Roles.SuperAdmin,
