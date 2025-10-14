@@ -8,7 +8,7 @@
   </div>
 </div>
 
-<div class="usuarios-lista-container container-fluid page-shell mt-2" style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
+<div class="user-list-container container-fluid page-shell mt-2" style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
 
   <div *ngIf="loading" class="text-center py-4">Loading...</div>
 
@@ -38,11 +38,11 @@
   </div>
 
     <!-- Instancia del modal de usuario -->
-    <app-usuarios-modal *ngIf="showUserModal"
+    <app-user-modal *ngIf="showUserModal"
       [initialData]="modalInitialData"
       [mode]="modalMode"
       (submit)="onModalSubmit($event)"
-      (close)="closeUserModal()"></app-usuarios-modal>
+      (close)="closeUserModal()"></app-user-modal>
 
     <!-- Modal de detalles eliminado: usar el modal de editar/visualizar en su lugar -->
 

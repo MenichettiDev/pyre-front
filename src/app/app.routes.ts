@@ -23,8 +23,8 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'herramientas',
-        loadChildren: () => import('./pages/herramienta/herramientas.routes').then(m => m.herramientaRoutes),
+        path: 'herramienta',
+        loadChildren: () => import('./pages/herramienta/herramienta.routes').then(m => m.herramientaRoutes),
         canActivate: [authGuard]
     },
     {
@@ -33,8 +33,8 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'usuarios',
-        loadChildren: () => import('./pages/usuario/usuarios.routes').then(m => m.userRoutes),
+        path: 'user',
+        loadChildren: () => import('./pages/usuario/user.routes').then(m => m.userRoutes),
         canActivate: [authGuard],
         data: { requiredAccess: [1, 2, 3, 4] } // Todos los roles pueden acceder
     },

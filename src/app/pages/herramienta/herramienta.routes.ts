@@ -4,13 +4,13 @@ import { Roles } from '../../shared/enums/roles';
 export const herramientaRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'lista', // Redirige correctamente
+        redirectTo: 'list',
         pathMatch: 'full'
     },
     {
-        path: 'lista', // Asegura que el path sea correcto
+        path: 'list',
         loadComponent: () =>
-            import('./lista/herramientas-lista.component').then(m => m.HerramientasListaComponent),
+            import('./list/tool-list.component').then(m => m.ToolListComponent),
         data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
     },
     {

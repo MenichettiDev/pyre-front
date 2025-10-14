@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { UsuariosService } from '../../../services/usuarios.service';
+import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
-import { UsuariosModalComponent } from '../modal/usuarios-modal.component';
+import { UserModalComponent } from '../user-modal/user-modal.component';
 // ConfirmModalComponent removed in favor of SweetAlert2
 import { AlertaService } from '../../../services/alerta.service';
 import { switchMap } from 'rxjs/operators';
@@ -23,18 +23,18 @@ interface DisplayUser {
 }
 
 @Component({
-  selector: 'app-usuarios-lista',
+  selector: 'app-user-list',
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
     TableSharedComponent,
-    UsuariosModalComponent,
+    UserModalComponent,
     // ConfirmModalComponent removed - not imported
   ],
-  templateUrl: './usuarios-lista.component.html',
-  styleUrls: ['./usuarios-lista.component.css'],
-  providers: [UsuariosService]
+  templateUrl: './user-list.component.html',
+  styleUrls: ['./user-list.component.css'],
+  providers: [UsuarioService]
 })
 export class UserListComponent implements OnInit {
   users: DisplayUser[] = [];
@@ -61,7 +61,7 @@ export class UserListComponent implements OnInit {
 
   // Confirm modal removed - using SweetAlert2 via AlertService
 
-  constructor(private UsuariosService: UsuariosService, private router: Router, private alertService: AlertaService) { }
+  constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService) { }
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -78,7 +78,7 @@ export class UserListComponent implements OnInit {
     if (this.filtroRol && String(this.filtroRol).trim() !== '') filters.rol = Number(this.filtroRol.trim());
     if (this.filtroEstado !== null) filters.estado = this.filtroEstado;
 
-    this.UsuariosService.getUsers(this.currentPage, this.pageSize, filters).subscribe(
+    this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe(
       (resp) => {
         console.debug('[UserList] fetchUsers - filtros enviados:', filters);
         console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
@@ -163,7 +163,7 @@ export class UserListComponent implements OnInit {
     this.showUserModal = true;
 
     // 🔄 Cargar datos en segundo plano
-    this.UsuariosService.getUserById(Number(id)).subscribe(
+    this.userService.getUserById(Number(id)).subscribe(
       (resp) => {
         // ✅ Actualizar datos del modal cuando lleguen del backend
         this.modalInitialData = resp?.data ?? resp ?? null;
@@ -187,7 +187,7 @@ export class UserListComponent implements OnInit {
       .then((result: any) => {
         if (result && result.isConfirmed) {
           // Llamada al backend para eliminar
-          this.UsuariosService.deleteUser(Number(id)).subscribe({
+          this.userService.deleteUser(Number(id)).subscribe({
             next: () => {
               this.alertService.success('El usuario ha sido eliminado correctamente.', '¡Eliminado!');
               this.fetchUsers();
@@ -213,7 +213,7 @@ export class UserListComponent implements OnInit {
     this.alertService.confirm(`¿Estás seguro de que deseas ${actionText} este usuario?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Usuario`)
       .then((result: any) => {
         if (result && result.isConfirmed) {
-          this.UsuariosService.toggleActivo(Number(id)).subscribe({
+          this.userService.toggleActivo(Number(id)).subscribe({
             next: (resp) => {
               const pastText = targetState ? 'activado' : 'desactivado';
               this.alertService.success(`Usuario ${pastText} correctamente.`, '¡Hecho!');
@@ -294,7 +294,7 @@ export class UserListComponent implements OnInit {
   }) {
     if (event.mode === 'create') {
       // Llamada al backend para crear
-      this.UsuariosService.createUser(event.data).subscribe({
+      this.userService.createUser(event.data).subscribe({
         next: (resp) => {
           // refrescar lista o insertar localmente
           this.fetchUsers();
@@ -313,7 +313,7 @@ export class UserListComponent implements OnInit {
         event.onError({ message: 'No se pudo identificar el usuario a actualizar' });
         return;
       }
-      this.UsuariosService.updateUser(id, event.data).subscribe({
+      this.userService.updateUser(id, event.data).subscribe({
         next: (resp) => {
           this.fetchUsers();
           event.onSuccess(); // ✅ Mostrar mensaje de éxito

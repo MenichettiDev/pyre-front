@@ -8,7 +8,7 @@ import { CreateUserDTO } from '../models/user.dto';
 @Injectable({
   providedIn: 'root'
 })
-export class UsuariosService {
+export class UsuarioService {
 
   // Use environment.apiUrl for dev/prod y apuntar al endpoint real '/usuario' (lowercase según backend)
   private baseUrl = (environment?.apiUrl ? environment.apiUrl : '') + '/usuario';
@@ -20,7 +20,7 @@ export class UsuariosService {
    * Parámetros de filtro aceptados (opcionales): legajo, estado, nombre, apellido, rol
    * Ejemplo:
    *   // Desde el frontend pueden llamar:
-   *   usuariosService.getUsers(1, 10, { nombre: 'Juan', estado: true });
+   *   userService.getUsers(1, 10, { nombre: 'Juan', estado: true });
    * Equivalente a GET /api/usuario?page=1&pageSize=10&nombre=Juan&estado=true
    */
   getUsers(
@@ -55,13 +55,13 @@ export class UsuariosService {
     try {
       const debugUrl = `${this.baseUrl}?${params.toString()}`;
       // usar console.debug para no ensuciar demasiado la consola en producción
-      console.debug('[usuariosService] GET URL:', debugUrl);
+      console.debug('[UserService] GET URL:', debugUrl);
     } catch (e) {
       // ignore
     }
 
     return this.http.get<any>(`${this.baseUrl}`, { params, observe: 'response' as const }).pipe(
-      tap((r: any) => console.debug('[usuariosService] raw response:', r)),
+      tap((r: any) => console.debug('[UserService] raw response:', r)),
       map(resp => {
         const body = resp.body ?? {};
         // Intenta leer header 'X-Total-Count' o 'x-total-count'
@@ -107,7 +107,7 @@ export class UsuariosService {
         return { data: dataArray, total };
       }),
       catchError(err => {
-        console.error('[usuariosService] getUsers error', err);
+        console.error('[UserService] getUsers error', err);
         // Fallback: devolver lista vacía y total 0 para que la UI no rompa
         return of({ data: [], total: 0 });
       })

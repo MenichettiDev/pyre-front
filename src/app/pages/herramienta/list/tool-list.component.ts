@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
-import { HerramientaService } from '../../../services/herramientas.service';
-import { HerramientasModalComponent } from '../modal/herramientas-modal.component'; // Nuevo modal
+import { HerramientaService } from '../../../services/herramienta.service';
+import { ToolModalComponent } from '../../herramienta/tool-modal/tool-modal.component'; // Nuevo modal
 import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
-  selector: 'app-herramientas-lista',
+  selector: 'app-tool-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TableSharedComponent, HerramientasModalComponent],
-  templateUrl: './herramientas-lista.component.html',
-  styleUrls: ['./herramientas-lista.component.css']
+  imports: [CommonModule, RouterModule, TableSharedComponent, ToolModalComponent],
+  templateUrl: './tool-list.component.html',
+  styleUrls: ['./tool-list.component.css']
 })
-export class HerramientasListaComponent implements OnInit {
+export class ToolListComponent implements OnInit {
   tools: any[] = [];
   columns: string[] = ['codigo', 'nombre', 'marca', 'estadoFisico', 'disponibilidad'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
@@ -36,7 +36,7 @@ export class HerramientasListaComponent implements OnInit {
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
-  constructor(private srvherramienta: HerramientaService, private srvAlerta: AlertaService) { }
+  constructor(private srvHerramienta: HerramientaService, private srvAlerta: AlertaService) { }
 
   ngOnInit(): void {
     this.fetchTools();
@@ -48,7 +48,7 @@ export class HerramientasListaComponent implements OnInit {
     if (this.filtroCodigo) search += this.filtroCodigo.trim();
     if (this.filtroNombre) search += (search ? ' ' : '') + this.filtroNombre.trim();
 
-    this.srvherramienta.getTools(this.currentPage, this.pageSize, search).subscribe(
+    this.srvHerramienta.getTools(this.currentPage, this.pageSize, search).subscribe(
       (response) => {
         // Mapear disponibilidad desde estadoDisponibilidad, ya no se incluye ubicacion
         this.tools = (response.data ?? []).map((tool: any) => ({
@@ -112,7 +112,7 @@ export class HerramientasListaComponent implements OnInit {
     this.modalInitialData = null;
     this.modalMode = 'edit';
     this.showToolModal = true;
-    this.srvherramienta.getToolById(Number(id)).subscribe(
+    this.srvHerramienta.getToolById(Number(id)).subscribe(
       (resp: any) => {
         this.modalInitialData = resp?.data ?? resp ?? null;
       },
@@ -129,13 +129,13 @@ export class HerramientasListaComponent implements OnInit {
     this.srvAlerta.confirm('¿Estás seguro de que deseas eliminar esta herramienta?', 'Eliminar Herramienta')
       .then((result: any) => {
         if (result && result.isConfirmed) {
-          this.srvherramienta.deleteTool(Number(id)).subscribe({
+          this.srvHerramienta.deleteTool(Number(id)).subscribe({
             next: () => {
               this.srvAlerta.success('La herramienta ha sido eliminada correctamente.', '¡Eliminada!');
               this.fetchTools();
             },
             error: (err) => {
-              this.srvAlerta.error('No se pudo eliminar la herramientas. Intente nuevamente.');
+              this.srvAlerta.error('No se pudo eliminar la herramienta. Intente nuevamente.');
             }
           });
         }
@@ -152,14 +152,14 @@ export class HerramientasListaComponent implements OnInit {
     this.srvAlerta.confirm(`¿Estás seguro de que deseas ${actionText} esta herramienta?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Herramienta`)
       .then((result: any) => {
         if (result && result.isConfirmed) {
-          this.srvherramienta.toggleActivo(Number(id)).subscribe({
+          this.srvHerramienta.toggleActivo(Number(id)).subscribe({
             next: () => {
               const pastText = targetState ? 'activada' : 'desactivada';
               this.srvAlerta.success(`Herramienta ${pastText} correctamente.`, '¡Hecho!');
               this.fetchTools();
             },
             error: () => {
-              this.srvAlerta.error('No se pudo cambiar el estado de la herramientas. Intente nuevamente.');
+              this.srvAlerta.error('No se pudo cambiar el estado de la herramienta. Intente nuevamente.');
             }
           });
         }
@@ -180,7 +180,7 @@ export class HerramientasListaComponent implements OnInit {
     onError: (error: any) => void;
   }) {
     if (event.mode === 'create') {
-      this.srvherramienta.createTool(event.data).subscribe({
+      this.srvHerramienta.createTool(event.data).subscribe({
         next: (resp: any) => {
           this.fetchTools();
           event.onSuccess();
@@ -195,7 +195,7 @@ export class HerramientasListaComponent implements OnInit {
         event.onError({ message: 'No se pudo identificar la herramienta a actualizar' });
         return;
       }
-      this.srvherramienta.updateTool(id, event.data).subscribe({
+      this.srvHerramienta.updateTool(id, event.data).subscribe({
         next: (resp: any) => {
           this.fetchTools();
           event.onSuccess();

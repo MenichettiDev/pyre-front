@@ -6,13 +6,13 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
-  selector: 'app-herramientas-modal',
+  selector: 'app-tool-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
-  templateUrl: './herramientas-modal.component.html',
-  styleUrls: ['./herramientas-modal.component.css']
+  templateUrl: './tool-modal.component.html',
+  styleUrls: ['./tool-modal.component.css']
 })
-export class HerramientasModalComponent implements OnInit, OnChanges, OnDestroy {
+export class ToolModalComponent implements OnInit, OnChanges, OnDestroy {
   @Output() submit = new EventEmitter<{
     mode: 'create' | 'edit';
     data: any;
