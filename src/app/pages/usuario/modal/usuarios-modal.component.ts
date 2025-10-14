@@ -7,13 +7,13 @@ import { Roles } from '../../../shared/enums/roles';
 import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
-  selector: 'app-user-modal',
+  selector: 'app-usuarios-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
-  templateUrl: './user-modal.component.html',
-  styleUrls: ['./user-modal.component.css']
+  templateUrl: './usuarios-modal.component.html',
+  styleUrls: ['./usuarios-modal.component.css']
 })
-export class UserModalComponent implements OnInit, OnChanges {
+export class UsuariosModalComponent implements OnInit, OnChanges {
   @Output() submit = new EventEmitter<{
     mode: 'create' | 'edit';
     data: any;

@@ -16,7 +16,7 @@
       </div>
       <div *ngIf="mode === 'edit' && !initialData" class="loading-container">
         <div class="loading-spinner"></div>
-        <p>Cargando datos de la herramienta...</p>
+        <p>Cargando datos de la herramientas...</p>
       </div>
       <form *ngIf="mode === 'create' || initialData" [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form" autocomplete="off">
         <div class="compact-form-grid">

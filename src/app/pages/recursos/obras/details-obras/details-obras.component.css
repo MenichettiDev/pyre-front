@@ -1,4 +1,4 @@
-/* Modal Base Styles - adaptado a la estética de user-modal */
+/* Modal Base Styles - adaptado a la estética de usuarios-modal */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -12,7 +12,7 @@
     padding: 2rem;
 }
 
-/* Contenedor compacto similar a user-modal */
+/* Contenedor compacto similar a usuarios-modal */
 .modal-content {
     width: 100%;
     max-width: 680px;
