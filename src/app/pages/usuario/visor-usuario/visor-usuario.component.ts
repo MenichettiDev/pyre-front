@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
-import { UserModalComponent } from '../user-modal/user-modal.component';
+import { UserModalComponent } from '../modal-editar-usuario/modal-editar-usuario.component';
 // ConfirmModalComponent removed in favor of SweetAlert2
 import { AlertaService } from '../../../services/alerta.service';
 import { switchMap } from 'rxjs/operators';
@@ -32,8 +32,8 @@ interface DisplayUser {
     UserModalComponent,
     // ConfirmModalComponent removed - not imported
   ],
-  templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.css'],
+  templateUrl: './visor-usuario.component.html',
+  styleUrls: ['./visor-usuario.component.css'],
   providers: [UsuarioService]
 })
 export class UserListComponent implements OnInit {

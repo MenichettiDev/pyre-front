@@ -10,12 +10,15 @@ import { RippleModule } from 'primeng/ripple';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PaginatorComponent } from '../paginator/paginator.component'; // Tu paginador personalizado
 
+// Tipo para los filtros disponibles
+export type FilterType = 'legajo' | 'nombre' | 'apellido' | 'rol' | 'estado';
+
 @Component({
   selector: 'app-table-shared',
   standalone: true,
   imports: [
-  CommonModule,
-  FormsModule,
+    CommonModule,
+    FormsModule,
     TableModule,
     PaginatorModule,
     ButtonModule,
@@ -92,6 +95,9 @@ export class TableSharedComponent implements OnInit, OnChanges {
 
   // Nuevo Input para seleccionar estilo de dropdown: 'soft' (por defecto) o 'compact'
   @Input() dropdownStyle: 'soft' | 'compact' = 'soft';
+
+  // Nuevo Input para controlar qué filtros están habilitados
+  @Input() enabledFilters: FilterType[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
 
   // Host classes para permitir selectores CSS condicionados
   @HostBinding('class.soft-dropdown') get isSoft() { return this.dropdownStyle === 'soft'; }
@@ -205,5 +211,10 @@ export class TableSharedComponent implements OnInit, OnChanges {
         this.filtroEstado = expectedEstado;
       }
     }
+  }
+
+  // Método helper para verificar si un filtro está habilitado
+  isFilterEnabled(filterType: FilterType): boolean {
+    return this.enabledFilters.includes(filterType);
   }
 }

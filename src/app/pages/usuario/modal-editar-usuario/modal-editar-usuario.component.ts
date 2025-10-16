@@ -10,8 +10,8 @@ import { AlertaService } from '../../../services/alerta.service';
   selector: 'app-user-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
-  templateUrl: './user-modal.component.html',
-  styleUrls: ['./user-modal.component.css']
+  templateUrl: './modal-editar-usuario.component.html',
+  styleUrls: ['./modal-editar-usuario.component.css']
 })
 export class UserModalComponent implements OnInit, OnChanges {
   @Output() submit = new EventEmitter<{

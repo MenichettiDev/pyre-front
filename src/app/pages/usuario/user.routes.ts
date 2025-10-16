@@ -10,7 +10,7 @@ export const userRoutes: Routes = [
   {
     path: 'list',
     loadComponent: () =>
-      import('./list/user-list.component').then((m) => m.UserListComponent),
+      import('./visor-usuario/visor-usuario.component').then((m) => m.UserListComponent),
     data: {
       requiredAccess: [
         Roles.SuperAdmin,
@@ -20,17 +20,5 @@ export const userRoutes: Routes = [
       ],
     },
   },
-  {
-    path: 'roles',
-    loadComponent: () =>
-      import('./roles/roles.component').then((m) => m.RolesComponent),
-    data: {
-      requiredAccess: [
-        Roles.SuperAdmin,
-        Roles.Operario,
-        Roles.Supervisor,
-        Roles.Administrativo,
-      ],
-    },
-  },
+
 ];

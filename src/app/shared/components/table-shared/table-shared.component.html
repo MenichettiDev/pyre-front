@@ -1,23 +1,23 @@
 <div class="pyre-table-shell">
   <!-- Filter bar (soft gray) -->
   <div class="pyre-filter-bar">
-    <div class="filter-row">
-      <div class="filter-item">
+    <div class="filter-row" [class]="'filter-count-' + enabledFilters.length">
+      <div class="filter-item" *ngIf="isFilterEnabled('legajo')">
         <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" (keyup.enter)="onSearch()" />
       </div>
-      <div class="filter-item">
+      <div class="filter-item" *ngIf="isFilterEnabled('nombre')">
         <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre" (keyup.enter)="onSearch()" />
       </div>
-      <div class="filter-item">
+      <div class="filter-item" *ngIf="isFilterEnabled('apellido')">
         <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido" (keyup.enter)="onSearch()" />
       </div>
-      <div class="filter-item">
+      <div class="filter-item" *ngIf="isFilterEnabled('rol')">
         <select [(ngModel)]="filtroRol">
           <option value="">Todos los roles</option>
           <option *ngFor="let rol of getRolesOptions()" [value]="rol.value">{{ rol.label }}</option>
         </select>
       </div>
-      <div class="filter-item filter-item-with-reset">
+      <div class="filter-item filter-item-with-reset" *ngIf="isFilterEnabled('estado')">
         <div class="filter-input-group">
           <select [(ngModel)]="filtroEstado">
             <option value="">Todos los estados</option>
@@ -25,25 +25,24 @@
             <option value="inactivo">Inactivo</option>
           </select>
           <button *ngIf="hasActiveFilters()" pButton type="button" icon="pi pi-filter-slash"
-                  [ngbTooltip]="'Limpiar todos los filtros'"
-                  placement="top"
-                  class="p-button-text p-button-rounded reset-button-inline"
-                  (click)="onResetFilters()"
-                  [attr.aria-label]="'Limpiar filtros aplicados'"></button>
+            [ngbTooltip]="'Limpiar todos los filtros'" placement="top"
+            class="p-button-text p-button-rounded reset-button-inline" (click)="onResetFilters()"
+            [attr.aria-label]="'Limpiar filtros aplicados'"></button>
         </div>
       </div>
-      <div class="filter-actions">
-        <button pButton type="button" icon="pi pi-search" [ngbTooltip]="hasActiveFilters() ? 'Buscar' : 'Seleccione al menos un filtro'" placement="top" container="body"
-                class="p-button-primary search-button" (click)="onSearch()"
-                [disabled]="!hasActiveFilters()" [attr.aria-disabled]="!hasActiveFilters()"
-                [attr.aria-label]="'Buscar con los filtros aplicados'"></button>
+      <!-- Mostrar el área de acciones si hay al menos un filtro habilitado -->
+      <div class="filter-actions" *ngIf="enabledFilters.length > 0">
+        <button pButton type="button" icon="pi pi-search"
+          [ngbTooltip]="hasActiveFilters() ? 'Buscar' : 'Seleccione al menos un filtro'" placement="top"
+          container="body" class="p-button-primary search-button" (click)="onSearch()" [disabled]="!hasActiveFilters()"
+          [attr.aria-disabled]="!hasActiveFilters()" [attr.aria-label]="'Buscar con los filtros aplicados'"></button>
       </div>
     </div>
   </div>
   <p-table [value]="value" [paginator]="!useExternalPaginator" [rows]="rows" [rowsPerPageOptions]="rowsPerPageOptions"
-           [responsiveLayout]="'stack'" [styleClass]="compact ? 'p-datatable-sm' : 'custom-table'"
-           [loading]="loading" [stripedRows]="false" [rowHover]="false"
-           currentPageReportTemplate="Pagina {first} a {last} de {totalRecords} registros">
+    [responsiveLayout]="'stack'" [styleClass]="compact ? 'p-datatable-sm' : 'custom-table'" [loading]="loading"
+    [stripedRows]="false" [rowHover]="false"
+    currentPageReportTemplate="Pagina {first} a {last} de {totalRecords} registros">
 
     <ng-template pTemplate="header">
       <tr>
@@ -57,11 +56,15 @@
         <td *ngFor="let c of columns">
           <ng-container *ngIf="c === 'estado'; else defaultCell">
             <!-- Toggle visual en columna ESTADO, ligado solo a la representación visual -->
-       <label class="action-toggle" [class.action-toggle--small]="toggleSize === 'small'" [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
-                   [ngbTooltip]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'" placement="top">
+            <label class="action-toggle" [class.action-toggle--small]="toggleSize === 'small'"
+              [attr.aria-label]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
+              [ngbTooltip]="((rowData?.activo == 1) || (rowData?.estado === 'Activo')) ? 'Deshabilitar' : 'Habilitar'"
+              placement="top">
               <input type="checkbox" class="action-toggle-input" aria-hidden="true"
-                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')" (change)="onToggle(rowData, $event)" />
-              <span class="action-toggle-track" [class.is-checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')">
+                [checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')"
+                (change)="onToggle(rowData, $event)" />
+              <span class="action-toggle-track"
+                [class.is-checked]="(rowData?.activo == 1) || (rowData?.estado === 'Activo')">
                 <span class="action-toggle-thumb"></span>
               </span>
             </label>
@@ -70,15 +73,15 @@
         </td>
         <td>
           <div class="flex gap-2 justify-content-center">
-      <button pButton pRipple type="button" icon="pi pi-user-edit" [ngbTooltip]="'Ver / Editar'" container="body"
-        class="p-button-rounded p-button-outlined p-button-warning p-button-sm"
-        (click)="onEdit(rowData)"></button>
-      <button *ngIf="showView" pButton pRipple type="button" icon="pi pi-eye" [ngbTooltip]="'Ver detalles'" container="body"
-        class="p-button-rounded p-button-outlined p-button-info p-button-sm"
-        (click)="onView(rowData)"></button>
-      <button pButton pRipple type="button" icon="pi pi-trash" [ngbTooltip]="'Eliminar'" container="body"
-        class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
-        (click)="onRemove(rowData)"></button>
+            <button pButton pRipple type="button" icon="pi pi-user-edit" [ngbTooltip]="'Ver / Editar'" container="body"
+              class="p-button-rounded p-button-outlined p-button-warning p-button-sm"
+              (click)="onEdit(rowData)"></button>
+            <button *ngIf="showView" pButton pRipple type="button" icon="pi pi-eye" [ngbTooltip]="'Ver detalles'"
+              container="body" class="p-button-rounded p-button-outlined p-button-info p-button-sm"
+              (click)="onView(rowData)"></button>
+            <button pButton pRipple type="button" icon="pi pi-trash" [ngbTooltip]="'Eliminar'" container="body"
+              class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
+              (click)="onRemove(rowData)"></button>
           </div>
         </td>
       </tr>
@@ -94,10 +97,7 @@
   <!-- External paginator (shared) -->
   <div *ngIf="useExternalPaginator" class="pyre-paginator-bar">
     <div class="pyre-paginator-wrap">
-      <app-paginator
-        [length]="length || totalRecords"
-        [pageSize]="rows"
-        [pageIndex]="pageIndex"
+      <app-paginator [length]="length || totalRecords" [pageSize]="rows" [pageIndex]="pageIndex"
         (pageChange)="onExternalPageChange($event)">
       </app-paginator>
     </div>
