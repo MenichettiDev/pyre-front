@@ -10,12 +10,7 @@ export const herramientaRoutes: Routes = [
     {
         path: 'list',
         loadComponent: () =>
-            import('./list/tool-list.component').then(m => m.ToolListComponent),
-        data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-    },
-    {
-        path: 'ubicacion',
-        loadComponent: () => import('./ubicacion/ubicacion.component').then(m => m.UbicacionComponent),
+            import('./visor-herramientas/visor-herramientas.component').then(m => m.VisorHerramientasComponent),
         data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
     }
 ];

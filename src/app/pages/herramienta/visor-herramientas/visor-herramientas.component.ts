@@ -3,17 +3,17 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
 import { HerramientaService } from '../../../services/herramienta.service';
-import { ToolModalComponent } from '../../herramienta/tool-modal/tool-modal.component'; // Nuevo modal
+import { HerramientasModalComponent } from '../herramienta-modal/herramientas-modal.component'; // Nuevo modal
 import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
-  selector: 'app-tool-list',
+  selector: 'app-herramientas-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TableSharedComponent, ToolModalComponent],
-  templateUrl: './tool-list.component.html',
-  styleUrls: ['./tool-list.component.css']
+  imports: [CommonModule, RouterModule, TableSharedComponent, HerramientasModalComponent],
+  templateUrl: './visor-herramientas.component.html',
+  styleUrls: ['./visor-herramientas.component.css']
 })
-export class ToolListComponent implements OnInit {
+export class VisorHerramientasComponent implements OnInit {
   tools: any[] = [];
   columns: string[] = ['codigo', 'nombre', 'marca', 'estadoFisico', 'disponibilidad'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];

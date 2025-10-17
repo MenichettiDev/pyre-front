@@ -25,6 +25,6 @@
   </div>
 
   <!-- Modal de herramienta -->
-  <app-tool-modal *ngIf="showToolModal" [initialData]="modalInitialData" [mode]="modalMode"
-    (submit)="onModalSubmit($event)" (close)="closeToolModal()"></app-tool-modal>
+  <app-herramientas-modal *ngIf="showToolModal" [initialData]="modalInitialData" [mode]="modalMode"
+    (submit)="onModalSubmit($event)" (close)="closeToolModal()"></app-herramientas-modal>
 </div>

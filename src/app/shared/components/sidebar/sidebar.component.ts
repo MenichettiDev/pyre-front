@@ -61,11 +61,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 3, descripcion: 'Alertas Pendientes', icono: 'bi bi-bell', link: '/dashboard/alertas', grupo: 'GM01', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Gestión de Herramientas
-    { id: 4, descripcion: 'Gestión de Herramientas', icono: 'bi bi-tools', link: '/herramientas', grupo: 'GM02', principal: true, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/tool/list', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 6, descripcion: 'Registro / Alta de Herramienta', icono: 'bi bi-plus-circle', link: '/herramientas/alta', grupo: 'GM02', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 7, descripcion: 'Estados de Herramientas', icono: 'bi bi-check2-circle', link: '/herramientas/estados', grupo: 'GM02', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 8, descripcion: 'Ubicación Física', icono: 'bi bi-geo-alt', link: '/herramientas/ubicacion', grupo: 'GM02', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 4, descripcion: 'Gestión de Herramientas', icono: 'bi bi-tools', link: '/herramienta', grupo: 'GM02', principal: true, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/herramienta/list', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 6, descripcion: 'Registro / Alta de Herramienta', icono: 'bi bi-plus-circle', link: '/herramienta/alta', grupo: 'GM02', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 7, descripcion: 'Estados de Herramientas', icono: 'bi bi-check2-circle', link: '/herramienta/estados', grupo: 'GM02', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 8, descripcion: 'Ubicación Física', icono: 'bi bi-geo-alt', link: '/herramienta/ubicacion', grupo: 'GM02', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Movimientos / Trazabilidad
     { id: 9, descripcion: 'Movimientos', icono: 'bi bi-arrow-left-right', link: '/movimientos', grupo: 'GM03', principal: true, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
