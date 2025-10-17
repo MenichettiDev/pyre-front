@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
-import { TableSharedComponent } from '../../../shared/components/table-shared/table-shared.component';
 import { UserModalComponent } from '../modal-editar-usuario/modal-editar-usuario.component';
-// ConfirmModalComponent removed in favor of SweetAlert2
 import { AlertaService } from '../../../services/alerta.service';
-import { switchMap } from 'rxjs/operators';
+import { Roles } from '../../../shared/enums/roles';
 
 interface UserRaw {
   [key: string]: any;
@@ -20,6 +19,7 @@ interface DisplayUser {
   apellido?: string;
   rol?: string;
   estado?: string;
+  activo?: boolean;
 }
 
 @Component({
@@ -27,10 +27,9 @@ interface DisplayUser {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
-    TableSharedComponent,
     UserModalComponent,
-    // ConfirmModalComponent removed - not imported
   ],
   templateUrl: './visor-usuario.component.html',
   styleUrls: ['./visor-usuario.component.css'],
@@ -38,28 +37,32 @@ interface DisplayUser {
 })
 export class UserListComponent implements OnInit {
   users: DisplayUser[] = [];
+  filteredUsers: DisplayUser[] = [];
   columns: string[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
-  pageSize = 5;
+  pageSize = 10;
   loading = false;
   totalItems = 0;
+  totalPages = 0;
 
-  // Filtros actuales
+  // Expose Math to template
+  Math = Math;
+
+  // Filtros
   filtroLegajo: string = '';
   filtroNombre: string = '';
   filtroApellido: string = '';
   filtroRol: string = '';
-  filtroEstado: boolean | null = null; // true = activo, false = inactivo, null = cualquiera
+  filtroEstado: string = '';
 
   // Modal control
   showUserModal = false;
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
-  // Details modal removed - no longer used
-
-  // Confirm modal removed - using SweetAlert2 via AlertService
+  // Exponer el enum de roles al template
+  readonly Roles = Roles;
 
   constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService) { }
 
@@ -70,26 +73,32 @@ export class UserListComponent implements OnInit {
   fetchUsers(): void {
     this.loading = true;
     console.log(`[UserList] fetchUsers page=${this.currentPage} size=${this.pageSize}`);
+    
     // Construir objeto de filtros para enviar al servicio
     const filters: any = {};
-    if (this.filtroLegajo && String(this.filtroLegajo).trim() !== '') filters.legajo = this.filtroLegajo.trim();
-    if (this.filtroNombre && String(this.filtroNombre).trim() !== '') filters.nombre = this.filtroNombre.trim();
-    if (this.filtroApellido && String(this.filtroApellido).trim() !== '') filters.apellido = this.filtroApellido.trim();
-    if (this.filtroRol && String(this.filtroRol).trim() !== '') filters.rol = Number(this.filtroRol.trim());
-    if (this.filtroEstado !== null) filters.estado = this.filtroEstado;
+    if (this.filtroLegajo?.trim()) filters.legajo = this.filtroLegajo.trim();
+    if (this.filtroNombre?.trim()) filters.nombre = this.filtroNombre.trim();
+    if (this.filtroApellido?.trim()) filters.apellido = this.filtroApellido.trim();
+    if (this.filtroRol?.trim()) filters.rol = Number(this.filtroRol.trim());
+    
+    // Convertir estado de string a boolean para el backend
+    if (this.filtroEstado) {
+      filters.estado = this.filtroEstado === 'activo';
+    }
 
-    this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe(
-      (resp) => {
+    this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe({
+      next: (resp) => {
         console.debug('[UserList] fetchUsers - filtros enviados:', filters);
         console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
-        // Resp tiene la forma { data: any[], total: number }
+        
         const rawList: UserRaw[] = Array.isArray(resp.data) ? resp.data : (resp.data || []);
         this.totalItems = resp.total ?? rawList.length ?? 0;
 
         // Normalizar cada usuario a campos en español esperados por la UI
         this.users = rawList.map((u: UserRaw) => {
           const estadoRaw = u['activo'] ?? u['estado'] ?? u['active'] ?? u['isActive'] ?? null;
-          const estado = typeof estadoRaw === 'boolean' ? (estadoRaw ? 'Activo' : 'Inactivo') : (estadoRaw ?? '');
+          const activo = typeof estadoRaw === 'boolean' ? estadoRaw : (estadoRaw === 'Activo' || estadoRaw === true);
+          const estado = activo ? 'Activo' : 'Inactivo';
 
           return {
             id: u['id'] ?? u['userId'] ?? null,
@@ -97,96 +106,152 @@ export class UserListComponent implements OnInit {
             nombre: u['nombre'] ?? u['firstName'] ?? u['name'] ?? '',
             apellido: u['apellido'] ?? u['lastName'] ?? u['surname'] ?? '',
             rol: u['rol'] ?? u['role'] ?? u['rolNombre'] ?? u['roleName'] ?? '',
-            estado: estado
+            estado: estado,
+            activo: activo
           } as DisplayUser;
         });
 
+        this.applyFilters();
+        this.calculatePagination();
         this.loading = false;
       },
-      (error: any) => {
+      error: (error: any) => {
         console.error('Error fetching users:', error);
         this.showSnack('Error al cargar los usuarios. Por favor, inténtelo de nuevo.');
         this.loading = false;
       }
-    );
+    });
   }
 
-  // Handler que recibe el objeto { legajo?, nombre?, apellido?, rol?, estado? } desde app-table-shared
-  onSearch(criteria: { legajo?: string; nombre?: string; apellido?: string; rol?: string | number; estado?: string | null }) {
-    // Normalizar y almacenar filtros
-    this.filtroLegajo = criteria?.legajo ?? '';
-    this.filtroNombre = criteria?.nombre ?? '';
-    this.filtroApellido = criteria?.apellido ?? '';
-    this.filtroRol = criteria?.rol ? criteria.rol.toString() : '';
+  applyFilters(): void {
+    this.filteredUsers = this.users.filter(user => {
+      const matchesLegajo = !this.filtroLegajo || 
+        user.legajo?.toString().toLowerCase().includes(this.filtroLegajo.toLowerCase());
+      
+      const matchesNombre = !this.filtroNombre || 
+        user.nombre?.toLowerCase().includes(this.filtroNombre.toLowerCase());
+      
+      const matchesApellido = !this.filtroApellido || 
+        user.apellido?.toLowerCase().includes(this.filtroApellido.toLowerCase());
+      
+      const matchesRol = !this.filtroRol || 
+        this.getRolNameById(Number(this.filtroRol))?.toLowerCase().includes(user.rol?.toLowerCase() || '');
+      
+      const matchesEstado = !this.filtroEstado || 
+        (this.filtroEstado === 'activo' && user.activo) ||
+        (this.filtroEstado === 'inactivo' && !user.activo);
+      
+      return matchesLegajo && matchesNombre && matchesApellido && matchesRol && matchesEstado;
+    });
 
-    // El componente table-shared emite estado como string; normalizamos a boolean|null
-    const estadoRaw = criteria?.estado ?? null;
-    if (estadoRaw === null || estadoRaw === undefined || String(estadoRaw).trim() === '') {
-      this.filtroEstado = null;
-    } else {
-      const s = String(estadoRaw).toLowerCase();
-      if (s === 'true' || s === 'activo' || s === '1') this.filtroEstado = true;
-      else if (s === 'false' || s === 'inactivo' || s === '0') this.filtroEstado = false;
-      else this.filtroEstado = null;
+    this.totalItems = this.filteredUsers.length;
+    this.calculatePagination();
+  }
+
+  calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
     }
-
-    // Reiniciar a primera página al aplicar filtros
-    this.currentPage = 1;
-    this.fetchUsers();
   }
 
-  // Handler para resetear filtros
-  onResetFilters() {
+  getPaginatedUsers(): DisplayUser[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredUsers.slice(startIndex, endIndex);
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onResetFilters(): void {
     this.filtroLegajo = '';
     this.filtroNombre = '';
     this.filtroApellido = '';
     this.filtroRol = '';
-    this.filtroEstado = null;
+    this.filtroEstado = '';
     this.currentPage = 1;
-    this.fetchUsers();
+    this.applyFilters();
   }
 
-  // Método helper para obtener el estado como string para el template
-  getEstadoAsString(): string | null {
-    if (this.filtroEstado === null || this.filtroEstado === undefined) return null;
-    return this.filtroEstado === true ? 'activo' : 'inactivo';
+  hasActiveFilters(): boolean {
+    return !!(this.filtroLegajo?.trim() || this.filtroNombre?.trim() || this.filtroApellido?.trim() || this.filtroRol?.trim() || this.filtroEstado);
   }
 
-  // Ahora recibimos el objeto emitido por la tabla y extraemos el id
-  editUser(item: any): void {
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.calculatePagination();
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    const half = Math.floor(maxVisible / 2);
+
+    let start = Math.max(1, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Obtener las opciones de roles para el select
+  getRolesOptions(): { value: string; label: string }[] {
+    return Object.entries(Roles)
+      .filter(([key, value]) => typeof value === 'number' && key !== 'Administrativo')
+      .map(([key, value]) => ({
+        value: value.toString(),
+        label: key === 'SuperAdmin' ? 'Super Admin' : key
+      }));
+  }
+
+  // Helper para obtener nombre del rol por ID
+  getRolNameById(rolId: number): string {
+    const rol = this.getRolesOptions().find(r => Number(r.value) === rolId);
+    return rol?.label || '';
+  }
+
+  editUser(item: DisplayUser): void {
     const id = item?.id ?? null;
     if (id == null) return;
 
-    // ⚡ Abrir modal inmediatamente con estado de loading
-    this.modalInitialData = null; // Indicará loading en el modal
+    this.modalInitialData = null;
     this.modalMode = 'edit';
     this.showUserModal = true;
 
-    // 🔄 Cargar datos en segundo plano
-    this.userService.getUserById(Number(id)).subscribe(
-      (resp) => {
-        // ✅ Actualizar datos del modal cuando lleguen del backend
+    this.userService.getUserById(Number(id)).subscribe({
+      next: (resp) => {
         this.modalInitialData = resp?.data ?? resp ?? null;
       },
-      (err) => {
+      error: (err) => {
         console.error('[UserList] error loading user by id', err);
-        // ❌ En caso de error, usar datos básicos de la tabla como fallback
         this.modalInitialData = item;
       }
-    );
+    });
   }
 
-  // closeDetailsModal removed
-
-  deleteUser(item: any): void {
+  deleteUser(item: DisplayUser): void {
     const id = item?.id ?? null;
     if (id == null) return;
 
-    // Usar SweetAlert2 centralizado para confirmar eliminación
     this.alertService.confirm('¿Estás seguro de que deseas eliminar este usuario?', 'Eliminar Usuario')
       .then((result: any) => {
         if (result && result.isConfirmed) {
-          // Llamada al backend para eliminar
           this.userService.deleteUser(Number(id)).subscribe({
             next: () => {
               this.alertService.success('El usuario ha sido eliminado correctamente.', '¡Eliminado!');
@@ -201,15 +266,14 @@ export class UserListComponent implements OnInit {
       });
   }
 
-  // Alterna el estado activo/inactivo de un usuario desde la lista
-  toggleUserActive(item: any): void {
+  toggleUserActive(item: DisplayUser): void {
     const id = item?.id ?? null;
     if (id == null) return;
 
-    const current = (item?.estado ?? '').toString().toLowerCase() === 'activo';
+    const current = item.activo;
     const targetState = !current;
-
     const actionText = targetState ? 'activar' : 'desactivar';
+
     this.alertService.confirm(`¿Estás seguro de que deseas ${actionText} este usuario?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Usuario`)
       .then((result: any) => {
         if (result && result.isConfirmed) {
@@ -217,7 +281,6 @@ export class UserListComponent implements OnInit {
             next: (resp) => {
               const pastText = targetState ? 'activado' : 'desactivado';
               this.alertService.success(`Usuario ${pastText} correctamente.`, '¡Hecho!');
-              // Refrescar la lista para obtener el estado actualizado desde backend
               this.fetchUsers();
             },
             error: (err) => {
@@ -229,63 +292,18 @@ export class UserListComponent implements OnInit {
       });
   }
 
-  onConfirmModal(): void {
-    // No-op: kept for backward compatibility if called elsewhere
-  }
-
-  closeConfirmModal(): void {
-    // No-op (confirm modal removed)
-  }
-
-  showSuccessSwal(title: string, message: string): void {
-    console.log(`SNACK: ${title} - ${message}`);
-  }
-
-  // Handler para el paginator externo (app-paginator)
-  onPageChange(event: { pageIndex: number; pageSize: number }) {
-    console.log(`[UserList] external onPageChange pageIndex=${event.pageIndex} pageSize=${event.pageSize}`);
-    this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex + 1;
-    this.fetchUsers();
-  }
-
-  openUserModal(): void {
-    this.showUserModal = true;
-  }
-
-  // Método específico para crear nuevo usuario
   createNewUser(): void {
-    this.modalInitialData = null;  // ✅ Limpiar datos previos
-    this.modalMode = 'create';     // ✅ Asegurar modo crear
-    this.openUserModal();
+    this.modalInitialData = null;
+    this.modalMode = 'create';
+    this.showUserModal = true;
   }
 
   closeUserModal(): void {
     this.showUserModal = false;
-    // ✅ Limpiar datos al cerrar para evitar interferencias
     this.modalInitialData = null;
     this.modalMode = 'create';
   }
 
-  handleCreateUser(newUser: any): void {
-    // Inserción local y temporal: asignar un id simulado y añadir al inicio de la lista
-    const simulatedId = (this.totalItems || this.users.length) + 1;
-    const display = {
-      id: simulatedId,
-      legajo: newUser.Legajo,
-      nombre: newUser.Nombre,
-      apellido: newUser.Apellido,
-      rol: `ID ${newUser.RolId}`,
-      estado: newUser.Activo ? 'Activo' : 'Inactivo'
-    };
-
-    this.users = [display, ...this.users];
-    this.totalItems = (this.totalItems || this.users.length) + 1;
-    this.showUserModal = false;
-    console.log('[UserList] Usuario creado localmente:', newUser);
-  }
-
-  // Handler para el evento submit del modal
   async onModalSubmit(event: {
     mode: 'create' | 'edit';
     data: any;
@@ -293,20 +311,17 @@ export class UserListComponent implements OnInit {
     onError: (error: any) => void;
   }) {
     if (event.mode === 'create') {
-      // Llamada al backend para crear
       this.userService.createUser(event.data).subscribe({
         next: (resp) => {
-          // refrescar lista o insertar localmente
           this.fetchUsers();
-          event.onSuccess(); // ✅ Mostrar mensaje de éxito
+          event.onSuccess();
         },
         error: (err) => {
           console.error('[UserList] createUser error', err);
-          event.onError(err); // ❌ Mostrar mensaje de error
+          event.onError(err);
         }
       });
     } else {
-      // update: necesitamos un id; si modalInitialData tiene id, usarlo
       const id = Number(this.modalInitialData?.id ?? this.modalInitialData?.userId ?? null);
       if (!id) {
         console.warn('[UserList] update requested but no id available');
@@ -316,21 +331,17 @@ export class UserListComponent implements OnInit {
       this.userService.updateUser(id, event.data).subscribe({
         next: (resp) => {
           this.fetchUsers();
-          event.onSuccess(); // ✅ Mostrar mensaje de éxito
+          event.onSuccess();
         },
         error: (err) => {
           console.error('[UserList] updateUser error', err);
-          event.onError(err); // ❌ Mostrar mensaje de error
+          event.onError(err);
         }
       });
     }
   }
 
-
-
-  // Implementación local simple para reemplazar MatSnackBar durante edición rápida en el editor.
   private showSnack(message: string): void {
-    // En ejecución real puedes volver a usar MatSnackBar; aquí se usa console para evitar la dependencia.
     console.log('SNACK:', message);
   }
 }

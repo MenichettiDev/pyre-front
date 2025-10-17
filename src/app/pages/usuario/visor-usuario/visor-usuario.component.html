@@ -11,18 +11,146 @@
 <div class="user-list-container container-fluid page-shell mt-2"
   style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
 
-  <div *ngIf="loading" class="text-center py-4">Loading...</div>
+  <div class="pyre-table-shell">
+    <!-- Filter bar -->
+    <div class="pyre-filter-bar">
+      <div class="filter-row">
+        <div class="filter-item">
+          <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo"
+            (keyup.enter)="onSearch()" />
+        </div>
+        <div class="filter-item">
+          <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre"
+            (keyup.enter)="onSearch()" />
+        </div>
+        <div class="filter-item">
+          <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido"
+            (keyup.enter)="onSearch()" />
+        </div>
+        <div class="filter-item">
+          <select [(ngModel)]="filtroRol">
+            <option value="">Todos los roles</option>
+            <option *ngFor="let rol of getRolesOptions()" [value]="rol.value">{{ rol.label }}</option>
+          </select>
+        </div>
+        <div class="filter-item filter-item-with-reset">
+          <div class="filter-input-group">
+            <select [(ngModel)]="filtroEstado">
+              <option value="">Todos los estados</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+            <button *ngIf="hasActiveFilters()" type="button" class="reset-button-inline"
+              (click)="onResetFilters()" title="Limpiar todos los filtros">
+              <i class="pi pi-filter-slash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="search-button" (click)="onSearch()" [disabled]="!hasActiveFilters()"
+            title="Buscar">
+            <i class="pi pi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
-  <div *ngIf="!loading" class="soft-edge depth" style="overflow: hidden; height: auto; min-height: 0;">
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="text-center py-4">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <p>Cargando usuarios...</p>
+    </div>
 
-    <div class="pyre-table-wrapper" style="overflow: hidden;">
-      <app-table-shared [value]="users" [toggleSize]="'small'" [columns]="columns" [rows]="pageSize"
-        [rowsPerPageOptions]="rowsPerPageOptions" [loading]="loading" [useExternalPaginator]="true"
-        [pageIndex]="currentPage - 1" [length]="totalItems" [showView]="false"
-        [filterValues]="{ legajo: filtroLegajo, nombre: filtroNombre, apellido: filtroApellido, rol: filtroRol, estado: getEstadoAsString() }"
-        (pageChange)="onPageChange($event)" (search)="onSearch($event)" (resetFilters)="onResetFilters()"
-        (edit)="editUser($event)" (remove)="deleteUser($event)" (toggle)="toggleUserActive($event)">
-      </app-table-shared>
+    <!-- Custom table -->
+    <div *ngIf="!loading" class="custom-table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Legajo</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of getPaginatedUsers(); let i = index">
+            <td>{{ user.legajo }}</td>
+            <td>{{ user.nombre }}</td>
+            <td>{{ user.apellido }}</td>
+            <td>{{ user.rol }}</td>
+            <td>
+              <div class="estado-toggle">
+                <label class="toggle-switch" 
+                       [attr.aria-label]="user.activo ? 'Desactivar usuario' : 'Activar usuario'"
+                       (click)="toggleUserActive(user)">
+                  <input type="checkbox" 
+                         [checked]="user.activo" 
+                         (click)="$event.preventDefault()" />
+                  <span class="toggle-slider" [class.active]="user.activo"></span>
+                </label>
+                <span class="status-text" [class.status-activo]="user.activo" 
+                      [class.status-inactivo]="!user.activo">
+                  {{ user.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button type="button" class="btn-icon btn-edit" (click)="editUser(user)"
+                  title="Ver / Editar">
+                  <i class="pi pi-user-edit"></i>
+                </button>
+                <button type="button" class="btn-icon btn-delete" (click)="deleteUser(user)"
+                  title="Eliminar">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="getPaginatedUsers().length === 0">
+            <td colspan="6" class="empty-message">No se encontraron usuarios.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Custom pagination -->
+    <div *ngIf="!loading && totalItems > 0" class="pagination-container">
+      <div class="pagination-info">
+        <span>Mostrando {{ (currentPage - 1) * pageSize + 1 }} a
+          {{ Math.min(currentPage * pageSize, totalItems) }} de {{ totalItems }} registros</span>
+      </div>
+      <div class="pagination-controls">
+        <div class="page-size-selector">
+          <label>Registros por página:</label>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option *ngFor="let size of rowsPerPageOptions" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+        <div class="page-buttons">
+          <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(1)">
+            <i class="pi pi-angle-double-left"></i>
+          </button>
+          <button type="button" class="page-btn" [disabled]="currentPage === 1"
+            (click)="onPageChange(currentPage - 1)">
+            <i class="pi pi-angle-left"></i>
+          </button>
+          <button *ngFor="let page of getVisiblePages()" type="button" class="page-btn"
+            [class.active]="page === currentPage" (click)="onPageChange(page)">
+            {{ page }}
+          </button>
+          <button type="button" class="page-btn" [disabled]="currentPage === totalPages"
+            (click)="onPageChange(currentPage + 1)">
+            <i class="pi pi-angle-right"></i>
+          </button>
+          <button type="button" class="page-btn" [disabled]="currentPage === totalPages"
+            (click)="onPageChange(totalPages)">
+            <i class="pi pi-angle-double-right"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
