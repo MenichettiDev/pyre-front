@@ -4,10 +4,18 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CboUsuarioComponent, UsuarioOption } from "../../../shared/components/Cbo/cbo-usuario/cbo-usuario.component";
 import { CboHerramientasComponent, HerramientaOption } from '../../../shared/components/Cbo/cbo-herramientas/cbo-herramientas.component';
+import { CboObraComponent, ObraOption } from '../../../shared/components/Cbo/cbo-obra/cbo-obra.component';
 
 @Component({
   selector: 'app-prestamo',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, CboHerramientasComponent, CboUsuarioComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    CboHerramientasComponent,
+    CboUsuarioComponent,
+    CboObraComponent
+  ],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.css'
 })
@@ -16,6 +24,7 @@ export class PrestamoComponent implements OnInit {
   prestamoForm!: FormGroup;
   selectedHerramientaInfo: HerramientaOption | null = null;
   selectedUsuarioInfo: UsuarioOption | null = null;
+  selectedObraInfo: ObraOption | null = null;
 
   constructor(private fb: FormBuilder) { }
 
@@ -57,6 +66,15 @@ export class PrestamoComponent implements OnInit {
     }
   }
 
+  onObraSelected(obra: ObraOption | null): void {
+    this.selectedObraInfo = obra;
+
+    if (obra) {
+      console.log('Obra seleccionada:', obra);
+      // Update any additional UI or perform actions based on selection
+    }
+  }
+
   onSubmit(): void {
     if (this.prestamoForm.valid) {
       const formData = this.prestamoForm.value;
@@ -76,5 +94,6 @@ export class PrestamoComponent implements OnInit {
     });
     this.selectedHerramientaInfo = null;
     this.selectedUsuarioInfo = null;
+    this.selectedObraInfo = null;
   }
 }
