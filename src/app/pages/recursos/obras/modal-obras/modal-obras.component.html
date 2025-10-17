@@ -2,13 +2,25 @@
     <div class="modal-wrapper" [class.readonly]="!editingEnabled">
         <div class="modal-content" [class.open]="visible">
             <div class="modal-header">
-                <h3>{{ mode === 'edit' ? 'Editar Obra' : 'Nueva Obra' }}</h3>
-                <span *ngIf="mode === 'edit' && !editingEnabled" class="readonly-badge">Solo lectura</span>
+                <div class="header-controls">
+                    <div *ngIf="mode === 'edit'" class="mode-switch-wrapper">
+                        <button type="button" class="mode-switch" (click)="toggleEditing()"
+                            [attr.aria-pressed]="editingEnabled"
+                            [attr.aria-label]="editingEnabled ? 'Desactivar edición' : 'Activar edición'">
+                            <span class="switch-track" [class.on]="editingEnabled"><span class="switch-thumb"
+                                    [class.on]="editingEnabled"></span></span>
+                        </button>
+                    </div>
+                    <h3 class="modal-title">{{ mode === 'edit' ? (editingEnabled ? 'Modo edición' : 'Modo lectura') :
+                        'Nueva Obra' }}</h3>
+                </div>
+
                 <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
                     <span class="pi pi-times" aria-hidden="true"></span>
                 </button>
             </div>
 
+            <!-- Indicador de loading para modo edición -->
             <div *ngIf="mode === 'edit' && !initialData" class="loading-container">
                 <div class="loading-spinner"></div>
                 <p>Cargando datos de la obra...</p>
@@ -16,42 +28,109 @@
 
             <form *ngIf="mode === 'create' || initialData" [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form"
                 autocomplete="off">
+                <!-- Grid compacto de campos -->
                 <div class="compact-form-grid">
+                    <!-- Fila 1: Información básica -->
                     <div class="field-group"
-                        [class.has-error]="form.get('codigo')?.invalid && form.get('codigo')?.touched">
+                        [class.has-error]="(form.get('Nombre')?.invalid && form.get('Nombre')?.touched) || serverErrors['Nombre']">
+                        <label class="required">Nombre</label>
+                        <input formControlName="Nombre" placeholder="Nombre de la obra"
+                            [class.error]="(form.get('Nombre')?.invalid && form.get('Nombre')?.touched) || serverErrors['Nombre']" />
+                        <div *ngIf="serverErrors['Nombre']" class="error-text">{{ serverErrors['Nombre'] }}</div>
+                        <div *ngIf="!serverErrors['Nombre'] && form.get('Nombre')?.invalid && form.get('Nombre')?.touched"
+                            class="error-text">El nombre es requerido</div>
+                    </div>
+
+                    <div class="field-group"
+                        [class.has-error]="(form.get('Codigo')?.invalid && form.get('Codigo')?.touched) || serverErrors['Codigo']">
                         <label class="required">Código</label>
-                        <input formControlName="codigo" placeholder="Código de obra" maxlength="20"
-                            [class.error]="form.get('codigo')?.invalid && form.get('codigo')?.touched" />
-                        <div *ngIf="form.get('codigo')?.invalid && form.get('codigo')?.touched" class="error-text">El
-                            código es requerido (máx 20)</div>
+                        <input formControlName="Codigo" placeholder="Código único"
+                            [class.error]="(form.get('Codigo')?.invalid && form.get('Codigo')?.touched) || serverErrors['Codigo']" />
+                        <div *ngIf="serverErrors['Codigo']" class="error-text">{{ serverErrors['Codigo'] }}</div>
+                        <div *ngIf="!serverErrors['Codigo'] && form.get('Codigo')?.invalid && form.get('Codigo')?.touched"
+                            class="error-text">El código es requerido</div>
                     </div>
+
                     <div class="field-group"
-                        [class.has-error]="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched">
-                        <label class="required">Nombre Obra</label>
-                        <input formControlName="nombreObra" placeholder="Nombre de la obra" maxlength="150"
-                            [class.error]="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched" />
-                        <div *ngIf="form.get('nombreObra')?.invalid && form.get('nombreObra')?.touched"
-                            class="error-text">El nombre es requerido (máx 150)</div>
+                        [class.has-error]="form.get('Estado')?.invalid && form.get('Estado')?.touched">
+                        <label class="required">Estado</label>
+                        <select formControlName="Estado"
+                            [class.error]="form.get('Estado')?.invalid && form.get('Estado')?.touched">
+                            <option value="Activo">Activo</option>
+                            <option value="En Progreso">En Progreso</option>
+                            <option value="Pausado">Pausado</option>
+                            <option value="Finalizado">Finalizado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                        <div *ngIf="form.get('Estado')?.invalid && form.get('Estado')?.touched" class="error-text">
+                            Selecciona un estado</div>
                     </div>
-                    <div class="field-group">
-                        <label class="optional">Ubicación</label>
-                        <input formControlName="ubicacion" placeholder="Ubicación" maxlength="200" />
+
+                    <!-- Fila 2: Descripción completa -->
+                    <div class="field-group full-width">
+                        <label>Descripción <span class="optional-text">(opcional)</span></label>
+                        <textarea formControlName="Descripcion" rows="3"
+                            placeholder="Descripción detallada de la obra"></textarea>
+                        <div *ngIf="form.get('Descripcion')?.invalid && form.get('Descripcion')?.touched"
+                            class="error-text">Máximo 500 caracteres</div>
                     </div>
+
+                    <!-- Fila 3: Ubicación -->
                     <div class="field-group">
-                        <label class="optional">Fecha Inicio</label>
-                        <input formControlName="fechaInicio" type="date" />
+                        <label>Dirección <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="Direccion" placeholder="Dirección de la obra" />
                     </div>
+
                     <div class="field-group">
-                        <label class="optional">Fecha Fin</label>
-                        <input formControlName="fechaFin" type="date" />
+                        <label>Ciudad <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="Ciudad" placeholder="Ciudad" />
+                    </div>
+
+                    <div class="field-group">
+                        <label>Provincia <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="Provincia" placeholder="Provincia" />
+                    </div>
+
+                    <!-- Fila 4: Fechas y presupuesto -->
+                    <div class="field-group">
+                        <label>Fecha Inicio <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="FechaInicio" type="date" />
+                    </div>
+
+                    <div class="field-group">
+                        <label>Fecha Fin Estimada <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="FechaFinEstimada" type="date" />
+                    </div>
+
+                    <div class="field-group">
+                        <label>Presupuesto <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="Presupuesto" type="number" min="0" placeholder="0.00" />
+                        <div *ngIf="form.get('Presupuesto')?.invalid && form.get('Presupuesto')?.touched"
+                            class="error-text">El presupuesto debe ser mayor o igual a 0</div>
+                    </div>
+
+                    <!-- Fila 5: Responsable y observaciones -->
+                    <div class="field-group">
+                        <label>Responsable Técnico <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="ResponsableTecnico" placeholder="Nombre del responsable" />
+                    </div>
+
+                    <div class="field-group full-width">
+                        <label>Observaciones <span class="optional-text">(opcional)</span></label>
+                        <textarea formControlName="Observaciones" rows="3"
+                            placeholder="Observaciones adicionales"></textarea>
+                        <div *ngIf="form.get('Observaciones')?.invalid && form.get('Observaciones')?.touched"
+                            class="error-text">Máximo 1000 caracteres</div>
                     </div>
                 </div>
+
                 <div class="actions">
                     <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
-                    <button *ngIf="mode === 'edit' && !editingEnabled" type="button" class="btn-edit"
-                        (click)="enableEditing()">Editar</button>
-                    <button *ngIf="mode === 'edit' && editingEnabled" type="submit"
-                        class="btn-submit">Actualizar</button>
+                    <span [ngbTooltip]="!editingEnabled ? 'Pasa a modo edición para poder actualizar' : null"
+                        placement="top" container="body">
+                        <button *ngIf="mode === 'edit'" [disabled]="!editingEnabled" type="submit"
+                            class="btn-submit">Actualizar</button>
+                    </span>
                     <button *ngIf="mode !== 'edit'" type="submit" class="btn-submit">Crear</button>
                 </div>
             </form>

@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProveedoresService } from '../../../../services/proveedores.service';
-import { TableSharedComponent } from '../../../../shared/components/table-shared/table-shared.component';
 import { AlertaService } from '../../../../services/alerta.service';
 import { ModalProveedorComponent } from '../modal-proveedor/modal-proveedor.component';
-import { DetailsProveedoresComponent } from '../details-proveedores/details-proveedores.component';
 
 export interface ProveedorDto {
   idProveedor: number;
@@ -22,9 +21,8 @@ export interface ProveedorDto {
   standalone: true,
   imports: [
     CommonModule,
-    TableSharedComponent,
+    FormsModule,
     ModalProveedorComponent,
-    DetailsProveedoresComponent,
   ],
   templateUrl: './visor-proveedores.component.html',
   styleUrls: ['./visor-proveedores.component.css'],
@@ -32,18 +30,26 @@ export interface ProveedorDto {
 })
 export class VisorProveedoresComponent implements OnInit {
   proveedores: ProveedorDto[] = [];
-  columns: string[] = ['nombreProveedor', 'contacto', 'cuit', 'telefono', 'email', 'direccion', 'activo'];
+  filteredProveedores: ProveedorDto[] = [];
+  columns: string[] = ['nombreProveedor', 'contacto', 'cuit', 'telefono', 'email', 'direccion'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
-  pageSize = 5;
+  pageSize = 10;
   loading = false;
   totalItems = 0;
+  totalPages = 0;
+
+  // Expose Math to template
+  Math = Math;
+
+  // Filtros
+  filtroNombre: string = '';
+  filtroEstado: string = '';
 
   showProveedorModal = false;
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
-  // Agrega las propiedades para el modal de detalles
   showDetailsModal = false;
   detailsData: any = null;
 
@@ -57,7 +63,6 @@ export class VisorProveedoresComponent implements OnInit {
     this.loading = true;
     this.proveedoresService.getProveedores(this.currentPage, this.pageSize).subscribe({
       next: (resp) => {
-        // Ajuste para la estructura de respuesta del backend
         const pagedData = resp?.data ?? {};
         const rawList = Array.isArray(pagedData.data) ? pagedData.data : [];
         this.totalItems = pagedData.totalRecords ?? rawList.length ?? 0;
@@ -73,6 +78,8 @@ export class VisorProveedoresComponent implements OnInit {
           direccion: p.direccion,
           activo: p.activo
         }));
+        this.applyFilters();
+        this.calculatePagination();
         this.loading = false;
       },
       error: () => {
@@ -80,6 +87,81 @@ export class VisorProveedoresComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  applyFilters(): void {
+    this.filteredProveedores = this.proveedores.filter(proveedor => {
+      const matchesNombre = !this.filtroNombre ||
+        proveedor.nombreProveedor?.toLowerCase().includes(this.filtroNombre.toLowerCase());
+
+      const matchesEstado = !this.filtroEstado ||
+        (this.filtroEstado === 'activo' && proveedor.activo) ||
+        (this.filtroEstado === 'inactivo' && !proveedor.activo);
+
+      return matchesNombre && matchesEstado;
+    });
+
+    this.totalItems = this.filteredProveedores.length;
+    this.calculatePagination();
+  }
+
+  calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  getPaginatedProveedores(): ProveedorDto[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredProveedores.slice(startIndex, endIndex);
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onResetFilters(): void {
+    this.filtroNombre = '';
+    this.filtroEstado = '';
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  hasActiveFilters(): boolean {
+    return !!(this.filtroNombre?.trim() || this.filtroEstado);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.calculatePagination();
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    const half = Math.floor(maxVisible / 2);
+
+    let start = Math.max(1, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
   }
 
   editProveedor(item: ProveedorDto): void {
@@ -115,12 +197,6 @@ export class VisorProveedoresComponent implements OnInit {
           });
         }
       });
-  }
-
-  onPageChange(event: { pageIndex: number; pageSize: number }) {
-    this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex + 1;
-    this.fetchProveedores();
   }
 
   createNewProveedor(): void {
@@ -169,13 +245,11 @@ export class VisorProveedoresComponent implements OnInit {
     }
   }
 
-  // Método para abrir el modal de detalles
   viewProveedor(item: ProveedorDto): void {
     this.detailsData = item;
     this.showDetailsModal = true;
   }
 
-  // Método para cerrar el modal de detalles
   closeDetailsModal(): void {
     this.showDetailsModal = false;
     this.detailsData = null;

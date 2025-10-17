@@ -2,8 +2,19 @@
     <div class="modal-wrapper" [class.readonly]="!editingEnabled">
         <div class="modal-content" [class.open]="visible">
             <div class="modal-header">
-                <h3>{{ mode === 'edit' ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h3>
-                <span *ngIf="mode === 'edit' && !editingEnabled" class="readonly-badge">Solo lectura</span>
+                <div class="header-controls">
+                    <div *ngIf="mode === 'edit'" class="mode-switch-wrapper">
+                        <button type="button" class="mode-switch" (click)="toggleEditing()"
+                            [attr.aria-pressed]="editingEnabled"
+                            [attr.aria-label]="editingEnabled ? 'Desactivar edición' : 'Activar edición'">
+                            <span class="switch-track" [class.on]="editingEnabled"><span class="switch-thumb"
+                                    [class.on]="editingEnabled"></span></span>
+                        </button>
+                    </div>
+                    <h3 class="modal-title">{{ mode === 'edit' ? (editingEnabled ? 'Modo edición' : 'Modo lectura') :
+                        'Nuevo Proveedor' }}</h3>
+                </div>
+
                 <button class="close-btn" (click)="onCancel()" aria-label="Cerrar">
                     <span class="pi pi-times" aria-hidden="true"></span>
                 </button>
@@ -18,53 +29,85 @@
                 autocomplete="off">
                 <div class="compact-form-grid">
                     <div class="field-group"
-                        [class.has-error]="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched">
+                        [class.has-error]="(form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched) || serverErrors['nombreProveedor']">
                         <label class="required">Nombre Proveedor</label>
                         <input formControlName="nombreProveedor" placeholder="Nombre del proveedor"
-                            [class.error]="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched" />
-                        <div *ngIf="form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched"
+                            [class.error]="(form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched) || serverErrors['nombreProveedor']" />
+                        <div *ngIf="serverErrors['nombreProveedor']" class="error-text">{{
+                            serverErrors['nombreProveedor'] }}</div>
+                        <div *ngIf="!serverErrors['nombreProveedor'] && form.get('nombreProveedor')?.invalid && form.get('nombreProveedor')?.touched"
                             class="error-text">El nombre es requerido</div>
                     </div>
+
                     <div class="field-group"
-                        [class.has-error]="form.get('contacto')?.invalid && form.get('contacto')?.touched">
+                        [class.has-error]="(form.get('contacto')?.invalid && form.get('contacto')?.touched) || serverErrors['contacto']">
                         <label class="required">Contacto</label>
                         <input formControlName="contacto" placeholder="Nombre del contacto"
-                            [class.error]="form.get('contacto')?.invalid && form.get('contacto')?.touched" />
-                        <div *ngIf="form.get('contacto')?.invalid && form.get('contacto')?.touched" class="error-text">
+                            [class.error]="(form.get('contacto')?.invalid && form.get('contacto')?.touched) || serverErrors['contacto']" />
+                        <div *ngIf="serverErrors['contacto']" class="error-text">{{ serverErrors['contacto'] }}</div>
+                        <div *ngIf="!serverErrors['contacto'] && form.get('contacto')?.invalid && form.get('contacto')?.touched"
+                            class="error-text">
                             El contacto es requerido</div>
                     </div>
-                    <div class="field-group">
-                        <label class="optional">CUIT</label>
-                        <input formControlName="cuit" placeholder="CUIT" />
+
+                    <div class="field-group"
+                        [class.has-error]="(form.get('cuit')?.invalid && form.get('cuit')?.touched) || serverErrors['cuit']">
+                        <label>CUIT <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="cuit" placeholder="CUIT"
+                            [class.error]="(form.get('cuit')?.invalid && form.get('cuit')?.touched) || serverErrors['cuit']" />
+                        <div *ngIf="serverErrors['cuit']" class="error-text">{{ serverErrors['cuit'] }}</div>
+                        <div *ngIf="!serverErrors['cuit'] && form.get('cuit')?.invalid && form.get('cuit')?.touched"
+                            class="error-text">Máximo 20 caracteres</div>
                     </div>
+
                     <div class="field-group">
-                        <label class="optional">Teléfono</label>
+                        <label>Teléfono <span class="optional-text">(opcional)</span></label>
                         <input formControlName="telefono" placeholder="Teléfono" />
+                        <div *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched" class="error-text">
+                            Máximo 50 caracteres</div>
                     </div>
-                    <div class="field-group">
-                        <label class="optional">Email</label>
-                        <input formControlName="email" type="email" placeholder="Email" />
-                        <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error-text">Formato
-                            de email inválido</div>
+
+                    <div class="field-group"
+                        [class.has-error]="(form.get('email')?.invalid && form.get('email')?.touched) || serverErrors['email']">
+                        <label>Email <span class="optional-text">(opcional)</span></label>
+                        <input formControlName="email" type="email" placeholder="Email"
+                            [class.error]="(form.get('email')?.invalid && form.get('email')?.touched) || serverErrors['email']" />
+                        <div *ngIf="serverErrors['email']" class="error-text">{{ serverErrors['email'] }}</div>
+                        <div *ngIf="!serverErrors['email'] && form.get('email')?.invalid && form.get('email')?.touched"
+                            class="error-text">
+                            <span *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</span>
+                            <span *ngIf="form.get('email')?.errors?.['maxlength']">Máximo 150 caracteres</span>
+                        </div>
                     </div>
+
                     <div class="field-group">
-                        <label class="optional">Dirección</label>
+                        <label>Dirección <span class="optional-text">(opcional)</span></label>
                         <input formControlName="direccion" placeholder="Dirección" />
+                        <div *ngIf="form.get('direccion')?.invalid && form.get('direccion')?.touched"
+                            class="error-text">
+                            Máximo 200 caracteres</div>
                     </div>
-                    <div class="field-group">
-                        <label class="required">Activo</label>
-                        <select formControlName="activo">
+
+                    <div class="field-group"
+                        [class.has-error]="form.get('activo')?.invalid && form.get('activo')?.touched">
+                        <label class="required">Estado</label>
+                        <select formControlName="activo"
+                            [class.error]="form.get('activo')?.invalid && form.get('activo')?.touched">
                             <option [value]="true">Activo</option>
                             <option [value]="false">Inactivo</option>
                         </select>
+                        <div *ngIf="form.get('activo')?.invalid && form.get('activo')?.touched" class="error-text">
+                            Selecciona un estado</div>
                     </div>
                 </div>
+
                 <div class="actions">
                     <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
-                    <button *ngIf="mode === 'edit' && !editingEnabled" type="button" class="btn-edit"
-                        (click)="enableEditing()">Editar</button>
-                    <button *ngIf="mode === 'edit' && editingEnabled" type="submit"
-                        class="btn-submit">Actualizar</button>
+                    <span [ngbTooltip]="!editingEnabled ? 'Pasa a modo edición para poder actualizar' : null"
+                        placement="top" container="body">
+                        <button *ngIf="mode === 'edit'" [disabled]="!editingEnabled" type="submit"
+                            class="btn-submit">Actualizar</button>
+                    </span>
                     <button *ngIf="mode !== 'edit'" type="submit" class="btn-submit">Crear</button>
                 </div>
             </form>

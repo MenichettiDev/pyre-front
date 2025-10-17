@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ObrasService, ObraDto } from '../../../../services/obras.service';
-import { TableSharedComponent } from '../../../../shared/components/table-shared/table-shared.component';
 import { AlertaService } from '../../../../services/alerta.service';
-import { ModalObrasComponent } from '../modal-obras/modal-obras.component';
-import { DetailsObrasComponent } from '../details-obras/details-obras.component';
+import { ObraEditModalComponent } from '../modal-obras/modal-obras.component';
 
 @Component({
   selector: 'app-visor-obras',
   standalone: true,
   imports: [
     CommonModule,
-    TableSharedComponent,
-    ModalObrasComponent,
-    DetailsObrasComponent,
+    FormsModule,
+    ObraEditModalComponent
   ],
   templateUrl: './visor-obras.component.html',
   styleUrls: ['./visor-obras.component.css'],
@@ -21,12 +19,21 @@ import { DetailsObrasComponent } from '../details-obras/details-obras.component'
 })
 export class VisorObrasComponent implements OnInit {
   obras: ObraDto[] = [];
+  filteredObras: ObraDto[] = [];
   columns: string[] = ['codigo', 'nombreObra', 'ubicacion', 'fechaInicio', 'fechaFin'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
   pageSize = 10;
   loading = false;
   totalItems = 0;
+  totalPages = 0;
+
+  // Expose Math to template
+  Math = Math;
+
+  // Filtros
+  filtroNombre: string = '';
+  filtroEstado: string = '';
 
   showObraModal = false;
   modalInitialData: any = null;
@@ -45,7 +52,6 @@ export class VisorObrasComponent implements OnInit {
     this.loading = true;
     this.obrasService.getObrasPaged(this.currentPage, this.pageSize).subscribe({
       next: (resp) => {
-        // Ajuste para la estructura de respuesta del backend
         const pagedData = resp?.data ?? {};
         const rawList = Array.isArray(pagedData.data) ? pagedData.data : [];
         this.totalItems = pagedData.totalRecords ?? rawList.length ?? 0;
@@ -57,8 +63,11 @@ export class VisorObrasComponent implements OnInit {
           nombreObra: o.nombreObra,
           ubicacion: o.ubicacion,
           fechaInicio: o.fechaInicio,
-          fechaFin: o.fechaFin
+          fechaFin: o.fechaFin,
+          estado: o.estado || 'Activo' // Default state
         }));
+        this.applyFilters();
+        this.calculatePagination();
         this.loading = false;
       },
       error: () => {
@@ -66,6 +75,81 @@ export class VisorObrasComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  applyFilters(): void {
+    this.filteredObras = this.obras.filter(obra => {
+      const matchesNombre = !this.filtroNombre ||
+        obra.nombreObra?.toLowerCase().includes(this.filtroNombre.toLowerCase());
+
+      const matchesEstado = !this.filtroEstado ||
+        (this.filtroEstado === 'activo') ||
+        (this.filtroEstado === 'inactivo');
+
+      return matchesNombre && matchesEstado;
+    });
+
+    this.totalItems = this.filteredObras.length;
+    this.calculatePagination();
+  }
+
+  calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  getPaginatedObras(): ObraDto[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredObras.slice(startIndex, endIndex);
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onResetFilters(): void {
+    this.filtroNombre = '';
+    this.filtroEstado = '';
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  hasActiveFilters(): boolean {
+    return !!(this.filtroNombre?.trim() || this.filtroEstado);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.calculatePagination();
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    const half = Math.floor(maxVisible / 2);
+
+    let start = Math.max(1, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
   }
 
   editObra(item: ObraDto): void {
@@ -101,12 +185,6 @@ export class VisorObrasComponent implements OnInit {
           });
         }
       });
-  }
-
-  onPageChange(event: { pageIndex: number; pageSize: number }) {
-    this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex + 1;
-    this.fetchObras();
   }
 
   createNewObra(): void {
