@@ -16,16 +16,13 @@
     <div class="pyre-filter-bar">
       <div class="filter-row">
         <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo"
-            (keyup.enter)="onSearch()" />
+          <input type="text" [(ngModel)]="filtroLegajo" placeholder="Legajo" (keyup.enter)="onSearch()" />
         </div>
         <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre"
-            (keyup.enter)="onSearch()" />
+          <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre" (keyup.enter)="onSearch()" />
         </div>
         <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido"
-            (keyup.enter)="onSearch()" />
+          <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido" (keyup.enter)="onSearch()" />
         </div>
         <div class="filter-item">
           <select [(ngModel)]="filtroRol">
@@ -40,8 +37,8 @@
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
-            <button *ngIf="hasActiveFilters()" type="button" class="reset-button-inline"
-              (click)="onResetFilters()" title="Limpiar todos los filtros">
+            <button *ngIf="hasActiveFilters()" type="button" class="reset-button-inline" (click)="onResetFilters()"
+              title="Limpiar todos los filtros">
               <i class="pi pi-filter-slash"></i>
             </button>
           </div>
@@ -82,28 +79,22 @@
             <td>{{ user.rol }}</td>
             <td>
               <div class="estado-toggle">
-                <label class="toggle-switch" 
-                       [attr.aria-label]="user.activo ? 'Desactivar usuario' : 'Activar usuario'"
-                       (click)="toggleUserActive(user)">
-                  <input type="checkbox" 
-                         [checked]="user.activo" 
-                         (click)="$event.preventDefault()" />
+                <label class="toggle-switch" [attr.aria-label]="user.activo ? 'Desactivar usuario' : 'Activar usuario'"
+                  (click)="toggleUserActive(user)">
+                  <input type="checkbox" [checked]="user.activo" (click)="$event.preventDefault()" />
                   <span class="toggle-slider" [class.active]="user.activo"></span>
                 </label>
-                <span class="status-text" [class.status-activo]="user.activo" 
-                      [class.status-inactivo]="!user.activo">
+                <span class="status-text" [class.status-activo]="user.activo" [class.status-inactivo]="!user.activo">
                   {{ user.activo ? 'Activo' : 'Inactivo' }}
                 </span>
               </div>
             </td>
             <td>
               <div class="action-buttons">
-                <button type="button" class="btn-icon btn-edit" (click)="editUser(user)"
-                  title="Ver / Editar">
+                <button type="button" class="btn-icon btn-edit" (click)="editUser(user)" title="Ver / Editar">
                   <i class="pi pi-user-edit"></i>
                 </button>
-                <button type="button" class="btn-icon btn-delete" (click)="deleteUser(user)"
-                  title="Eliminar">
+                <button type="button" class="btn-icon btn-delete" (click)="deleteUser(user)" title="Eliminar">
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
@@ -133,8 +124,7 @@
           <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(1)">
             <i class="pi pi-angle-double-left"></i>
           </button>
-          <button type="button" class="page-btn" [disabled]="currentPage === 1"
-            (click)="onPageChange(currentPage - 1)">
+          <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
             <i class="pi pi-angle-left"></i>
           </button>
           <button *ngFor="let page of getVisiblePages()" type="button" class="page-btn"

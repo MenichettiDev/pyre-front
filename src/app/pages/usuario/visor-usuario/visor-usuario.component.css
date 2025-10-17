@@ -20,9 +20,12 @@
 .page-title {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 400; /* no bold */
-  color: var(--color-text-secondary); /* gris coherente con UI */
-  font-family: var(--font-family-primary); /* usar la fuente global */
+  font-weight: 400;
+  /* no bold */
+  color: var(--color-text-secondary);
+  /* gris coherente con UI */
+  font-family: var(--font-family-primary);
+  /* usar la fuente global */
 }
 
 /* Estilo para el encabezado compacto */
@@ -58,21 +61,27 @@
 
 /* Clase para el botón de acción del encabezado: espacio a la derecha para no pegarse al borde */
 .header-action {
-  margin-right: 3rem; /* coincide con el padding interno de .pyre-table-wrapper.soft-edge */
-  background: transparent !important; /* quitar relleno visual */
-  border: none !important; /* quitar borde */
-  padding: 0 !important; /* quitar padding para que solo quede icono + texto */
+  margin-right: 3rem;
+  /* coincide con el padding interno de .pyre-table-wrapper.soft-edge */
+  background: transparent !important;
+  /* quitar relleno visual */
+  border: none !important;
+  /* quitar borde */
+  padding: 0 !important;
+  /* quitar padding para que solo quede icono + texto */
   display: inline-flex;
   align-items: center;
   gap: .25rem;
-  color: var(--color-primary, #0d6efd); /* usar color primario visible en lugar de blanco */
+  color: var(--color-primary, #0d6efd);
+  /* usar color primario visible en lugar de blanco */
   text-decoration: none;
 }
 
 /* Si el botón tenía clases de btn-primary que aplican color, forzamos color de enlace primario en hover/focus */
 .header-action:hover,
 .header-action:focus {
-  background: rgba(13,110,253,0.08); /* leve fondo en hover para indicar interactividad */
+  background: rgba(13, 110, 253, 0.08);
+  /* leve fondo en hover para indicar interactividad */
   text-decoration: none;
   outline: none;
 }
@@ -81,8 +90,10 @@
 .header-action i {
   display: inline-block;
   vertical-align: middle;
-  font-size: 1rem; /* mantiene tamaño coherente con el texto */
-  color: inherit; /* hereda el color del enlace */
+  font-size: 1rem;
+  /* mantiene tamaño coherente con el texto */
+  color: inherit;
+  /* hereda el color del enlace */
 }
 
 /* Separación entre icono y texto (siempre usar util clase 'me-1' de bootstrap, pero asegurar fallback) */
@@ -99,8 +110,10 @@
   /* Evitar que el contenedor genere scroll innecesario - forzar altura automática */
   overflow: hidden;
   height: auto !important;
-  min-height: 0 !important; /* Evitar forzar altura que provoque scroll */
-  max-height: none !important; /* Evitar altura máxima que limite contenido */
+  min-height: 0 !important;
+  /* Evitar forzar altura que provoque scroll */
+  max-height: none !important;
+  /* Evitar altura máxima que limite contenido */
 }
 
 .container-fluid.page-shell {
@@ -695,6 +708,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

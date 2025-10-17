@@ -73,14 +73,14 @@ export class UserListComponent implements OnInit {
   fetchUsers(): void {
     this.loading = true;
     console.log(`[UserList] fetchUsers page=${this.currentPage} size=${this.pageSize}`);
-    
+
     // Construir objeto de filtros para enviar al servicio
     const filters: any = {};
     if (this.filtroLegajo?.trim()) filters.legajo = this.filtroLegajo.trim();
     if (this.filtroNombre?.trim()) filters.nombre = this.filtroNombre.trim();
     if (this.filtroApellido?.trim()) filters.apellido = this.filtroApellido.trim();
     if (this.filtroRol?.trim()) filters.rol = Number(this.filtroRol.trim());
-    
+
     // Convertir estado de string a boolean para el backend
     if (this.filtroEstado) {
       filters.estado = this.filtroEstado === 'activo';
@@ -90,7 +90,7 @@ export class UserListComponent implements OnInit {
       next: (resp) => {
         console.debug('[UserList] fetchUsers - filtros enviados:', filters);
         console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
-        
+
         const rawList: UserRaw[] = Array.isArray(resp.data) ? resp.data : (resp.data || []);
         this.totalItems = resp.total ?? rawList.length ?? 0;
 
@@ -125,22 +125,22 @@ export class UserListComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredUsers = this.users.filter(user => {
-      const matchesLegajo = !this.filtroLegajo || 
+      const matchesLegajo = !this.filtroLegajo ||
         user.legajo?.toString().toLowerCase().includes(this.filtroLegajo.toLowerCase());
-      
-      const matchesNombre = !this.filtroNombre || 
+
+      const matchesNombre = !this.filtroNombre ||
         user.nombre?.toLowerCase().includes(this.filtroNombre.toLowerCase());
-      
-      const matchesApellido = !this.filtroApellido || 
+
+      const matchesApellido = !this.filtroApellido ||
         user.apellido?.toLowerCase().includes(this.filtroApellido.toLowerCase());
-      
-      const matchesRol = !this.filtroRol || 
+
+      const matchesRol = !this.filtroRol ||
         this.getRolNameById(Number(this.filtroRol))?.toLowerCase().includes(user.rol?.toLowerCase() || '');
-      
-      const matchesEstado = !this.filtroEstado || 
+
+      const matchesEstado = !this.filtroEstado ||
         (this.filtroEstado === 'activo' && user.activo) ||
         (this.filtroEstado === 'inactivo' && !user.activo);
-      
+
       return matchesLegajo && matchesNombre && matchesApellido && matchesRol && matchesEstado;
     });
 
