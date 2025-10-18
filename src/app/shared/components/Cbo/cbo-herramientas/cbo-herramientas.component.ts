@@ -81,24 +81,21 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
         debounceTime(300),
         distinctUntilChanged(),
         switchMap(term => {
-          // Only search when dropdown is open
           if (!this.isOpen) {
-            return of([]);
+            return of([] as HerramientaOption[]);
           }
-
           const searchTerm = (term || '').toString().trim();
-
           if (searchTerm.length >= 3) {
             return this.searchHerramientas(searchTerm);
           } else if (searchTerm.length === 0) {
             return this.loadInitialData();
           } else {
-            return of([]);
+            return of([] as HerramientaOption[]);
           }
         })
       )
       .subscribe(herramientas => {
-        this.herramientas = herramientas;
+        this.herramientas = Array.isArray(herramientas) ? herramientas : [];
       });
 
     this.subscriptions.push(searchSub);
@@ -106,7 +103,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
   private loadInitialHerramientas(): void {
     this.loadInitialData().subscribe(herramientas => {
-      this.herramientas = herramientas;
+      this.herramientas = Array.isArray(herramientas) ? herramientas : [];
     });
   }
 
@@ -116,16 +113,14 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
-          let filteredList = rawList;
-
-          const herramientas = this.mapHerramientasToOptions(filteredList);
+          const herramientas = this.mapHerramientasToOptions(rawList);
           this.isLoading = false;
-          return of(herramientas);
+          return of(herramientas as HerramientaOption[]);
         }),
         catchError(error => {
           console.error('Error loading herramientas:', error);
           this.isLoading = false;
-          return of([]);
+          return of([] as HerramientaOption[]);
         })
       );
   }
@@ -136,13 +131,12 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
     return this.herramientaService.getTools(1, 10, { search: '' })
       .pipe(
         map((response: { data: any[], total: number }) => {
-          // Extraer los datos según la estructura de respuesta
           const rawData = response.data || [];
-          return this.mapHerramientasToOptions(rawData);
+          return this.mapHerramientasToOptions(rawData) as HerramientaOption[];
         }),
         catchError(error => {
           console.error('Error cargando herramientas:', error);
-          return of([]);
+          return of([] as HerramientaOption[]);
         })
       );
   }
@@ -153,16 +147,14 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
-          let filteredList = rawList;
-
-          const herramientas = this.mapHerramientasToOptions(filteredList);
+          const herramientas = this.mapHerramientasToOptions(rawList);
           this.isLoading = false;
-          return herramientas;
+          return of(herramientas as HerramientaOption[]);
         }),
         catchError(error => {
           console.error('Error buscando herramientas:', error);
           this.isLoading = false;
-          return of([]);
+          return of([] as HerramientaOption[]);
         })
       );
   }
