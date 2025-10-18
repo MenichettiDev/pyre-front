@@ -36,7 +36,7 @@
                   <div class="col-md-6">
                     <label class="form-label">Herramienta *</label>
                     <app-cbo-herramientas [isLabel]="'Seleccionar Herramienta'" [isId]="'herramientaSelect'"
-                      [showOnlyAvailable]="true" [objectErrors]="prestamoForm.get('herramientaId')?.errors"
+                      [idDisponibilidad]=1 [objectErrors]="prestamoForm.get('herramientaId')?.errors"
                       [isTouched]="!!(prestamoForm.get('herramientaId')?.touched)" formControlName="herramientaId"
                       (herramientaSelected)="onHerramientaSelected($event)">
                     </app-cbo-herramientas>

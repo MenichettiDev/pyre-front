@@ -79,4 +79,10 @@ export class HerramientaService {
   getCountHerramientasEnReparacion(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/count-herramientas-en-reparacion`);
   }
+
+  // [HttpGet("disponibilidad/{disponibilidadId}")]
+  getHerramientasPorDisponibilidad(disponibilidadId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/disponibilidad/${disponibilidadId}`);
+  }
+
 }

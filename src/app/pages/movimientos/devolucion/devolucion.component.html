@@ -1,1 +1,197 @@
-<p>devolucion works!</p>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header de la página -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-box-arrow-up text-primary me-2"></i>
+                        Registrar Devolución
+                    </h2>
+                    <p class="text-muted mb-0">Registro de devolución de herramientas prestadas</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" routerLink="/movimientos">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Volver
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Formulario de Devolución -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-clipboard-check me-2"></i>
+                                Datos de la Devolución
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form [formGroup]="devolucionForm" (ngSubmit)="onSubmit()">
+                                <div class="row g-3">
+
+                                    <!-- Selección de Herramienta -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Herramienta Prestada *</label>
+                                        <app-cbo-herramientas [isLabel]="'Seleccionar Herramienta'"
+                                            [isId]="'herramientaSelect'"
+                                            [objectErrors]="devolucionForm.get('herramientaId')?.errors"
+                                            [isTouched]="!!(devolucionForm.get('herramientaId')?.touched)"
+                                            formControlName="herramientaId" [idDisponibilidad]="2"
+                                            (herramientaSelected)="onHerramientaSelected($event)">
+                                        </app-cbo-herramientas>
+                                        <small class="text-muted">Solo se muestran herramientas actualmente
+                                            prestadas</small>
+                                    </div>
+
+
+                                    <!-- Fecha de Devolución -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Devolución *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                            <input type="date" class="form-control" formControlName="fechaDevolucion"
+                                                [class.is-invalid]="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched">
+                                        </div>
+                                        <div *ngIf="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched"
+                                            class="invalid-feedback">
+                                            La fecha de devolución es requerida
+                                        </div>
+                                    </div>
+
+                                    <!-- Observaciones -->
+                                    <div class="col-12">
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" rows="3" formControlName="observaciones"
+                                            placeholder="Detalles adicionales de la devolución...">
+                    </textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary"
+                                        [disabled]="!isFormValid() || isLoading">
+                                        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"
+                                            role="status" aria-hidden="true"></span>
+                                        <i *ngIf="!isLoading" class="bi bi-check-circle me-1"></i>
+                                        {{ isLoading ? 'Registrando...' : 'Registrar Devolución' }}
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" (click)="resetForm()"
+                                        [disabled]="isLoading">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>
+                                        Limpiar Formulario
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Información -->
+                <div class="col-lg-4">
+                    <!-- Información del Préstamo Actual -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Información del Préstamo
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div *ngIf="isLoadingMovimiento" class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mb-0 mt-2">Cargando información...</p>
+                            </div>
+
+                            <div *ngIf="movimientoInfo && !isLoadingMovimiento">
+                                <!-- Alert de retraso si aplica -->
+                                <div *ngIf="isOverdue()" class="alert alert-warning py-2 mb-3">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    <strong>Retraso:</strong> {{ getDaysOverdue() }} día(s) vencido
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Código:</small>
+                                    <small><strong>{{ movimientoInfo.herramientaCodigo }}</strong></small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Herramienta:</small>
+                                    <small><strong>{{ movimientoInfo.herramientaNombre }}</strong></small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Responsable:</small>
+                                    <small><strong>{{ movimientoInfo.usuarioNombre }} {{ movimientoInfo.usuarioApellido
+                                            }}</strong></small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Legajo:</small>
+                                    <small>{{ movimientoInfo.usuarioLegajo }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Fecha Préstamo:</small>
+                                    <small>{{ movimientoInfo.fechaMovimiento | date:'dd/MM/yyyy' }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Fecha Estimada:</small>
+                                    <small [class.text-danger]="isOverdue()">
+                                        {{ movimientoInfo.fechaEstimadaDevolucion | date:'dd/MM/yyyy' }}
+                                    </small>
+                                </div>
+                                <div *ngIf="movimientoInfo.obraNombre" class="d-flex justify-content-between mb-1">
+                                    <small>Obra:</small>
+                                    <small>{{ movimientoInfo.obraNombre }}</small>
+                                </div>
+                                <div *ngIf="movimientoInfo.observaciones" class="mt-2">
+                                    <small class="text-muted">Observaciones del préstamo:</small>
+                                    <p class="small mb-0">{{ movimientoInfo.observaciones }}</p>
+                                </div>
+                            </div>
+
+                            <div *ngIf="!movimientoInfo && !isLoadingMovimiento && selectedHerramientaInfo"
+                                class="text-center text-muted py-3">
+                                <i class="bi bi-exclamation-circle" style="font-size: 2rem;"></i>
+                                <p class="mb-0 mt-2">No se encontró información de préstamo para esta herramienta</p>
+                            </div>
+
+                            <div *ngIf="!selectedHerramientaInfo" class="text-center text-muted py-3">
+                                <i class="bi bi-search" style="font-size: 2rem;"></i>
+                                <p class="mb-0 mt-2">Seleccione una herramienta para ver la información del préstamo</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Instrucciones -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                Instrucciones
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ol class="small mb-0">
+                                <li>Seleccione la herramienta a devolver</li>
+                                <li>Verifique la información del préstamo</li>
+                                <li>Indique el estado físico actual</li>
+                                <li>Complete observaciones si es necesario</li>
+                                <li>Confirme la devolución</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <app-modal-confirm [visible]="showModal" [title]="modalTitle" [message]="modalMessage" (confirm)="onModalConfirm()"
+        (cancel)="onModalCancel()">
+    </app-modal-confirm>
+</div>

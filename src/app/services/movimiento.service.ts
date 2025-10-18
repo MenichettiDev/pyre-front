@@ -37,6 +37,10 @@ export class MovimientoService {
   registrarPrestamo(data: CreateMovimientoDto): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}`, data);
   }
+  // Registrar devolucion de herramienta
+  registrarDevolucion(data: CreateMovimientoDto): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}`, data);
+  }
 
 
 

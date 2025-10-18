@@ -48,7 +48,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
   @Input() isId: string = '';
   @Input() isDisabled: boolean = false;
   @Input() placeholder: string = 'Seleccionar herramienta...';
-  @Input() showOnlyAvailable: boolean = true;
+  @Input() idDisponibilidad: number = 1;
   @Input() objectErrors: any = null;
   @Input() isTouched: boolean = false;
 
@@ -112,17 +112,11 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
   private loadInitialData() {
     this.isLoading = true;
-    return this.herramientaService.getTools(1, 10, '')
+    return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad)
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
           let filteredList = rawList;
-
-          if (this.showOnlyAvailable) {
-            filteredList = rawList.filter(h =>
-              h.disponibilidad === 'Disponible' || h.estadoDisponibilidad === 'Disponible'
-            );
-          }
 
           const herramientas = this.mapHerramientasToOptions(filteredList);
           this.isLoading = false;
@@ -138,17 +132,11 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
   private searchHerramientas(searchTerm: string) {
     this.isLoading = true;
-    return this.herramientaService.getTools(1, 20, searchTerm)
+    return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad)
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
           let filteredList = rawList;
-
-          if (this.showOnlyAvailable) {
-            filteredList = rawList.filter(h =>
-              h.disponibilidad === 'Disponible' || h.estadoDisponibilidad === 'Disponible'
-            );
-          }
 
           const herramientas = this.mapHerramientasToOptions(filteredList);
           this.isLoading = false;
