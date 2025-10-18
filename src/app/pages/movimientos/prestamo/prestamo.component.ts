@@ -7,6 +7,7 @@ import { CboHerramientasComponent, HerramientaOption } from '../../../shared/com
 import { CboObraComponent, ObraOption } from '../../../shared/components/Cbo/cbo-obra/cbo-obra.component';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { MovimientoService, CreateMovimientoDto } from '../../../services/movimiento.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-prestamo',
@@ -38,7 +39,8 @@ export class PrestamoComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private movimientoService: MovimientoService
+    private movimientoService: MovimientoService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -93,10 +95,21 @@ export class PrestamoComponent implements OnInit {
       this.isLoading = true;
 
       const formData = this.prestamoForm.value;
+      const currentUserId = this.authService.getUserId();
+
+      if (!currentUserId) {
+        this.isLoading = false;
+        this.isSuccess = false;
+        this.modalTitle = 'Error de Autenticación';
+        this.modalMessage = 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.';
+        this.showModal = true;
+        return;
+      }
 
       const prestamoData: CreateMovimientoDto = {
         idHerramienta: formData.herramientaId,
-        idUsuario: formData.responsableId,
+        idUsuarioResponsable: formData.responsableId,
+        idUsuarioGenera: currentUserId,
         idTipoMovimiento: 1, //  "Préstamo"
         fechaMovimiento: formData.fechaPrestamo,
         fechaEstimadaDevolucion: formData.fechaEstimadaDevolucion,

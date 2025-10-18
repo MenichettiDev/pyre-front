@@ -34,7 +34,6 @@
 
                   <!-- Selección de Herramienta -->
                   <div class="col-md-6">
-                    <label class="form-label">Herramienta *</label>
                     <app-cbo-herramientas [isLabel]="'Seleccionar Herramienta'" [isId]="'herramientaSelect'"
                       [idDisponibilidad]=1 [objectErrors]="prestamoForm.get('herramientaId')?.errors"
                       [isTouched]="!!(prestamoForm.get('herramientaId')?.touched)" formControlName="herramientaId"
@@ -44,8 +43,7 @@
 
                   <!-- Responsable -->
                   <div class="col-md-6">
-                    <label class="form-label">Responsable *</label>
-                    <app-cbo-usuario [isLabel]="'Seleccionar Usuario'" [isId]="'responsableSelect'"
+                    <app-cbo-usuario [isLabel]="'Seleccionar Responsable'" [isId]="'responsableSelect'"
                       [showOnlyActive]="true" [objectErrors]="prestamoForm.get('responsableId')?.errors"
                       [isTouched]="!!(prestamoForm.get('responsableId')?.touched)" formControlName="responsableId"
                       (usuarioSelected)="onUsuarioSelected($event)">

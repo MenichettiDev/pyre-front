@@ -9,7 +9,8 @@ export interface MovimientoDto {
 
 export interface CreateMovimientoDto {
   idHerramienta: number;
-  idUsuario: number;
+  idUsuarioGenera: number;
+  idUsuarioResponsable: number;
   idTipoMovimiento: number;
   fechaMovimiento: string;
   fechaEstimadaDevolucion?: string;
