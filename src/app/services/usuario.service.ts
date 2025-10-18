@@ -27,7 +27,7 @@ export class UsuarioService {
     page: number = 1,
     pageSize: number = 10,
     filters?: { legajo?: string; estado?: boolean; nombre?: string; apellido?: string; rol?: number }
-  ): Observable<{ data: any[]; total: number }> {
+  ): Observable<{ data: any[]; total: number; pagination?: any }> {
     let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
 
     // Añadir filtros opcionales si fueron provistos
@@ -67,48 +67,52 @@ export class UsuarioService {
         // Intenta leer header 'X-Total-Count' o 'x-total-count'
         const totalHeader = resp.headers.get('X-Total-Count') ?? resp.headers.get('x-total-count');
 
-        // Casos comunes de shape del backend:
-        // 1) { data: [ ... ], total: N }
-        // 2) { data: { data: [ ... ], totalRecords: N, ... } }
-        // 3) array simple [ ... ]
         let dataArray: any[] = [];
         let total = 0;
+        let pagination = null;
 
+        // 1. Verificar si la respuesta tiene la estructura estándar de la API con data.data
+        if (body.data && typeof body.data === 'object' && !Array.isArray(body.data) && body.data.data) {
+          const apiData = body.data;
+          dataArray = Array.isArray(apiData.data) ? apiData.data : [];
+
+          // Extraer metadata de paginación
+          pagination = {
+            page: apiData.page ?? 1,
+            pageSize: apiData.pageSize ?? dataArray.length,
+            totalRecords: apiData.totalRecords ?? dataArray.length,
+            totalPages: apiData.totalPages ?? 1,
+            hasNextPage: apiData.hasNextPage ?? false,
+            hasPreviousPage: apiData.hasPreviousPage ?? false
+          };
+
+          total = apiData.totalRecords ?? dataArray.length;
+        }
+        // 2. Verificar si es un array directo
+        else if (Array.isArray(body)) {
+          dataArray = body;
+          total = dataArray.length;
+        }
+        // 3. Verificar si tiene data como array
+        else if (body.data && Array.isArray(body.data)) {
+          dataArray = body.data;
+          total = body.total ?? dataArray.length;
+        }
+        // 4. Fallback para otros formatos
+        else {
+          dataArray = [];
+          total = 0;
+        }
+
+        // Respetar el totalHeader si existe
         if (totalHeader) {
           total = Number(totalHeader);
         }
 
-        if (body && Array.isArray(body)) {
-          dataArray = body as any[];
-          if (!total) total = dataArray.length;
-        } else if (body && body.data) {
-          // body.data may be array or an object that contains data and pagination
-          if (Array.isArray(body.data)) {
-            dataArray = body.data;
-            if (!total) total = body.total ?? dataArray.length;
-          } else if (body.data.data && Array.isArray(body.data.data)) {
-            // Nested: body.data.data
-            dataArray = body.data.data;
-            if (!total) total = body.data.totalRecords ?? body.data.total ?? dataArray.length;
-          } else {
-            // fallback: try items
-            dataArray = body.data.items ?? [];
-            if (!total) total = body.data.total ?? dataArray.length;
-          }
-        } else if (body.items && Array.isArray(body.items)) {
-          dataArray = body.items;
-          if (!total) total = body.total ?? dataArray.length;
-        } else {
-          // fallback: try body as array-like
-          dataArray = [];
-          if (!total) total = 0;
-        }
-
-        return { data: dataArray, total };
+        return { data: dataArray, total, pagination };
       }),
       catchError(err => {
         console.error('[UserService] getUsers error', err);
-        // Fallback: devolver lista vacía y total 0 para que la UI no rompa
         return of({ data: [], total: 0 });
       })
     );
@@ -135,7 +139,15 @@ export class UsuarioService {
   }
 
   updateUser(id: number, user: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, user);
+    try {
+      const validBody = JSON.stringify(user);
+      return this.http.put(`${this.baseUrl}/${id}`, JSON.parse(validBody), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (error) {
+      console.error('El cuerpo de la solicitud no es un JSON válido:', error);
+      throw new Error('El cuerpo de la solicitud no es un JSON válido.');
+    }
   }
 
   validateCredentials(legajo: string, password: string): Observable<any> {

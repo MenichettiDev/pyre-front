@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
-import { UserModalComponent } from '../modal-editar-usuario/modal-editar-usuario.component';
+import { UserModalComponent } from '../modal-usuario/modal-usuario.component'; // ✅ Ruta corregida
 import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../../shared/enums/roles';
+import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 interface UserRaw {
   [key: string]: any;
@@ -22,6 +24,33 @@ interface DisplayUser {
   activo?: boolean;
 }
 
+// Nueva interfaz para la paginación
+interface PaginationData {
+  totalRecords?: number;
+  totalPages?: number;
+  currentPage?: number;
+  page?: number;
+  pageSize?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
+
+// Nueva interfaz para la respuesta
+interface ApiResponse {
+  data: any[] | {
+    data: any[];
+    pagination?: PaginationData;
+    page?: number;
+    pageSize?: number;
+    totalRecords?: number;
+    totalPages?: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+  };
+  total?: number;
+  pagination?: PaginationData;
+}
+
 @Component({
   selector: 'app-user-list',
   standalone: true,
@@ -30,9 +59,10 @@ interface DisplayUser {
     FormsModule,
     RouterModule,
     UserModalComponent,
+    PaginatorComponent,
+    NgbTooltipModule
   ],
   templateUrl: './visor-usuario.component.html',
-  styleUrls: ['./visor-usuario.component.css'],
   providers: [UsuarioService]
 })
 export class UserListComponent implements OnInit {
@@ -41,7 +71,7 @@ export class UserListComponent implements OnInit {
   columns: string[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
   rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 6;
   loading = false;
   totalItems = 0;
   totalPages = 0;
@@ -87,83 +117,110 @@ export class UserListComponent implements OnInit {
     }
 
     this.userService.getUsers(this.currentPage, this.pageSize, filters).subscribe({
-      next: (resp) => {
+      next: (resp: ApiResponse) => {
         console.debug('[UserList] fetchUsers - filtros enviados:', filters);
         console.debug('[UserList] fetchUsers - resp crudo del servicio:', resp);
 
-        const rawList: UserRaw[] = Array.isArray(resp.data) ? resp.data : (resp.data || []);
-        this.totalItems = resp.total ?? rawList.length ?? 0;
+        // Obtener la lista de usuarios
+        let rawList: UserRaw[] = [];
+        if (Array.isArray(resp.data)) {
+          rawList = resp.data;
+          this.users = resp.data.map(u => this.mapUserToDisplayFormat(u));
+        } else if (resp.data && typeof resp.data === 'object') {
+          if (Array.isArray(resp.data.data)) {
+            rawList = resp.data.data;
+            this.users = resp.data.data.map(u => this.mapUserToDisplayFormat(u));
+          }
+        }
 
-        // Normalizar cada usuario a campos en español esperados por la UI
-        this.users = rawList.map((u: UserRaw) => {
-          const estadoRaw = u['activo'] ?? u['estado'] ?? u['active'] ?? u['isActive'] ?? null;
-          const activo = typeof estadoRaw === 'boolean' ? estadoRaw : (estadoRaw === 'Activo' || estadoRaw === true);
-          const estado = activo ? 'Activo' : 'Inactivo';
+        // Extraer información de paginación de la respuesta
+        let paginationInfo: PaginationData | null = null;
 
-          return {
-            id: u['id'] ?? u['userId'] ?? null,
-            legajo: u['legajo'] ?? u['legajo_number'] ?? u['legajoNumber'] ?? u['id'] ?? '',
-            nombre: u['nombre'] ?? u['firstName'] ?? u['name'] ?? '',
-            apellido: u['apellido'] ?? u['lastName'] ?? u['surname'] ?? '',
-            rol: u['rol'] ?? u['role'] ?? u['rolNombre'] ?? u['roleName'] ?? '',
-            estado: estado,
-            activo: activo
-          } as DisplayUser;
-        });
+        // Caso 1: Cuando la respuesta tiene el formato esperado con pagination
+        if (resp.pagination) {
+          paginationInfo = resp.pagination;
+        }
+        // Caso 2: Cuando la pagination está dentro de data
+        else if (resp.data && typeof resp.data === 'object' && !Array.isArray(resp.data)) {
+          const dataObj = resp.data as {
+            pagination?: PaginationData;
+            page?: number;
+            pageSize?: number;
+            totalRecords?: number;
+            totalPages?: number;
+            hasNextPage?: boolean;
+            hasPreviousPage?: boolean;
+          };
 
-        this.applyFilters();
-        this.calculatePagination();
+          if (dataObj.pagination) {
+            paginationInfo = dataObj.pagination;
+          } else if (dataObj.page !== undefined) {
+            paginationInfo = {
+              page: dataObj.page,
+              pageSize: dataObj.pageSize,
+              totalRecords: dataObj.totalRecords,
+              totalPages: dataObj.totalPages,
+              hasNextPage: dataObj.hasNextPage,
+              hasPreviousPage: dataObj.hasPreviousPage
+            };
+          }
+        }
+
+        // Actualizar propiedades de paginación
+        if (paginationInfo) {
+          this.totalItems = paginationInfo.totalRecords || resp.total || this.users.length;
+          this.totalPages = paginationInfo.totalPages || Math.ceil(this.totalItems / this.pageSize);
+
+          // Si el backend devuelve la página actual, sincronizamos nuestro estado
+          if (paginationInfo.page) {
+            this.currentPage = paginationInfo.page;
+          }
+
+          console.log('[UserList] Paginación actualizada:', {
+            currentPage: this.currentPage,
+            totalPages: this.totalPages,
+            totalItems: this.totalItems,
+            pageSize: this.pageSize
+          });
+        } else {
+          // Fallback a los valores calculados anteriormente
+          this.totalItems = resp.total || this.users.length;
+          this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+        }
+
+        // Eliminar el filtrado local y depender únicamente de los datos del backend
+        this.filteredUsers = this.users;
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error fetching users:', error);
-        this.showSnack('Error al cargar los usuarios. Por favor, inténtelo de nuevo.');
+        this.alertService.error('Error al cargar los usuarios. Por favor, inténtelo de nuevo.');
         this.loading = false;
       }
     });
   }
 
-  applyFilters(): void {
-    this.filteredUsers = this.users.filter(user => {
-      const matchesLegajo = !this.filtroLegajo ||
-        user.legajo?.toString().toLowerCase().includes(this.filtroLegajo.toLowerCase());
+  // Helper para mapear usuario a formato de visualización
+  private mapUserToDisplayFormat(u: UserRaw): DisplayUser {
+    const estadoRaw = u['activo'] ?? u['estado'] ?? u['active'] ?? u['isActive'] ?? null;
+    const activo = typeof estadoRaw === 'boolean' ? estadoRaw : (estadoRaw === 'Activo' || estadoRaw === true);
+    const estado = activo ? 'Activo' : 'Inactivo';
 
-      const matchesNombre = !this.filtroNombre ||
-        user.nombre?.toLowerCase().includes(this.filtroNombre.toLowerCase());
-
-      const matchesApellido = !this.filtroApellido ||
-        user.apellido?.toLowerCase().includes(this.filtroApellido.toLowerCase());
-
-      const matchesRol = !this.filtroRol ||
-        this.getRolNameById(Number(this.filtroRol))?.toLowerCase().includes(user.rol?.toLowerCase() || '');
-
-      const matchesEstado = !this.filtroEstado ||
-        (this.filtroEstado === 'activo' && user.activo) ||
-        (this.filtroEstado === 'inactivo' && !user.activo);
-
-      return matchesLegajo && matchesNombre && matchesApellido && matchesRol && matchesEstado;
-    });
-
-    this.totalItems = this.filteredUsers.length;
-    this.calculatePagination();
+    return {
+      id: u['id'] ?? u['userId'] ?? null,
+      legajo: u['legajo'] ?? u['legajo_number'] ?? u['legajoNumber'] ?? u['id'] ?? '',
+      nombre: u['nombre'] ?? u['firstName'] ?? u['name'] ?? '',
+      apellido: u['apellido'] ?? u['lastName'] ?? u['surname'] ?? '',
+      rol: u['rol'] ?? u['role'] ?? u['rolNombre'] ?? u['roleName'] ?? '',
+      estado: estado,
+      activo: activo
+    } as DisplayUser;
   }
 
-  calculatePagination(): void {
-    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-    if (this.currentPage > this.totalPages && this.totalPages > 0) {
-      this.currentPage = this.totalPages;
-    }
-  }
-
-  getPaginatedUsers(): DisplayUser[] {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    return this.filteredUsers.slice(startIndex, endIndex);
-  }
-
+  // Reimplementación de métodos faltantes que se usan en la plantilla
   onSearch(): void {
     this.currentPage = 1;
-    this.applyFilters();
+    this.fetchUsers();
   }
 
   onResetFilters(): void {
@@ -173,7 +230,30 @@ export class UserListComponent implements OnInit {
     this.filtroRol = '';
     this.filtroEstado = '';
     this.currentPage = 1;
-    this.applyFilters();
+    this.fetchUsers();
+  }
+
+  getPaginatedUsers(): DisplayUser[] {
+    return this.filteredUsers;
+  }
+
+  calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  // Los filtros ahora solo se aplicarán localmente cuando no usamos la paginación del backend
+  applyFilters(): void {
+    // Si hay filtros activos, hacer una nueva petición al backend en lugar de filtrar localmente
+    if (this.hasActiveFilters()) {
+      this.fetchUsers();
+      return;
+    }
+
+    // Si no hay filtros, simplemente mostramos los datos tal cual están
+    this.filteredUsers = [...this.users];
   }
 
   hasActiveFilters(): boolean {
@@ -278,10 +358,10 @@ export class UserListComponent implements OnInit {
       .then((result: any) => {
         if (result && result.isConfirmed) {
           this.userService.toggleActivo(Number(id)).subscribe({
-            next: (resp) => {
+            next: () => {
+              item.activo = targetState; // Actualizar el estado localmente
               const pastText = targetState ? 'activado' : 'desactivado';
               this.alertService.success(`Usuario ${pastText} correctamente.`, '¡Hecho!');
-              this.fetchUsers();
             },
             error: (err) => {
               console.error('[UserList] toggleUserActive error', err);
@@ -339,6 +419,18 @@ export class UserListComponent implements OnInit {
         }
       });
     }
+  }
+
+  // Actualizado para usar la paginación del backend
+  onPageEvent(event: { pageIndex: number, pageSize: number }): void {
+    // pageIndex es 0-based, pero backend espera 1-based
+    this.currentPage = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+
+    console.log(`[UserList] Cambio de página: pageIndex=${event.pageIndex}, pageSize=${event.pageSize}`);
+    console.log(`[UserList] Solicitando página ${this.currentPage} con ${this.pageSize} registros por página`);
+
+    this.fetchUsers();
   }
 
   private showSnack(message: string): void {
