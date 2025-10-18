@@ -115,6 +115,6 @@
   </div>
 
   <!-- Instancia del modal de usuario -->
-  <app-user-modal *ngIf="showUserModal" [initialData]="modalInitialData" [mode]="modalMode"
-    (submit)="onModalSubmit($event)" (close)="closeUserModal()"></app-user-modal>
+  <app-usuarios-modal *ngIf="showUserModal" [initialData]="modalInitialData" [mode]="modalMode"
+    (submit)="onModalSubmit($event)" (close)="closeUserModal()"></app-usuarios-modal>
 </div>

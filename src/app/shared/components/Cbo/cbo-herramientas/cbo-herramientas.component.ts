@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, forwardRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subscription, switchMap, of, catchError } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription, switchMap, of, catchError, map } from 'rxjs';
 import { HerramientaService } from '../../../../services/herramienta.service';
 
 export interface HerramientaOption {
@@ -130,6 +130,23 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
       );
   }
 
+  // Método para cargar herramientas sin filtro
+  loadAllHerramientas() {
+    // Aquí está la corrección: pasar un objeto vacío o una cadena vacía como filtro
+    return this.herramientaService.getTools(1, 10, { search: '' })
+      .pipe(
+        map((response: { data: any[], total: number }) => {
+          // Extraer los datos según la estructura de respuesta
+          const rawData = response.data || [];
+          return this.mapHerramientasToOptions(rawData);
+        }),
+        catchError(error => {
+          console.error('Error cargando herramientas:', error);
+          return of([]);
+        })
+      );
+  }
+
   private searchHerramientas(searchTerm: string) {
     this.isLoading = true;
     return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad)
@@ -140,10 +157,10 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
           const herramientas = this.mapHerramientasToOptions(filteredList);
           this.isLoading = false;
-          return of(herramientas);
+          return herramientas;
         }),
         catchError(error => {
-          console.error('Error searching herramientas:', error);
+          console.error('Error buscando herramientas:', error);
           this.isLoading = false;
           return of([]);
         })
