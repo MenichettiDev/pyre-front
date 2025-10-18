@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
+import { UsuariosModalComponent } from '../modal-usuario/modal-usuario.component';
 import { Router } from '@angular/router';
-import { UserModalComponent } from '../modal-usuario/modal-usuario.component'; // ✅ Ruta corregida
 import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
@@ -58,18 +58,17 @@ interface ApiResponse {
     CommonModule,
     FormsModule,
     RouterModule,
-    UserModalComponent,
     PaginatorComponent,
-    NgbTooltipModule
+    NgbTooltipModule,
+    UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
   providers: [UsuarioService]
 })
-export class UserListComponent implements OnInit {
+export class VisorUsuariosComponent implements OnInit {
   users: DisplayUser[] = [];
   filteredUsers: DisplayUser[] = [];
   columns: string[] = ['legajo', 'nombre', 'apellido', 'rol', 'estado'];
-  rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
   pageSize = 6;
   loading = false;

@@ -2,11 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HerramientasModalComponent } from '../modal-herramienta/modal-herramienta.component';
 import { HerramientaService } from '../../../services/herramienta.service';
-import { HerramientasModalComponent } from '../herramienta-modal/herramientas-modal.component';
 import { AlertaService } from '../../../services/alerta.service';
+import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
-interface HerramientaDto {
+interface HerramientasRaw {
+  [key: string]: any;
+}
+
+interface DisplayHerramienta {
   id?: number;
   idHerramienta?: number;
   codigo?: string;
@@ -22,25 +28,53 @@ interface HerramientaDto {
   estado?: string;
 }
 
+// Nueva interfaz para la paginación
+interface PaginationData {
+  totalRecords?: number;
+  totalPages?: number;
+  currentPage?: number;
+  page?: number;
+  pageSize?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
+
+// Nueva interfaz para la respuesta
+interface ApiResponse {
+  data: any[] | {
+    data: any[];
+    pagination?: PaginationData;
+    page?: number;
+    pageSize?: number;
+    totalRecords?: number;
+    totalPages?: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+  };
+  total?: number;
+  pagination?: PaginationData;
+}
+
 @Component({
-  selector: 'app-herramientas-list',
+  selector: 'app-visor-herramientas',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     RouterModule,
-    HerramientasModalComponent
+    HerramientasModalComponent,
+    PaginatorComponent,
+    NgbTooltipModule
   ],
   templateUrl: './visor-herramientas.component.html',
-  styleUrls: ['./visor-herramientas.component.css']
+  providers: [HerramientaService, AlertaService],
 })
 export class VisorHerramientasComponent implements OnInit {
-  herramientas: HerramientaDto[] = [];
-  filteredHerramientas: HerramientaDto[] = [];
+  herramientas: DisplayHerramienta[] = [];
+  filteredHerramientas: DisplayHerramienta[] = [];
   columns: string[] = ['codigo', 'nombre', 'marca', 'estadoFisico', 'disponibilidad'];
-  rowsPerPageOptions: number[] = [5, 10, 20, 40];
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 6;
   loading = false;
   totalItems = 0;
   totalPages = 0;
@@ -54,10 +88,12 @@ export class VisorHerramientasComponent implements OnInit {
   filtroMarca: string = '';
   filtroEstado: string = '';
 
+  // Modal control
   showToolModal = false;
   modalInitialData: any = null;
   modalMode: 'create' | 'edit' = 'create';
 
+  // Constructor con inyección de servicios
   constructor(private srvHerramienta: HerramientaService, private srvAlerta: AlertaService) { }
 
   ngOnInit(): void {
@@ -66,65 +102,120 @@ export class VisorHerramientasComponent implements OnInit {
 
   fetchHerramientas(): void {
     this.loading = true;
+    console.log(`[HerramientasList] fetchHerramientas page=${this.currentPage} size=${this.pageSize}`);
 
-    // Construir término de búsqueda simple
-    let search = '';
-    if (this.filtroCodigo?.trim()) search += this.filtroCodigo.trim();
-    if (this.filtroNombre?.trim()) search += (search ? ' ' : '') + this.filtroNombre.trim();
+    // Construir objeto de filtros para enviar al servicio
+    const filters: any = {};
+    if (this.filtroCodigo?.trim()) filters.codigo = this.filtroCodigo.trim();
+    if (this.filtroNombre?.trim()) filters.nombre = this.filtroNombre.trim();
+    if (this.filtroMarca?.trim()) filters.marca = this.filtroMarca.trim();
 
-    this.srvHerramienta.getTools(this.currentPage, this.pageSize, search).subscribe({
-      next: (response) => {
-        const rawList = response.data ?? [];
-        this.totalItems = response.total ?? rawList.length ?? 0;
+    // Convertir estado de string a boolean para el backend
+    if (this.filtroEstado) {
+      filters.estado = this.filtroEstado === 'activo';
+    }
 
-        // Normalizar datos
-        this.herramientas = rawList.map((tool: any) => ({
-          id: tool.id ?? tool.idHerramienta,
-          idHerramienta: tool.idHerramienta ?? tool.id,
-          codigo: tool.codigo ?? '',
-          nombre: tool.nombre ?? '',
-          marca: tool.marca ?? '',
-          tipo: tool.tipo ?? '',
-          estadoFisico: tool.estadoFisico ?? '',
-          disponibilidad: tool.estadoDisponibilidad ?? tool.disponibilidad ?? '',
-          ubicacion: tool.ubicacion ?? '',
-          planta: tool.planta ?? '',
-          activo: tool.activo ?? true,
-          estado: tool.estado ?? (tool.activo ? 'Activo' : 'Inactivo')
-        }));
+    console.debug('[HerramientasList] Enviando filtros:', filters);
 
-        this.applyFilters();
-        this.calculatePagination();
+    this.srvHerramienta.getTools(this.currentPage, this.pageSize, filters).subscribe({
+      next: (resp: any) => {
+        console.debug('[HerramientasList] fetchHerramientas - respuesta:', resp);
+
+        // Extraer datos del array
+        let herramientasData = [];
+
+        if (Array.isArray(resp.data)) {
+          herramientasData = resp.data;
+        } else if (resp.data && Array.isArray(resp.data.data)) {
+          herramientasData = resp.data.data;
+        }
+
+        // Mapear los datos al formato de visualización
+        this.herramientas = herramientasData.map((h: any) => this.mapHerramientaToDisplayFormat(h));
+
+        // Actualizar información de paginación
+        this.totalItems = resp.total || herramientasData.length;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+
+        // Usar datos directamente sin filtrado adicional
+        this.filteredHerramientas = this.herramientas;
         this.loading = false;
+
+        console.log('[HerramientasList] Herramientas cargadas:', this.herramientas.length);
+        console.log('[HerramientasList] Paginación:', {
+          total: this.totalItems,
+          pages: this.totalPages,
+          current: this.currentPage
+        });
       },
-      error: (error) => {
-        console.error('Error fetching herramientas:', error);
-        this.showSnack('Error al cargar las herramientas. Por favor, inténtelo de nuevo.');
+      error: (error: any) => {
+        console.error('Error al cargar herramientas:', error);
+        this.srvAlerta.error('Error al cargar las herramientas. Por favor, inténtelo de nuevo.');
         this.loading = false;
       }
     });
   }
 
-  applyFilters(): void {
-    this.filteredHerramientas = this.herramientas.filter(herramienta => {
-      const matchesCodigo = !this.filtroCodigo ||
-        herramienta.codigo?.toLowerCase().includes(this.filtroCodigo.toLowerCase());
+  // Helper para mapear herramienta a formato de visualización
+  private mapHerramientaToDisplayFormat(h: HerramientasRaw): DisplayHerramienta {
+    const estadoRaw = h['activo'] ?? h['estado'] ?? h['active'] ?? h['isActive'] ?? null;
+    const activo = typeof estadoRaw === 'boolean' ? estadoRaw : (estadoRaw === 'Activo' || estadoRaw === true);
+    const estado = activo ? 'Activo' : 'Inactivo';
 
-      const matchesNombre = !this.filtroNombre ||
-        herramienta.nombre?.toLowerCase().includes(this.filtroNombre.toLowerCase());
+    // Mapeo para normalizar los valores de disponibilidad
+    let disponibilidad = h['estadoDisponibilidad'] ?? h['disponibilidad'] ?? '';
 
-      const matchesMarca = !this.filtroMarca ||
-        herramienta.marca?.toLowerCase().includes(this.filtroMarca.toLowerCase());
+    // Normalizar disponibilidad según los valores correctos
+    if (disponibilidad) {
+      if (typeof disponibilidad === 'string') {
+        if (disponibilidad.toLowerCase().includes('prest')) disponibilidad = 'Prestada';
+        else if (disponibilidad.toLowerCase().includes('manten')) disponibilidad = 'Mantenimiento';
+        else if (disponibilidad.toLowerCase().includes('extra')) disponibilidad = 'Extraviada';
+        else if (disponibilidad.toLowerCase().includes('disp')) disponibilidad = 'Disponible';
+      } else if (typeof disponibilidad === 'number') {
+        const dispMap: { [key: number]: string } = {
+          1: 'Disponible',
+          2: 'Prestada',
+          3: 'Mantenimiento',
+          4: 'Extraviada'
+        };
+        disponibilidad = dispMap[disponibilidad] || 'Disponible';
+      }
+    }
 
-      const matchesEstado = !this.filtroEstado ||
-        (this.filtroEstado === 'activo' && herramienta.activo) ||
-        (this.filtroEstado === 'inactivo' && !herramienta.activo);
+    return {
+      id: h['id'] ?? h['idHerramienta'] ?? null,
+      idHerramienta: h['idHerramienta'] ?? h['id'] ?? null,
+      codigo: h['codigo'] ?? '',
+      nombre: h['nombreHerramienta'] ?? h['nombre'] ?? '', // Primero buscar nombreHerramienta
+      marca: h['marca'] ?? '',
+      tipo: h['tipo'] ?? '',
+      estadoFisico: h['estadoFisico'] ?? '',
+      disponibilidad: disponibilidad,
+      ubicacion: h['ubicacion'] ?? h['ubicacionFisica'] ?? '', // Añadir ubicacionFisica como fallback
+      planta: h['nombrePlanta'] ?? h['planta'] ?? '',
+      activo: activo,
+      estado: estado
+    } as DisplayHerramienta;
+  }
 
-      return matchesCodigo && matchesNombre && matchesMarca && matchesEstado;
-    });
+  // Reimplementación de métodos para que coincidan con los de visor-usuario
+  onSearch(): void {
+    this.currentPage = 1;
+    this.fetchHerramientas();
+  }
 
-    this.totalItems = this.filteredHerramientas.length;
-    this.calculatePagination();
+  onResetFilters(): void {
+    this.filtroCodigo = '';
+    this.filtroNombre = '';
+    this.filtroMarca = '';
+    this.filtroEstado = '';
+    this.currentPage = 1;
+    this.fetchHerramientas();
+  }
+
+  getPaginatedHerramientas(): DisplayHerramienta[] {
+    return this.filteredHerramientas;
   }
 
   calculatePagination(): void {
@@ -134,24 +225,16 @@ export class VisorHerramientasComponent implements OnInit {
     }
   }
 
-  getPaginatedHerramientas(): HerramientaDto[] {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    return this.filteredHerramientas.slice(startIndex, endIndex);
-  }
+  // Los filtros ahora solo se aplicarán localmente cuando no usamos la paginación del backend
+  applyFilters(): void {
+    // Si hay filtros activos, hacer una nueva petición al backend en lugar de filtrar localmente
+    if (this.hasActiveFilters()) {
+      this.fetchHerramientas();
+      return;
+    }
 
-  onSearch(): void {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onResetFilters(): void {
-    this.filtroCodigo = '';
-    this.filtroNombre = '';
-    this.filtroMarca = '';
-    this.filtroEstado = '';
-    this.currentPage = 1;
-    this.applyFilters();
+    // Si no hay filtros, simplemente mostramos los datos tal cual están
+    this.filteredHerramientas = [...this.herramientas];
   }
 
   hasActiveFilters(): boolean {
@@ -194,7 +277,7 @@ export class VisorHerramientasComponent implements OnInit {
     this.showToolModal = true;
   }
 
-  editTool(item: HerramientaDto): void {
+  editTool(item: DisplayHerramienta): void {
     const id = item?.id ?? item?.idHerramienta ?? null;
     if (id == null) return;
 
@@ -204,15 +287,44 @@ export class VisorHerramientasComponent implements OnInit {
 
     this.srvHerramienta.getToolById(Number(id)).subscribe({
       next: (resp: any) => {
-        this.modalInitialData = resp?.data ?? resp ?? null;
+        console.debug('[HerramientasList] Datos de herramienta recibidos:', resp);
+        // Extraer los datos de la respuesta según su estructura
+        const toolData = resp?.data ?? resp ?? null;
+
+        // Si no hay datos o están vacíos, usar el item directamente
+        if (!toolData) {
+          console.warn('[HerramientasList] No se recibieron datos, usando item actual');
+          this.modalInitialData = item;
+          return;
+        }
+
+        // Normalizar el objeto para asegurar que tenga todas las propiedades necesarias
+        const normalizedData = {
+          ...toolData,
+          // Asegurar que nombreHerramienta/nombre estén presentes
+          nombreHerramienta: toolData.nombreHerramienta || toolData.nombre || item.nombre,
+          nombre: toolData.nombre || toolData.nombreHerramienta || item.nombre,
+          // Asegurar que disponibilidad/estadoDisponibilidad estén presentes
+          disponibilidad: toolData.disponibilidad || toolData.estadoDisponibilidad || item.disponibilidad,
+          estadoDisponibilidad: toolData.estadoDisponibilidad || toolData.disponibilidad || item.disponibilidad,
+          // Asegurar que estadoFisico esté presente
+          estadoFisico: toolData.estadoFisico || item.estadoFisico || 'Bueno',
+          // Asegurar que id/idHerramienta estén presentes
+          id: toolData.id || toolData.idHerramienta || item.id,
+          idHerramienta: toolData.idHerramienta || toolData.id || item.idHerramienta
+        };
+
+        this.modalInitialData = normalizedData;
+        console.debug('[HerramientasList] Datos normalizados para el modal:', normalizedData);
       },
       error: (err: any) => {
+        console.error('[HerramientasList] error loading tool by id', err);
         this.modalInitialData = item;
       }
     });
   }
 
-  deleteTool(item: HerramientaDto): void {
+  deleteTool(item: DisplayHerramienta): void {
     const id = item?.id ?? item?.idHerramienta ?? null;
     if (id == null) return;
 
@@ -224,7 +336,8 @@ export class VisorHerramientasComponent implements OnInit {
               this.srvAlerta.success('La herramienta ha sido eliminada correctamente.', '¡Eliminada!');
               this.fetchHerramientas();
             },
-            error: () => {
+            error: (err: any) => {
+              console.error('[HerramientasList] deleteTool error', err);
               this.srvAlerta.error('No se pudo eliminar la herramienta. Intente nuevamente.');
             }
           });
@@ -232,7 +345,7 @@ export class VisorHerramientasComponent implements OnInit {
       });
   }
 
-  toggleToolActive(item: HerramientaDto): void {
+  toggleToolActive(item: DisplayHerramienta): void {
     const id = item?.id ?? item?.idHerramienta ?? null;
     if (id == null) return;
 
@@ -243,14 +356,31 @@ export class VisorHerramientasComponent implements OnInit {
     this.srvAlerta.confirm(`¿Estás seguro de que deseas ${actionText} esta herramienta?`, `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Herramienta`)
       .then((result: any) => {
         if (result && result.isConfirmed) {
-          this.srvHerramienta.toggleActivo(Number(id)).subscribe({
-            next: () => {
-              const pastText = targetState ? 'activada' : 'desactivada';
-              this.srvAlerta.success(`Herramienta ${pastText} correctamente.`, '¡Hecho!');
-              this.fetchHerramientas();
+          // Usar el nuevo método updateToolStatus en lugar de toggleActivo
+          this.srvHerramienta.updateToolStatus(Number(id), targetState).subscribe({
+            next: (response) => {
+              // Verificar si la respuesta contiene información sobre el éxito de la operación
+              const success = response?.success !== false;
+
+              if (success) {
+                item.activo = targetState; // Actualizar el estado localmente
+                const pastText = targetState ? 'activada' : 'desactivada';
+                this.srvAlerta.success(`Herramienta ${pastText} correctamente.`, '¡Hecho!');
+              } else {
+                // Si el backend indica que hubo un error
+                const errorMsg = response?.message || 'No se pudo cambiar el estado de la herramienta.';
+                this.srvAlerta.error(errorMsg);
+              }
             },
-            error: () => {
-              this.srvAlerta.error('No se pudo cambiar el estado de la herramienta. Intente nuevamente.');
+            error: (err: any) => {
+              console.error('[HerramientasList] updateToolStatus error:', err);
+
+              // Extraer mensaje de error del backend si está disponible
+              const errorMsg = err?.error?.message ||
+                               err?.message ||
+                               'No se pudo cambiar el estado de la herramienta. Intente nuevamente.';
+
+              this.srvAlerta.error(errorMsg);
             }
           });
         }
@@ -270,31 +400,51 @@ export class VisorHerramientasComponent implements OnInit {
     onError: (error: any) => void;
   }) {
     if (event.mode === 'create') {
+      // Para creación, mantener el formato original
       this.srvHerramienta.createTool(event.data).subscribe({
         next: () => {
           this.fetchHerramientas();
           event.onSuccess();
         },
         error: (err) => {
+          console.error('[HerramientasList] createTool error:', err);
           event.onError(err);
         }
       });
     } else {
+      // Para actualización, extraer el ID correctamente
       const id = Number(this.modalInitialData?.id ?? this.modalInitialData?.idHerramienta ?? null);
       if (!id) {
+        console.warn('[HerramientasList] update requested but no id available');
         event.onError({ message: 'No se pudo identificar la herramienta a actualizar' });
         return;
       }
+
+      console.debug('[HerramientasList] Datos a enviar para actualización:', { id, data: event.data });
+
+      // Llamar al servicio con ID y datos
       this.srvHerramienta.updateTool(id, event.data).subscribe({
         next: () => {
           this.fetchHerramientas();
           event.onSuccess();
         },
         error: (err) => {
+          console.error('[HerramientasList] updateTool error:', err);
           event.onError(err);
         }
       });
     }
+  }
+
+  onPageEvent(event: { pageIndex: number, pageSize: number }): void {
+    // pageIndex es 0-based, pero backend espera 1-based
+    this.currentPage = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+
+    console.log(`[HerramientasList] Cambio de página: pageIndex=${event.pageIndex}, pageSize=${event.pageSize}`);
+    console.log(`[HerramientasList] Solicitando página ${this.currentPage} con ${this.pageSize} registros por página`);
+
+    this.fetchHerramientas();
   }
 
   private showSnack(message: string): void {

@@ -20,6 +20,12 @@
       </div>
       <form *ngIf="mode === 'create' || initialData" [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form" autocomplete="off">
         <div class="compact-form-grid">
+          <!-- Mostrar error general si existe -->
+          <div *ngIf="serverErrors['general']" class="error-general">
+            {{ serverErrors['general'] }}
+          </div>
+
+          <!-- Campos del formulario -->
           <div class="field-group" [class.has-error]="form.get('Codigo')?.invalid && form.get('Codigo')?.touched">
             <label class="required">Código</label>
             <input formControlName="Codigo" placeholder="Código único" [class.error]="form.get('Codigo')?.invalid && form.get('Codigo')?.touched" />
@@ -45,9 +51,11 @@
             <label class="required">Estado Físico</label>
             <select formControlName="EstadoFisico" [class.error]="form.get('EstadoFisico')?.invalid && form.get('EstadoFisico')?.touched">
               <option value="" disabled>Selecciona estado</option>
+              <option value="Excelente">Excelente</option>
               <option value="Bueno">Bueno</option>
               <option value="Regular">Regular</option>
               <option value="Malo">Malo</option>
+              <option value="Muy malo">Muy malo</option>
             </select>
             <div *ngIf="form.get('EstadoFisico')?.invalid && form.get('EstadoFisico')?.touched" class="error-text">Selecciona estado físico</div>
           </div>
@@ -56,8 +64,9 @@
             <select formControlName="Disponibilidad" [class.error]="form.get('Disponibilidad')?.invalid && form.get('Disponibilidad')?.touched">
               <option value="" disabled>Selecciona disponibilidad</option>
               <option value="Disponible">Disponible</option>
-              <option value="No disponible">No disponible</option>
-              <option value="En mantenimiento">En mantenimiento</option>
+              <option value="Prestada">Prestada</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+              <option value="Extraviada">Extraviada</option>
             </select>
             <div *ngIf="form.get('Disponibilidad')?.invalid && form.get('Disponibilidad')?.touched" class="error-text">Selecciona disponibilidad</div>
           </div>

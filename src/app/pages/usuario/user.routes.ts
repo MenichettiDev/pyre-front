@@ -10,7 +10,7 @@ export const userRoutes: Routes = [
   {
     path: 'list',
     loadComponent: () =>
-      import('./visor-usuario/visor-usuario.component').then((m) => m.UserListComponent),
+      import('./visor-usuario/visor-usuario.component').then((m) => m.VisorUsuariosComponent),
     data: {
       requiredAccess: [
         Roles.SuperAdmin,
