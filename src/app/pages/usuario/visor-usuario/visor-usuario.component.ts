@@ -63,6 +63,7 @@ interface ApiResponse {
     UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
+  styleUrls: ['../../../../styles/visor-style.css'],
   providers: [UsuarioService]
 })
 export class VisorUsuariosComponent implements OnInit {

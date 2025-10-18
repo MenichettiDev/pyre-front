@@ -67,6 +67,7 @@ interface ApiResponse {
     NgbTooltipModule
   ],
   templateUrl: './visor-herramientas.component.html',
+  styleUrls: ['../../../../styles/visor-style.css'],
   providers: [HerramientaService, AlertaService],
 })
 export class VisorHerramientasComponent implements OnInit {

@@ -20,7 +20,7 @@ import { MovimientoService, CreateMovimientoDto } from '../../../services/movimi
     ConfirmModalComponent,
   ],
   templateUrl: './prestamo.component.html',
-  styleUrl: './prestamo.component.css'
+  styleUrls: ['../../../../styles/visor-style.css'], // Enlace al archivo de estilos
 })
 export class PrestamoComponent implements OnInit {
 
