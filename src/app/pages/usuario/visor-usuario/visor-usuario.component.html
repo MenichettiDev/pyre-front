@@ -8,9 +8,7 @@
   </div>
 </div>
 
-<div class="user-list-container container-fluid page-shell mt-2"
-  style="overflow: hidden; height: auto; min-height: 0; max-height: none;">
-
+<div class="user-list-container container-fluid page-shell mt-2">
   <div class="pyre-table-shell">
     <!-- Filter bar -->
     <div class="pyre-filter-bar">
@@ -79,22 +77,20 @@
             <td>{{ user.rol }}</td>
             <td>
               <div class="estado-toggle">
-                <label class="toggle-switch" [attr.aria-label]="user.activo ? 'Desactivar usuario' : 'Activar usuario'"
-                  (click)="toggleUserActive(user)">
-                  <input type="checkbox" [checked]="user.activo" (click)="$event.preventDefault()" />
-                  <span class="toggle-slider" [class.active]="user.activo"></span>
+                <label class="toggle-switch" [ngbTooltip]="user.activo ? 'Activo' : 'Inactivo'" placement="top" container="body">
+                  <input type="checkbox" [checked]="user.activo" (change)="toggleUserActive(user)" />
+                  <span class="toggle-slider modern" [class.active]="user.activo"></span>
                 </label>
-                <span class="status-text" [class.status-activo]="user.activo" [class.status-inactivo]="!user.activo">
-                  {{ user.activo ? 'Activo' : 'Inactivo' }}
-                </span>
               </div>
             </td>
             <td>
               <div class="action-buttons">
-                <button type="button" class="btn-icon btn-edit" (click)="editUser(user)" title="Ver / Editar">
-                  <i class="pi pi-user-edit"></i>
+                <button type="button" class="btn-icon btn-edit" (click)="editUser(user)"
+                    ngbTooltip="Ver/Editar usuario" placement="top" container="body">
+                  <i class="pi pi-eye"></i>
                 </button>
-                <button type="button" class="btn-icon btn-delete" (click)="deleteUser(user)" title="Eliminar">
+                <button type="button" class="btn-icon btn-delete" (click)="deleteUser(user)"
+                    ngbTooltip="Eliminar usuario" placement="top" container="body">
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
@@ -107,48 +103,18 @@
       </table>
     </div>
 
-    <!-- Custom pagination -->
-    <div *ngIf="!loading && totalItems > 0" class="pagination-container">
-      <div class="pagination-info">
-        <span>Mostrando {{ (currentPage - 1) * pageSize + 1 }} a
-          {{ Math.min(currentPage * pageSize, totalItems) }} de {{ totalItems }} registros</span>
-      </div>
-      <div class="pagination-controls">
-        <div class="page-size-selector">
-          <label>Registros por página:</label>
-          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-            <option *ngFor="let size of rowsPerPageOptions" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-        <div class="page-buttons">
-          <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(1)">
-            <i class="pi pi-angle-double-left"></i>
-          </button>
-          <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
-            <i class="pi pi-angle-left"></i>
-          </button>
-          <button *ngFor="let page of getVisiblePages()" type="button" class="page-btn"
-            [class.active]="page === currentPage" (click)="onPageChange(page)">
-            {{ page }}
-          </button>
-          <button type="button" class="page-btn" [disabled]="currentPage === totalPages"
-            (click)="onPageChange(currentPage + 1)">
-            <i class="pi pi-angle-right"></i>
-          </button>
-          <button type="button" class="page-btn" [disabled]="currentPage === totalPages"
-            (click)="onPageChange(totalPages)">
-            <i class="pi pi-angle-double-right"></i>
-          </button>
-        </div>
-      </div>
+    <!-- Reemplazar el paginador personalizado con el componente app-paginator -->
+    <div *ngIf="!loading && totalItems > 0" class="paginator-container">
+      <app-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage - 1"
+        (pageChange)="onPageEvent($event)">
+      </app-paginator>
     </div>
   </div>
 
   <!-- Instancia del modal de usuario -->
   <app-user-modal *ngIf="showUserModal" [initialData]="modalInitialData" [mode]="modalMode"
     (submit)="onModalSubmit($event)" (close)="closeUserModal()"></app-user-modal>
-
-  <!-- Modal de detalles eliminado: usar el modal de editar/visualizar en su lugar -->
-
-  <!-- Confirm modal removed: using SweetAlert2 via AlertService.confirm -->
 </div>
