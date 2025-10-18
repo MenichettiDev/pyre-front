@@ -1,0 +1,196 @@
+/* Import generic combo styles */
+@import '../cbo.component.css';
+
+/* Specific styles for tipo movimiento combo */
+.option-nombre {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text, #374151);
+}
+
+.dropdown-option.selected .option-nombre {
+    color: var(--color-white, #ffffff);
+}
+
+.option-descripcion {
+    color: var(--color-text-secondary, #6b7280);
+    font-style: italic;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+.dropdown-option.selected .option-descripcion {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.option-status-inactive {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--color-warning, #f59e0b);
+    color: var(--color-white, #ffffff);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-option.selected .option-status-inactive {
+    background: rgba(245, 158, 11, 0.8);
+    color: var(--color-white, #ffffff);
+}
+
+/* Tipo movimiento specific option content layout */
+.option-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.option-details {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 4px;
+}
+
+/* Movement type icons for common operations */
+.option-nombre[title*="Préstamo"]::before,
+.option-nombre:contains("Préstamo")::before {
+    content: "📤";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Devolución"]::before,
+.option-nombre:contains("Devolución")::before {
+    content: "📥";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Mantenimiento"]::before,
+.option-nombre:contains("Mantenimiento")::before {
+    content: "🔧";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Reparación"]::before,
+.option-nombre:contains("Reparación")::before {
+    content: "🛠️";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Transferencia"]::before,
+.option-nombre:contains("Transferencia")::before {
+    content: "🔄";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Baja"]::before,
+.option-nombre:contains("Baja")::before {
+    content: "❌";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Inventario"]::before,
+.option-nombre:contains("Inventario")::before {
+    content: "📋";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Reserva"]::before,
+.option-nombre:contains("Reserva")::before {
+    content: "🔒";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Calibración"]::before,
+.option-nombre:contains("Calibración")::before {
+    content: "⚙️";
+    margin-right: 6px;
+}
+
+.option-nombre[title*="Pérdida"]::before,
+.option-nombre:contains("Pérdida")::before {
+    content: "⚠️";
+    margin-right: 6px;
+}
+
+/* Color coding for movement types */
+.dropdown-option:has(.option-nombre:contains("Préstamo")) {
+    border-left: 3px solid #10b981;
+}
+
+.dropdown-option:has(.option-nombre:contains("Devolución")) {
+    border-left: 3px solid #3b82f6;
+}
+
+.dropdown-option:has(.option-nombre:contains("Mantenimiento")) {
+    border-left: 3px solid #f59e0b;
+}
+
+.dropdown-option:has(.option-nombre:contains("Reparación")) {
+    border-left: 3px solid #ef4444;
+}
+
+.dropdown-option:has(.option-nombre:contains("Transferencia")) {
+    border-left: 3px solid #8b5cf6;
+}
+
+.dropdown-option:has(.option-nombre:contains("Baja")) {
+    border-left: 3px solid #6b7280;
+}
+
+.dropdown-option:has(.option-nombre:contains("Inventario")) {
+    border-left: 3px solid #06b6d4;
+}
+
+.dropdown-option:has(.option-nombre:contains("Reserva")) {
+    border-left: 3px solid #f97316;
+}
+
+/* Responsive adjustments for tipo movimiento specific elements */
+@media (max-width: 768px) {
+    .option-nombre {
+        font-size: 0.9rem;
+    }
+
+    .option-descripcion {
+        font-size: 0.8rem;
+    }
+
+    .option-status-inactive {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .option-status-inactive {
+        border: 1px solid var(--color-border, #d1d5db);
+        font-weight: 700;
+    }
+
+    .option-descripcion {
+        font-weight: 500;
+    }
+
+    .dropdown-option {
+        border-left-width: 4px;
+    }
+}
+
+/* Focus ring for keyboard navigation */
+.dropdown-option:focus {
+    outline: 2px solid var(--color-primary, #3b82f6);
+    outline-offset: -2px;
+}
+
+/* Animation for movement type icons */
+.option-nombre::before {
+    transition: transform 0.2s ease;
+}
+
+.dropdown-option:hover .option-nombre::before {
+    transform: scale(1.1);
+}

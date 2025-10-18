@@ -15,7 +15,7 @@
                 autocomplete="off" />
 
             <!-- Clear button -->
-            <button *ngIf="selectedRol && !isDisabled && isOpen" type="button" class="clear-button"
+            <button *ngIf="selectedProveedor && !isDisabled && isOpen" type="button" class="clear-button"
                 (click)="clearSelection()" title="Limpiar selección">
                 <i class="pi pi-times"></i>
             </button>
@@ -35,29 +35,30 @@
         <div *ngIf="isOpen && !isDisabled" class="dropdown-panel">
             <div class="dropdown-content">
                 <!-- No results message -->
-                <div *ngIf="roles.length === 0 && !isLoading" class="no-results">
+                <div *ngIf="proveedores.length === 0 && !isLoading" class="no-results">
                     <span *ngIf="searchControl.value && searchControl.value.length < 2">
                         Ingrese al menos 2 caracteres para buscar
                     </span>
                     <span *ngIf="searchControl.value && searchControl.value.length >= 2">
-                        No se encontraron roles
+                        No se encontraron proveedores
                     </span>
                     <span *ngIf="!searchControl.value">
-                        No hay roles disponibles
+                        No hay proveedores disponibles
                     </span>
                 </div>
 
                 <!-- Options list -->
-                <div *ngFor="let rol of roles; trackBy: trackByRol" class="dropdown-option"
-                    [class.selected]="selectedRol?.id === rol.id" (click)="onOptionClick(rol)">
+                <div *ngFor="let proveedor of proveedores; trackBy: trackByProveedor" class="dropdown-option"
+                    [class.selected]="selectedProveedor?.id === proveedor.id" (click)="onOptionClick(proveedor)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-codigo">{{ rol.codigo || 'S/C' }}</span>
-                            <span class="option-nombre">{{ rol.nombre }}</span>
-                            <span *ngIf="!rol.activo" class="option-status-inactive">Inactivo</span>
+                            <span class="option-codigo">{{ proveedor.codigo || 'S/C' }}</span>
+                            <span class="option-razon-social">{{ proveedor.razonSocial }}</span>
+                            <span *ngIf="!proveedor.activo" class="option-status-inactive">Inactivo</span>
                         </div>
-                        <div class="option-details" *ngIf="rol.descripcion && rol.descripcion !== rol.nombre">
-                            <span class="option-descripcion">{{ rol.descripcion }}</span>
+                        <div class="option-details">
+                            <span *ngIf="proveedor.cuit" class="option-cuit">CUIT: {{ proveedor.cuit }}</span>
+                            <span *ngIf="proveedor.email" class="option-email">{{ proveedor.email }}</span>
                         </div>
                     </div>
                 </div>

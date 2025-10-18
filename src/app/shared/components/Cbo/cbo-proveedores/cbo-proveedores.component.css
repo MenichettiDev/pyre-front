@@ -1,0 +1,179 @@
+/* Import generic combo styles */
+@import '../cbo.component.css';
+
+/* Specific styles for proveedores combo */
+.option-codigo {
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--color-primary, #3b82f6);
+    font-size: 0.9rem;
+    min-width: 60px;
+}
+
+.dropdown-option.selected .option-codigo {
+    color: var(--color-white, #ffffff);
+}
+
+.option-razon-social {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text, #374151);
+}
+
+.dropdown-option.selected .option-razon-social {
+    color: var(--color-white, #ffffff);
+}
+
+.option-status-inactive {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--color-warning, #f59e0b);
+    color: var(--color-white, #ffffff);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-option.selected .option-status-inactive {
+    background: rgba(245, 158, 11, 0.8);
+    color: var(--color-white, #ffffff);
+}
+
+.option-cuit {
+    color: var(--color-text-secondary, #6b7280);
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dropdown-option.selected .option-cuit {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.option-email {
+    color: var(--color-text-secondary, #6b7280);
+    font-style: italic;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+}
+
+.dropdown-option.selected .option-email {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Proveedor specific option content layout */
+.option-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.option-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+/* Business type indicators */
+.option-razon-social[title*="S.A."]::after,
+.option-razon-social:contains("S.A.")::after {
+    content: "🏢";
+    margin-left: 6px;
+    font-size: 0.8rem;
+}
+
+.option-razon-social[title*="S.R.L."]::after,
+.option-razon-social:contains("S.R.L.")::after {
+    content: "🏪";
+    margin-left: 6px;
+    font-size: 0.8rem;
+}
+
+.option-razon-social[title*="Monotributo"]::after,
+.option-razon-social:contains("Monotributo")::after {
+    content: "👤";
+    margin-left: 6px;
+    font-size: 0.8rem;
+}
+
+/* Email icon indicator */
+.option-email::before {
+    content: "📧";
+    margin-right: 4px;
+    font-size: 0.7rem;
+}
+
+/* CUIT formatting */
+.option-cuit::before {
+    content: "🆔";
+    margin-right: 4px;
+    font-size: 0.7rem;
+}
+
+/* Responsive adjustments for proveedor specific elements */
+@media (max-width: 768px) {
+    .option-codigo {
+        font-size: 0.85rem;
+        min-width: 50px;
+    }
+
+    .option-razon-social {
+        font-size: 0.9rem;
+    }
+
+    .option-cuit,
+    .option-email {
+        font-size: 0.75rem;
+    }
+
+    .option-email {
+        max-width: 150px;
+    }
+
+    .option-status-inactive {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+
+    .option-details {
+        gap: 8px;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .option-status-inactive {
+        border: 1px solid var(--color-border, #d1d5db);
+        font-weight: 700;
+    }
+
+    .option-cuit,
+    .option-email {
+        font-weight: 500;
+    }
+
+    .option-codigo {
+        font-weight: 700;
+    }
+}
+
+/* Focus ring for keyboard navigation */
+.dropdown-option:focus {
+    outline: 2px solid var(--color-primary, #3b82f6);
+    outline-offset: -2px;
+}
+
+/* Hover states */
+.dropdown-option:hover .option-email {
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
+}
