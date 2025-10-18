@@ -90,16 +90,6 @@
                     </app-cbo-obra>
                   </div>
 
-                  <!-- Prioridad -->
-                  <div class="col-md-6">
-                    <label class="form-label">Prioridad</label>
-                    <select class="form-select" formControlName="prioridad">
-                      <option value="baja">Baja</option>
-                      <option value="normal">Normal</option>
-                      <option value="alta">Alta</option>
-                      <option value="urgente">Urgente</option>
-                    </select>
-                  </div>
 
                   <!-- Observaciones -->
                   <div class="col-12">
@@ -112,11 +102,13 @@
 
                 <!-- Botones de acción -->
                 <div class="d-flex gap-2 mt-4">
-                  <button type="submit" class="btn btn-success" [disabled]="prestamoForm.invalid">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Registrar Préstamo
+                  <button type="submit" class="btn btn-success" [disabled]="prestamoForm.invalid || isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status"
+                      aria-hidden="true"></span>
+                    <i *ngIf="!isLoading" class="bi bi-check-circle me-1"></i>
+                    {{ isLoading ? 'Registrando...' : 'Registrar Préstamo' }}
                   </button>
-                  <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">
+                  <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" [disabled]="isLoading">
                     <i class="bi bi-arrow-clockwise me-1"></i>
                     Limpiar Formulario
                   </button>
@@ -258,4 +250,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Confirmation Modal -->
+  <app-modal-confirm [visible]="showModal" [title]="modalTitle" [message]="modalMessage" (confirm)="onModalConfirm()"
+    (cancel)="onModalCancel()">
+  </app-modal-confirm>
 </div>

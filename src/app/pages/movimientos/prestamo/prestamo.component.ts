@@ -5,6 +5,8 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { CboUsuarioComponent, UsuarioOption } from "../../../shared/components/Cbo/cbo-usuario/cbo-usuario.component";
 import { CboHerramientasComponent, HerramientaOption } from '../../../shared/components/Cbo/cbo-herramientas/cbo-herramientas.component';
 import { CboObraComponent, ObraOption } from '../../../shared/components/Cbo/cbo-obra/cbo-obra.component';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { MovimientoService, CreateMovimientoDto } from '../../../services/movimiento.service';
 
 @Component({
   selector: 'app-prestamo',
@@ -14,7 +16,8 @@ import { CboObraComponent, ObraOption } from '../../../shared/components/Cbo/cbo
     ReactiveFormsModule,
     CboHerramientasComponent,
     CboUsuarioComponent,
-    CboObraComponent
+    CboObraComponent,
+    ConfirmModalComponent,
   ],
   templateUrl: './prestamo.component.html',
   styleUrl: './prestamo.component.css'
@@ -26,7 +29,17 @@ export class PrestamoComponent implements OnInit {
   selectedUsuarioInfo: UsuarioOption | null = null;
   selectedObraInfo: ObraOption | null = null;
 
-  constructor(private fb: FormBuilder) { }
+  // Modal properties
+  showModal = false;
+  modalTitle = '';
+  modalMessage = '';
+  isSuccess = false;
+  isLoading = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private movimientoService: MovimientoService
+  ) { }
 
   ngOnInit(): void {
     this.buildForm();
@@ -38,7 +51,7 @@ export class PrestamoComponent implements OnInit {
       responsableId: ['', Validators.required],
       fechaPrestamo: [this.getTodayDate(), Validators.required],
       fechaEstimadaDevolucion: ['', Validators.required],
-      obraId: [''],
+      obraId: ['', Validators.required],
       prioridad: ['normal'],
       observaciones: ['']
     });
@@ -77,13 +90,55 @@ export class PrestamoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.prestamoForm.valid) {
+      this.isLoading = true;
+
       const formData = this.prestamoForm.value;
-      console.log('Datos del préstamo:', formData);
-      // TODO: Implement loan creation logic
+
+      const prestamoData: CreateMovimientoDto = {
+        idHerramienta: formData.herramientaId,
+        idUsuario: formData.responsableId,
+        idTipoMovimiento: 1, //  "Préstamo"
+        fechaMovimiento: formData.fechaPrestamo,
+        fechaEstimadaDevolucion: formData.fechaEstimadaDevolucion,
+        estadoHerramientaAlDevolver: formData.estadoFisicoHerramientaId,
+        idObra: formData.obraId,
+        idProveedor: formData.proveedorId || null,
+        observaciones: formData.observaciones || undefined,
+      };
+
+
+      this.movimientoService.registrarPrestamo(prestamoData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.isSuccess = true;
+          this.modalTitle = 'Préstamo Registrado';
+          this.modalMessage = `El préstamo de la herramienta ${this.selectedHerramientaInfo?.codigo} ha sido registrado exitosamente.`;
+          this.showModal = true;
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.isSuccess = false;
+          this.modalTitle = 'Error al Registrar Préstamo';
+          this.modalMessage = error.error?.message || 'Ha ocurrido un error inesperado. Por favor, intente nuevamente.';
+          this.showModal = true;
+          console.error('Error al crear préstamo:', error);
+        }
+      });
     } else {
       this.prestamoForm.markAllAsTouched();
       console.log('Formulario inválido');
     }
+  }
+
+  onModalConfirm(): void {
+    this.showModal = false;
+    if (this.isSuccess) {
+      this.resetForm();
+    }
+  }
+
+  onModalCancel(): void {
+    this.showModal = false;
   }
 
   resetForm(): void {
