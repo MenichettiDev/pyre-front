@@ -22,7 +22,6 @@
    ======================================== */
 .prestamo-container {
   animation: fadeInUp 0.4s ease-out;
-  height: calc(100vh - 70px); /* Reducir aún más la altura del contenedor */
 }
 
 @keyframes fadeInUp {
@@ -252,12 +251,13 @@
    ======================================== */
 .form-actions {
   background-color: var(--color-light);
-  padding: 1rem;
+  padding: 4rem 1rem 1rem 1rem; /* Aumentar aún más padding derecho para mover botones más a la derecha */
   margin: 0 -1.5rem -1.5rem;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
   margin-top: auto;
-  margin-bottom: 1.5rem; /* Ajuste para acercar los botones al borde inferior */
+  text-align: right; /* MÁS A LA DERECHA */
 }
+
 
 .btn-lg {
   padding: 0.75rem 1.5rem;
