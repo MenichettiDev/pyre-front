@@ -9,6 +9,7 @@ import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { PageTitleService } from '../../../services/page-title.service';
 
 interface UserRaw {
   [key: string]: any;
@@ -63,6 +64,7 @@ interface ApiResponse {
     UsuariosModalComponent
   ],
   templateUrl: './visor-usuario.component.html',
+  styleUrls: ['../../../../styles/visor-style.css'],
   providers: [UsuarioService]
 })
 export class VisorUsuariosComponent implements OnInit {
@@ -93,9 +95,10 @@ export class VisorUsuariosComponent implements OnInit {
   // Exponer el enum de roles al template
   readonly Roles = Roles;
 
-  constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService) { }
+  constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService, private pageTitleService: PageTitleService) { }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Usuarios');
     this.fetchUsers();
   }
 

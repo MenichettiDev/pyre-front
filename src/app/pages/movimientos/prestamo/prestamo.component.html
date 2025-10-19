@@ -1,256 +1,389 @@
-<div class="container-fluid mt-4">
-  <div class="row">
-    <div class="col-12">
-      <!-- Header de la página -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-1">
-            <i class="bi bi-box-arrow-in-right text-success me-2"></i>
-            Registrar Préstamo
-          </h2>
-          <p class="text-muted mb-0">Registro de préstamo de herramientas a operarios</p>
+<!-- COMPONENTE PRÉSTAMO MEJORADO - HTML -->
+<div class="container-fluid mt-4 prestamo-container">
+  <div class="row g-4 d-flex align-items-stretch">
+    <!-- FORMULARIO PRINCIPAL -->
+    <div class="col-lg-8">
+      <div class="card prestamo-form-card shadow-sm h-100">
+        <!-- Header del formulario con indicador de progreso -->
+        <div class="card-header border-0 bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-clipboard-check text-primary me-2"></i>
+              Datos del Préstamo
+            </h5>
+            <div class="form-progress">
+              <span class="badge bg-light text-dark border">
+                <i class="bi bi-check-circle-fill text-success me-1" *ngIf="prestamoForm.valid"></i>
+                <i class="bi bi-hourglass-split text-warning me-1" *ngIf="!prestamoForm.valid"></i>
+                {{ getFormCompletionPercentage() }}% completado
+              </span>
+            </div>
+          </div>
+          <!-- Barra de progreso visual -->
+          <div class="progress mt-3" style="height: 4px;">
+            <div class="progress-bar bg-success transition-smooth"
+                 role="progressbar"
+                 [style.width.%]="getFormCompletionPercentage()"
+                 [attr.aria-valuenow]="getFormCompletionPercentage()"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+            </div>
+          </div>
         </div>
-        <div>
-          <button class="btn btn-outline-secondary me-2" routerLink="/movimientos">
-            <i class="bi bi-arrow-left me-1"></i>
-            Volver
-          </button>
+
+        <div class="card-body p-4 d-flex flex-column">
+          <form [formGroup]="prestamoForm" (ngSubmit)="onSubmit()" class="flex-grow-1">
+
+            <!-- SECCIÓN 1: Selección de Herramienta y Responsable -->
+            <div class="mb-4">
+              <h6 class="form-section-title">
+                <i class="bi bi-1-circle-fill text-primary me-2"></i>
+                Herramienta y Responsable
+              </h6>
+              <div class="row g-3">
+                <!-- Labels -->
+                <div class="col-md-6">
+                  <label class="form-label soft-label">
+                    Seleccionar Herramienta
+                    <span class="text-danger">*</span>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label soft-label">
+                    Seleccionar Responsable
+                    <span class="text-danger">*</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row g-3">
+                <!-- Herramienta -->
+                <div class="col-md-6">
+                  <div class="form-field-wrapper"
+                       [class.has-value]="prestamoForm.get('herramientaId')?.value"
+                       [class.has-error]="prestamoForm.get('herramientaId')?.invalid && prestamoForm.get('herramientaId')?.touched">
+                    <app-cbo-herramientas
+                      [isId]="'herramientaSelect'"
+                      [idDisponibilidad]=1
+                      [objectErrors]="prestamoForm.get('herramientaId')?.errors"
+                      [isTouched]="!!(prestamoForm.get('herramientaId')?.touched)"
+                      formControlName="herramientaId"
+                      (herramientaSelected)="onHerramientaSelected($event)">
+                    </app-cbo-herramientas>
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('herramientaId')?.valid">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Responsable -->
+                <div class="col-md-6">
+                  <div class="form-field-wrapper"
+                       [class.has-value]="prestamoForm.get('responsableId')?.value"
+                       [class.has-error]="prestamoForm.get('responsableId')?.invalid && prestamoForm.get('responsableId')?.touched">
+                    <app-cbo-usuario
+                      [isId]="'responsableSelect'"
+                      [showOnlyActive]="true"
+                      [objectErrors]="prestamoForm.get('responsableId')?.errors"
+                      [isTouched]="!!(prestamoForm.get('responsableId')?.touched)"
+                      formControlName="responsableId"
+                      (usuarioSelected)="onUsuarioSelected($event)">
+                    </app-cbo-usuario>
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('responsableId')?.valid">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="soft-divider">
+
+            <!-- SECCIÓN 2: Fechas -->
+            <div class="mb-4">
+              <h6 class="form-section-title">
+                <i class="bi bi-2-circle-fill text-primary me-2"></i>
+                Fechas del Préstamo
+              </h6>
+              <div class="row g-3">
+                <!-- Fecha de Préstamo -->
+                <div class="col-md-6">
+                  <label class="form-label soft-label">
+                    Fecha de Préstamo
+                    <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group input-group-modern">
+                    <span class="input-group-text bg-light border-end-0">
+                      <i class="bi bi-calendar3 text-primary"></i>
+                    </span>
+                    <input
+                      type="date"
+                      class="form-control border-start-0 ps-0"
+                      formControlName="fechaPrestamo"
+                      [class.is-invalid]="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched"
+                      [class.is-valid]="prestamoForm.get('fechaPrestamo')?.valid && prestamoForm.get('fechaPrestamo')?.touched">
+                    <span class="input-group-text bg-white border-start-0" *ngIf="prestamoForm.get('fechaPrestamo')?.valid">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </span>
+                  </div>
+                  <div class="invalid-feedback d-block"
+                       *ngIf="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    La fecha de préstamo es requerida
+                  </div>
+                </div>
+
+                <!-- Fecha Estimada de Devolución -->
+                <div class="col-md-6">
+                  <label class="form-label soft-label">
+                    Fecha Estimada Devolución
+                    <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group input-group-modern">
+                    <span class="input-group-text bg-light border-end-0">
+                      <i class="bi bi-calendar-check text-primary"></i>
+                    </span>
+                    <input
+                      type="date"
+                      class="form-control border-start-0 ps-0"
+                      formControlName="fechaEstimadaDevolucion"
+                      [class.is-invalid]="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched"
+                      [class.is-valid]="prestamoForm.get('fechaEstimadaDevolucion')?.valid && prestamoForm.get('fechaEstimadaDevolucion')?.touched">
+                    <span class="input-group-text bg-white border-start-0" *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.valid">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </span>
+                  </div>
+                  <div class="invalid-feedback d-block"
+                       *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    La fecha estimada de devolución es requerida
+                  </div>
+                  <!-- Alerta si la fecha es muy lejana -->
+                  <div class="form-text text-warning mt-2" *ngIf="isDaysExceeded()">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    El préstamo excede los 30 días recomendados
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="soft-divider">
+
+            <!-- SECCIÓN 3: Obra y Observaciones -->
+            <div class="mb-4">
+              <h6 class="form-section-title">
+                <i class="bi bi-3-circle-fill text-primary me-2"></i>
+                Información Adicional
+              </h6>
+              <div class="row g-3">
+                <!-- Obra/Proyecto -->
+                <div class="col-md-6">
+                  <div class="form-field-wrapper"
+                       [class.has-value]="prestamoForm.get('obraId')?.value">
+                    <app-cbo-obra
+                      [isLabel]="'Seleccionar Obra (Opcional)'"
+                      [isId]="'obraSelect'"
+                      [showOnlyActive]="true"
+                      [labelClass]="'soft-label'"
+                      formControlName="obraId"
+                      (obraSelected)="onObraSelected($event)">
+                    </app-cbo-obra>
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('obraId')?.value">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="col-12">
+                  <label class="form-label soft-label">
+                    Observaciones
+                  </label>
+                  <textarea
+                    class="form-control modern-textarea"
+                    rows="4"
+                    formControlName="observaciones"
+                    placeholder=""
+                    maxlength="500"
+                    (focus)="onTextareaFocus()"
+                    (blur)="onTextareaBlur()">
+                  </textarea>
+                  <div class="form-text text-end">
+                    {{ prestamoForm.get('observaciones')?.value?.length || 0 }} / 500 caracteres
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <div class="form-actions d-flex gap-3 mt-auto border-top justify-content-end">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="resetForm()"
+                [disabled]="isLoading">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                <span>Limpiar</span>
+              </button>
+              <button
+                type="submit"
+                class="btn btn-success d-flex align-items-center gap-2"
+                [disabled]="prestamoForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <i *ngIf="!isLoading" class="bi bi-check-circle-fill"></i>
+                <span>{{ isLoading ? 'Registrando...' : 'Registrar Préstamo' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL LATERAL DE INFORMACIÓN -->
+    <div class="col-lg-4">
+      <!-- Card de Estado de Herramienta -->
+      <div class="info-card card mb-3 shadow-sm"
+           [class.card-skeleton]="!selectedHerramientaInfo"
+           [class.card-filled]="selectedHerramientaInfo">
+        <div class="card-header bg-secondary text-white">
+          <h6 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-tools me-2"></i>
+            Estado de Herramienta
+          </h6>
+        </div>
+        <div class="card-body">
+          <!-- Estado sin selección -->
+          <div *ngIf="!selectedHerramientaInfo" class="text-center text-muted py-4">
+            <div class="empty-state-icon mb-3">
+              <i class="bi bi-tools" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <p class="mb-0 small">Seleccione una herramienta para ver su información</p>
+          </div>
+
+          <!-- Estado con herramienta seleccionada -->
+          <div *ngIf="selectedHerramientaInfo" class="info-content">
+            <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              <div>
+                <strong>{{ selectedHerramientaInfo.disponibilidad }}</strong>
+                <small class="d-block text-muted">Actualizado: Hoy</small>
+              </div>
+            </div>
+
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">
+                  <i class="bi bi-hash text-primary"></i> Código:
+                </span>
+                <span class="info-value">{{ selectedHerramientaInfo.codigo }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">
+                  <i class="bi bi-wrench text-primary"></i> Nombre:
+                </span>
+                <span class="info-value">{{ selectedHerramientaInfo.nombre }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">
+                  <i class="bi bi-tag text-primary"></i> Marca:
+                </span>
+                <span class="info-value">{{ selectedHerramientaInfo.marca }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <!-- Formulario de Préstamo -->
-        <div class="col-lg-8">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">
-                <i class="bi bi-clipboard-check me-2"></i>
-                Datos del Préstamo
-              </h5>
+      <!-- Card de Información del Responsable -->
+      <div class="info-card card mb-3 shadow-sm"
+           *ngIf="selectedUsuarioInfo"
+           @fadeIn>
+        <div class="card-header bg-gradient-info text-white">
+          <h6 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-person-badge me-2"></i>
+            Responsable
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-person-vcard text-info"></i> Legajo:
+              </span>
+              <span class="info-value">{{ selectedUsuarioInfo.legajo }}</span>
             </div>
-            <div class="card-body">
-              <form [formGroup]="prestamoForm" (ngSubmit)="onSubmit()">
-                <div class="row g-3">
-
-                  <!-- Selección de Herramienta -->
-                  <div class="col-md-6">
-                    <app-cbo-herramientas [isLabel]="'Seleccionar Herramienta'" [isId]="'herramientaSelect'"
-                      [idDisponibilidad]=1 [objectErrors]="prestamoForm.get('herramientaId')?.errors"
-                      [isTouched]="!!(prestamoForm.get('herramientaId')?.touched)" formControlName="herramientaId"
-                      (herramientaSelected)="onHerramientaSelected($event)">
-                    </app-cbo-herramientas>
-                  </div>
-
-                  <!-- Responsable -->
-                  <div class="col-md-6">
-                    <app-cbo-usuario [isLabel]="'Seleccionar Responsable'" [isId]="'responsableSelect'"
-                      [showOnlyActive]="true" [objectErrors]="prestamoForm.get('responsableId')?.errors"
-                      [isTouched]="!!(prestamoForm.get('responsableId')?.touched)" formControlName="responsableId"
-                      (usuarioSelected)="onUsuarioSelected($event)">
-                    </app-cbo-usuario>
-                  </div>
-
-                  <!-- Fecha de Préstamo -->
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha de Préstamo *</label>
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="bi bi-calendar"></i></span>
-                      <input type="date" class="form-control" formControlName="fechaPrestamo"
-                        [class.is-invalid]="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched">
-                    </div>
-                    <div
-                      *ngIf="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched"
-                      class="invalid-feedback">
-                      La fecha de préstamo es requerida
-                    </div>
-                  </div>
-
-                  <!-- Fecha Estimada de Devolución -->
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Estimada Devolución *</label>
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                      <input type="date" class="form-control" formControlName="fechaEstimadaDevolucion"
-                        [class.is-invalid]="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched">
-                    </div>
-                    <div
-                      *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched"
-                      class="invalid-feedback">
-                      La fecha estimada de devolución es requerida
-                    </div>
-                  </div>
-
-                  <!-- Obra/Proyecto -->
-                  <div class="col-md-6">
-                    <label class="form-label">Obra/Proyecto</label>
-                    <app-cbo-obra [isLabel]="'Seleccionar Obra'" [isId]="'obraSelect'" [showOnlyActive]="true"
-                      formControlName="obraId" (obraSelected)="onObraSelected($event)">
-                    </app-cbo-obra>
-                  </div>
-
-
-                  <!-- Observaciones -->
-                  <div class="col-12">
-                    <label class="form-label">Observaciones</label>
-                    <textarea class="form-control" rows="3" formControlName="observaciones"
-                      placeholder="Detalles adicionales del préstamo...">
-                    </textarea>
-                  </div>
-                </div>
-
-                <!-- Botones de acción -->
-                <div class="d-flex gap-2 mt-4">
-                  <button type="submit" class="btn btn-success" [disabled]="prestamoForm.invalid || isLoading">
-                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status"
-                      aria-hidden="true"></span>
-                    <i *ngIf="!isLoading" class="bi bi-check-circle me-1"></i>
-                    {{ isLoading ? 'Registrando...' : 'Registrar Préstamo' }}
-                  </button>
-                  <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" [disabled]="isLoading">
-                    <i class="bi bi-arrow-clockwise me-1"></i>
-                    Limpiar Formulario
-                  </button>
-                </div>
-              </form>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-person text-info"></i> Nombre:
+              </span>
+              <span class="info-value">{{ selectedUsuarioInfo.nombre }} {{ selectedUsuarioInfo.apellido }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-card-text text-info"></i> DNI:
+              </span>
+              <span class="info-value">{{ selectedUsuarioInfo.dni }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-shield-check text-info"></i> Rol:
+              </span>
+              <span class="badge bg-info">{{ selectedUsuarioInfo.rolNombre }}</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Panel de Información -->
-        <div class="col-lg-4">
-          <!-- Estado de la Herramienta -->
-          <div class="card mb-3">
-            <div class="card-header bg-light">
-              <h6 class="card-title mb-0">
-                <i class="bi bi-info-circle me-2"></i>
-                Estado de Herramienta
-              </h6>
+      <!-- Card de Información de la Obra -->
+      <div class="info-card card mb-3 shadow-sm"
+           *ngIf="selectedObraInfo"
+           @fadeIn>
+        <div class="card-header bg-gradient-warning text-dark">
+          <h6 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-building me-2"></i>
+            Obra Asignada
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-hash text-warning"></i> Código:
+              </span>
+              <span class="info-value">{{ selectedObraInfo.codigo || 'Sin código' }}</span>
             </div>
-            <div class="card-body">
-              <div *ngIf="selectedHerramientaInfo; else noHerramientaSelection">
-                <div class="d-flex align-items-center mb-2">
-                  <span class="badge bg-success me-2">{{ selectedHerramientaInfo.disponibilidad }}</span>
-                  <small class="text-muted">Actualizado: Hoy</small>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between mb-1">
-                  <small>Código:</small>
-                  <small><strong>{{ selectedHerramientaInfo.codigo }}</strong></small>
-                </div>
-                <div class="d-flex justify-content-between mb-1">
-                  <small>Nombre:</small>
-                  <small><strong>{{ selectedHerramientaInfo.nombre }}</strong></small>
-                </div>
-                <div class="d-flex justify-content-between mb-1">
-                  <small>Marca:</small>
-                  <small>{{ selectedHerramientaInfo.marca }}</small>
-                </div>
-              </div>
-              <ng-template #noHerramientaSelection>
-                <div class="text-center text-muted py-3">
-                  <i class="bi bi-tools" style="font-size: 2rem;"></i>
-                  <p class="mb-0 mt-2">Seleccione una herramienta para ver su información</p>
-                </div>
-              </ng-template>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-building text-warning"></i> Nombre:
+              </span>
+              <span class="info-value">{{ selectedObraInfo.nombreObra }}</span>
             </div>
-          </div>
-
-          <!-- Información del Responsable -->
-          <div class="card mb-3" *ngIf="selectedUsuarioInfo">
-            <div class="card-header bg-light">
-              <h6 class="card-title mb-0">
-                <i class="bi bi-person me-2"></i>
-                Información del Responsable
-              </h6>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-geo-alt text-warning"></i> Ubicación:
+              </span>
+              <span class="info-value">{{ selectedObraInfo.ubicacion || 'No especificada' }}</span>
             </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-1">
-                <small>Legajo:</small>
-                <small><strong>{{ selectedUsuarioInfo.legajo }}</strong></small>
-              </div>
-              <div class="d-flex justify-content-between mb-1">
-                <small>Nombre:</small>
-                <small><strong>{{ selectedUsuarioInfo.nombre }} {{ selectedUsuarioInfo.apellido }}</strong></small>
-              </div>
-              <div class="d-flex justify-content-between mb-1">
-                <small>DNI:</small>
-                <small>{{ selectedUsuarioInfo.dni }}</small>
-              </div>
-              <div class="d-flex justify-content-between">
-                <small>Rol:</small>
-                <small>{{ selectedUsuarioInfo.rolNombre }}</small>
-              </div>
-            </div>
-          </div>
-
-          <!-- Información de la Obra -->
-          <div class="card mb-3" *ngIf="selectedObraInfo">
-            <div class="card-header bg-light">
-              <h6 class="card-title mb-0">
-                <i class="bi bi-building me-2"></i>
-                Información de la Obra
-              </h6>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-1">
-                <small>Código:</small>
-                <small><strong>{{ selectedObraInfo.codigo || 'Sin código' }}</strong></small>
-              </div>
-              <div class="d-flex justify-content-between mb-1">
-                <small>Nombre:</small>
-                <small><strong>{{ selectedObraInfo.nombreObra }}</strong></small>
-              </div>
-              <div class="d-flex justify-content-between mb-1">
-                <small>Ubicación:</small>
-                <small>{{ selectedObraInfo.ubicacion || 'No especificada' }}</small>
-              </div>
-              <div class="d-flex justify-content-between">
-                <small>Fecha Inicio:</small>
-                <small>{{ selectedObraInfo.fechaInicio | date:'dd/MM/yyyy' }}</small>
-              </div>
-            </div>
-          </div>
-
-          <!-- Préstamos Recientes -->
-          <div class="card">
-            <div class="card-header bg-light">
-              <h6 class="card-title mb-0">
-                <i class="bi bi-clock-history me-2"></i>
-                Préstamos Recientes
-              </h6>
-            </div>
-            <div class="card-body p-2">
-              <div class="list-group list-group-flush">
-                <div class="list-group-item border-0 px-2 py-2">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                      <small class="text-primary fw-bold">H-002</small>
-                      <div class="small text-muted">Soldadora MIG/MAG</div>
-                      <div class="small text-muted">Juan Pérez</div>
-                    </div>
-                    <span class="badge bg-warning text-dark">En uso</span>
-                  </div>
-                </div>
-                <div class="list-group-item border-0 px-2 py-2">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                      <small class="text-primary fw-bold">H-004</small>
-                      <div class="small text-muted">Compresor de Aire</div>
-                      <div class="small text-muted">María González</div>
-                    </div>
-                    <span class="badge bg-success">Devuelto</span>
-                  </div>
-                </div>
-              </div>
+            <div class="info-item">
+              <span class="info-label">
+                <i class="bi bi-calendar-event text-warning"></i> Inicio:
+              </span>
+              <span class="info-value">{{ selectedObraInfo.fechaInicio | date:'dd/MM/yyyy' }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Confirmation Modal -->
-  <app-modal-confirm [visible]="showModal" [title]="modalTitle" [message]="modalMessage" (confirm)="onModalConfirm()"
-    (cancel)="onModalCancel()">
-  </app-modal-confirm>
 </div>
+
+<style>
+  .prestamo-form-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .form-actions {
+    margin-top: auto;
+  }
+</style>

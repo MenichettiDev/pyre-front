@@ -7,6 +7,7 @@ import { HerramientaService } from '../../../services/herramienta.service';
 import { AlertaService } from '../../../services/alerta.service';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { PageTitleService } from '../../../services/page-title.service';
 
 interface HerramientasRaw {
   [key: string]: any;
@@ -67,6 +68,7 @@ interface ApiResponse {
     NgbTooltipModule
   ],
   templateUrl: './visor-herramientas.component.html',
+  styleUrls: ['../../../../styles/visor-style.css'],
   providers: [HerramientaService, AlertaService],
 })
 export class VisorHerramientasComponent implements OnInit {
@@ -94,9 +96,10 @@ export class VisorHerramientasComponent implements OnInit {
   modalMode: 'create' | 'edit' = 'create';
 
   // Constructor con inyección de servicios
-  constructor(private srvHerramienta: HerramientaService, private srvAlerta: AlertaService) { }
+  constructor(private srvHerramienta: HerramientaService, private srvAlerta: AlertaService, private pageTitleService: PageTitleService) { }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Listado de Herramientas');
     this.fetchHerramientas();
   }
 

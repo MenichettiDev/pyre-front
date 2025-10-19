@@ -17,7 +17,7 @@ export class AlertaService {
   confirm(message: string, title: string = '¿Estás seguro?'): Promise<any> {
     return Swal.fire({
       title,
-      text: message,
+      html: message,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, confirmar',

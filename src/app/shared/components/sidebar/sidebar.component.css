@@ -17,7 +17,7 @@
     width: 100%;
     height: var(--topbar-height);        /* 🎯 ¡Altura estándar! */
     background: var(--white);            /* 🎯 ¡Blanco puro! */
-    z-index: 1001;
+    z-index: 1003;
     display: flex;
     align-items: center;
     padding: 0 1.5rem;
@@ -29,15 +29,13 @@
 .topbar-desktop {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
-    padding-left: 260px; /* Ajustado al nuevo ancho del sidebar */
 }
 
 .topbar-desktop .topbar-center {
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -209,17 +207,17 @@
     position: fixed;
     top: 0; /* Comenzar desde la parte superior, cubriendo parte del topbar */
     left: 0;
-    width: 260px; /* Reducido de 280px a 260px */
+    width: var(--sidebar-width);
     height: 100vh; /* Altura completa de la pantalla */
     background: linear-gradient(180deg, rgba(44, 44, 44, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%); /* Gradiente con transparencia */
     backdrop-filter: blur(10px); /* Efecto de desenfoque para mejorar la transparencia */
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 1002; /* Mayor que el topbar para estar por encima */
-    overflow-y: auto;
+    overflow-y: auto; /* Scroll solo en el sidebar */
     overflow-x: hidden;
     padding-top: 70px; /* Espacio para que el contenido no se oculte detrás del topbar */
-    padding-bottom: 120px; /* Espacio para el botón de logout en la parte inferior */
+    padding-bottom: 20px; /* Espacio reducido en la parte inferior */
 
     /* Aplicar Inter solo al menú y submenú del sidebar */
     .sidebar .sidebar-menu,
@@ -493,11 +491,11 @@
    ========================================================== */
 .main-content {
     /* Reservar espacio equivalente al ancho real del sidebar (260px) */
-    margin-left: 260px;
+    margin-left: var(--sidebar-width);
     /* Asegurar que la página entre en pantalla sin hacer scroll (reserva topbar) */
     min-height: calc(100vh - var(--topbar-height));
-    width: calc(100% - 260px);
-    max-width: calc(100% - 260px);
+    width: calc(100% - var(--sidebar-width));
+    max-width: calc(100% - var(--sidebar-width));
     overflow-x: hidden; /* Prevenir scroll horizontal */
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-sizing: border-box;
@@ -525,7 +523,7 @@
         top: 0; /* Comenzar desde arriba en móviles también */
         height: 100vh; /* Altura completa */
         padding-top: 70px; /* Espacio para el topbar */
-        padding-bottom: 120px; /* Espacio para el botón de logout */
+        padding-bottom: 20px; /* Espacio reducido */
     }
 
     .sidebar.visible {
@@ -546,7 +544,7 @@
         top: 0; /* Comenzar desde arriba */
         height: 100vh; /* Altura completa */
         padding-top: 60px; /* Espacio para topbar más pequeño en móviles */
-        padding-bottom: 120px; /* Espacio para el botón de logout */
+        padding-bottom: 20px; /* Espacio reducido */
     }
 
     .top-bar {

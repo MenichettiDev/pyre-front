@@ -1,9 +1,11 @@
-<div class="app-container" style="overflow: hidden;">
-    <div *ngIf="isLoggedIn">
-        <app-sidebar></app-sidebar>
-    </div>
+<div class="app-container">
+  <div *ngIf="isLoggedIn">
+    <app-sidebar></app-sidebar>
+  </div>
 
-    <div class="main-wrapper" [class.with-sidebar]="isLoggedIn && isSidebarVisible" style="overflow: hidden; height: auto; min-height: 0;">
-        <router-outlet></router-outlet>
-    </div>
+  <div class="main-wrapper"
+       [class.with-sidebar]="isLoggedIn && isSidebarVisible"
+       [class.logged-in]="isLoggedIn">
+    <router-outlet></router-outlet>
+  </div>
 </div>

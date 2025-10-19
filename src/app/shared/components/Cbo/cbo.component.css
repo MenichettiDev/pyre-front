@@ -18,6 +18,13 @@
     gap: 0.25rem;
 }
 
+.form-label.soft-label {
+    font-style: italic !important;
+    font-weight: 400 !important;
+    font-size: 0.85rem !important;
+    opacity: 0.8 !important;
+}
+
 .required-indicator {
     color: var(--color-error, #ef4444);
     font-weight: 700;

@@ -1,64 +1,99 @@
-<!-- Topbar Component -->
-<div class="top-bar" *ngIf="isLoggedIn">
-  <!-- Layout para Desktop -->
-  <div class="topbar-desktop" *ngIf="!isSmallScreen">
-    <div class="topbar-center">
-    </div>
+<!-- TOPBAR MEJORADO CON BREADCRUMBS Y TÍTULO DINÁMICO -->
+<nav class="topbar" [class.logged-in]="isLoggedIn && !isSmallScreen">
+  <div class="topbar-container">
 
-    <div class="topbar-right">
-      <div class="user-info">
-        <!-- Mostrar Legajo y tipo de perfil (role) y un icono de Perfil separado -->
-  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole">
-          <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
-          <span class="email-text legajo-text">{{ userLegajo || displayLegajo || '—' }}</span>
-          <!-- Icono del rol colocado antes del texto para mejor lectura -->
-          <span class="role-pill" *ngIf="userRole || displayRole">
-            <i class="bi bi-shield-lock role-icon" aria-hidden="true"></i>
-            <span class="role-text">{{ (displayRole || userRole) | titlecase }}</span>
-          </span>
-          <!-- Icono de perfil adicional eliminado para evitar redundancia; el icono circular abre el dropdown -->
-        </div>
-  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body">
-          <i class="bi bi-person-circle profile-icon"></i>
-        </span>
-        <!-- Dropdown de perfil -->
-        <div class="profile-dropdown" *ngIf="isPerfilModalVisible">
-          <ul>
-            <li (click)="navigateToHome(); isPerfilModalVisible=false"><i class="bi bi-person me-2"></i> Perfil</li>
-            <li (click)="confirmLogout()"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</li>
-          </ul>
+    <!-- Botón hamburguesa (móvil) -->
+    <button
+      *ngIf="isLoggedIn && isSmallScreen"
+      class="btn-hamburger"
+      (click)="toggleSidebar()"
+      aria-label="Toggle sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <!-- SECCIÓN DE TÍTULO CON BREADCRUMBS -->
+    <div class="topbar-title-section" [@titleChange]>
+      <!-- Breadcrumbs (si existen) -->
+      <nav *ngIf="hasBreadcrumbs && !isSmallScreen" class="breadcrumbs" aria-label="breadcrumb">
+        <ol class="breadcrumb-list">
+          <li
+            *ngFor="let crumb of breadcrumbs; let last = last"
+            class="breadcrumb-item"
+            [@breadcrumbSlide]>
+
+            <!-- Si tiene ruta, es clickeable -->
+            <a
+              *ngIf="crumb.route && !last"
+              [routerLink]="crumb.route"
+              class="breadcrumb-link">
+              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
+              {{ crumb.label }}
+            </a>
+
+            <!-- Último elemento o sin ruta -->
+            <span
+              *ngIf="!crumb.route || last"
+              class="breadcrumb-current"
+              [class.active]="last">
+              <i *ngIf="crumb.icon" [class]="'bi ' + crumb.icon + ' me-1'"></i>
+              {{ crumb.label }}
+            </span>
+
+            <!-- Separador -->
+            <i *ngIf="!last" class="bi bi-chevron-right breadcrumb-separator"></i>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Título Principal con Icono -->
+      <div class="page-title-container">
+        <div class="page-title-wrapper">
+          <!-- Icono de la página -->
+          <div *ngIf="pageIcon" class="page-icon" [class]="'text-' + pageColor">
+            <i [class]="'bi ' + pageIcon"></i>
+          </div>
+
+          <!-- Título y Subtítulo -->
+          <div class="page-title-content">
+            <h1 class="page-title">
+              {{ pageTitle }}
+
+              <!-- Badge opcional (ej: notificaciones) -->
+              <span
+                *ngIf="pageBadge"
+                class="badge ms-2"
+                [class]="'bg-' + pageBadge.color">
+                {{ pageBadge.text }}
+              </span>
+            </h1>
+
+            <!-- Subtítulo (descripción breve) -->
+            <p *ngIf="pageSubtitle && !isSmallScreen" class="page-subtitle">
+              {{ pageSubtitle }}
+            </p>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- SECCIÓN DE USUARIO (Derecha) -->
+    <div class="topbar-user-section" *ngIf="isLoggedIn">
+
+      <!-- Información del usuario (desktop) -->
+      <div class="user-info" *ngIf="!isSmallScreen">
+        <span class="user-pill" [ngbTooltip]="pillTooltip" placement="bottom">
+          <i class="bi bi-person-badge me-1"></i>
+          {{ displayLegajo || userLegajo }}
+        </span>
+        <span class="user-role-badge" *ngIf="displayRole">
+          {{ displayRole }}
+        </span>
+      </div>
+
+      <!-- Botón de logout (icono) -->
+      <button class="logout-icon-btn" (click)="confirmLogout()" [ngbTooltip]="'Cerrar Sesión'" aria-label="Cerrar sesión" *ngIf="!isSmallScreen">
+        <i class="bi bi-power"></i>
+      </button>
     </div>
   </div>
-
-  <!-- Layout para Mobile -->
-  <div class="topbar-mobile" *ngIf="isSmallScreen">
-    <div class="topbar-left">
-      <div class="logo-small">
-        <img src="assets/images/logos/logo.png" alt="Logo" (click)="navigateToHome()">
-      </div>
-      <div class="hamburger-menu" (click)="toggleSidebar()">
-        <i class="bi bi-list"></i>
-      </div>
-    </div>
-
-    <div class="topbar-center">
-      <h4 class="app-title">Sistema de Gestión</h4>
-    </div>
-
-    <div class="topbar-right">
-        <div class="user-info">
-  <div class="user-email-pill" *ngIf="userLegajo || displayLegajo || userRole || displayRole" [ngbTooltip]="pillTooltip" container="body">
-          <i class="bi bi-person-badge email-icon" aria-hidden="true"></i>
-          <span class="email-text legajo-text">{{ userLegajo || displayLegajo || '' }}</span>
-          <span class="role-text" *ngIf="userRole || displayRole">{{ (displayRole || userRole) | titlecase }}</span>
-          <!-- Icono de perfil adicional eliminado en mobile para evitar redundancia -->
-        </div>
-  <span class="profile-toggle" (click)="togglePerfilModal()" [ngbTooltip]="'Ver perfil y opciones'" container="body">
-          <i class="bi bi-person-circle profile-icon"></i>
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
+</nav>

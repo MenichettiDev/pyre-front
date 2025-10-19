@@ -66,6 +66,7 @@
 
   /* Layout */
   --topbar-height: 70px;
+  --topbar-bg: #ffffff;
   --border-radius: 4px;
   --border-radius-lg: 8px;
   --input-height: 45px;
@@ -113,7 +114,8 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevenir scroll en todas direcciones */
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir scroll vertical global */
 }
 
 body {
@@ -124,7 +126,8 @@ body {
   padding: 0;
   background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/assets/images/backgrounds/fondo.png') center/cover no-repeat;
   background-attachment: fixed;
-  overflow: auto; /* Permitir scroll solo cuando sea necesario */
+  overflow-y: auto; /* Permitir scroll vertical */
+  overflow-x: hidden;
 }
 
 /* Asegurar que el contenedor principal permita ver el fondo detrás */
@@ -132,8 +135,8 @@ body {
   background: transparent;
   /* Evitar scroll vertical innecesario */
   height: auto;
-  min-height: auto;
-  overflow: hidden;
+  min-height: 0;
+  overflow: visible; /* Permitir scroll si el contenido lo requiere */
 }
 
 /* Efecto 'blanch' para que el fondo se vea más claro/deslavado después del login
@@ -331,6 +334,7 @@ app-root, .app-container, .main-wrapper {
   font-size: 1.25rem; /* slightly larger than h4 */
   font-weight: 600;
   color: rgba(51, 51, 51, 0.75); /* color más suave que el texto principal */
+  margin-bottom: 1.25rem; /* margen inferior global para separación */
 }
 
 /* Contenedor principal para páginas con espacio adecuado para el topbar fijo */
@@ -576,8 +580,6 @@ a:hover {
   max-width: 100%;
   overflow-x: hidden;
 }
-
-
 
 /* Optional brand variant for PrimeNG tooltips */
 .p-tooltip.mi-tooltip {
