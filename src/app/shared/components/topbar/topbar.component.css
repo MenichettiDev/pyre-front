@@ -1,256 +1,509 @@
-/* Estilos para el componente Topbar */
-.top-bar {
-  background-color: var(--color-bg-alt, #f8f9fa);
-  border-bottom: 1px solid var(--color-border-light, #dee2e6);
-  padding: 0.5rem 1rem;
+/* ========================================
+   TOPBAR MEJORADO - ESTILOS MODERNOS
+   ======================================== */
+
+:root {
+  --topbar-height: 70px;
+  --topbar-bg: #ffffff;
+  --topbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --topbar-border: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --color-primary: #0d6efd;
+  --color-success: #198754;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-info: #0dcaf0;
+  --transition-speed: 0.3s;
+  --z-index-topbar: 1030;
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    --topbar-height: 60px;
+  }
+}
+
+/* ========================================
+   CONTENEDOR PRINCIPAL DEL TOPBAR
+   ======================================== */
+.topbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
-  min-width: 100%;
-  box-sizing: border-box;
-  height: 65px; /* Altura reducida */
+  height: var(--topbar-height);
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+  z-index: var(--z-index-topbar);
+  transition: all var(--transition-speed);
 }
 
-.topbar-desktop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; /* asegurar centrado vertical */
-  /* Usar la altura del contenedor padre para evitar inconsistencias */
+.topbar-container {
   height: 100%;
-}
-
-.topbar-mobile {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  /* Mantener consistencia con .top-bar usando 100% de altura */
-  height: 100%;
-  width: 100%;
+  justify-content: space-between;
+  padding: 0; /* Quitar padding para ocupar todo el ancho */
+  max-width: 100%;
 }
 
+/* ========================================
+   BOTÓN HAMBURGUESA (MÓVIL)
+   ======================================== */
+.btn-hamburguesa {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  border-radius: 8px;
+}
+
+.btn-hamburguesa:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+}
+
+.btn-hamburguesa:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   SECCIÓN DE TÍTULO Y BREADCRUMBS
+   ======================================== */
+.topbar-title-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* Revertido a column */
+  align-items: center;
+  overflow: hidden;
+}
+
+/* BREADCRUMBS */
+.breadcrumbs {
+  margin-bottom: 0.25rem;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: var(--color-primary);
+  background-color: rgba(13, 110, 253, 0.08);
+}
+
+.breadcrumb-current {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+
+.breadcrumb-current.active {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* TÍTULO PRINCIPAL */
+.page-title-container {
+  display: flex;
+  align-items: center;
+}
+
+.page-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: -22rem; /* Reducido de 4rem a 3rem para moverlo un poco menos a la derecha */
+}
+
+.page-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+  border-radius: 10px;
+  font-size: 1.25rem;
+  transition: all var(--transition-speed);
+}
+
+.page-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+}
+
+/* Colores contextuales para el icono */
+.page-icon.text-primary {
+  background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+  color: var(--color-primary);
+}
+
+.page-icon.text-success {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
+  color: var(--color-success);
+}
+
+.page-icon.text-warning {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.08) 100%);
+  color: #cc9a06;
+}
+
+.page-icon.text-danger {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+  color: var(--color-danger);
+}
+
+.page-icon.text-info {
+  background: linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.05) 100%);
+  color: var(--color-info);
+}
+
+.page-title-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.25rem; /* Reducido de 1.5rem a 1.25rem */
+  font-weight: 500; /* Cambiado de 600 a 500 para suavizar */
+  color: var(--text-primary);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-title .badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* ========================================
+   SECCIÓN DE USUARIO (DERECHA)
+   ======================================== */
+.topbar-user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Información del usuario (desktop) */
 .user-info {
   display: flex;
-  align-items: center; /* centrar verticalmente los elementos internos */
-  position: relative; /* Necesario para el positioning del dropdown */
-}
-
-.user-email-pill {
-  display: flex;
   align-items: center;
-  background-color: #e9ecef;
-  border-radius: 15px;
-  padding: 0.3rem 0.65rem; /* más espacio para legajo + rol */
-  margin-right: 0.6rem;
-  cursor: default; /* No debe parecer clickeable */
-  min-width: 180px; /* asegurar que quepa la info */
-}
-
-/* El botón `.profile-pill` fue eliminado del HTML para evitar icono redundante */
-
-.profile-toggle {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center; /* garantizar centrado dentro del toggle */
-  border-radius: 6px;
-  padding: 0.25rem;
-  transition: background-color 0.2s ease;
-}
-
-.profile-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.profile-icon {
-  font-size: 1.6rem;
-  color: #495057;
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 1;
-  /* ajuste extra para asegurar pixel-perfect centrado si hace falta */
-  transform: translateY(0%);
-}
-
-/* Pequeño ajuste vertical: subir ligeramente la etiqueta de legajo y el icono
-   para que queden perfectamente centrados respecto a la barra superior. */
-.user-email-pill, .profile-toggle {
-  transform: translateY(-3px);
-}
-
-/* Reducir el nudge en pantallas muy pequeñas para evitar solapamientos */
-@media (max-width: 575.98px) {
-  .user-email-pill, .profile-toggle {
-    transform: translateY(-2px);
-  }
-}
-
-.profile-dropdown {
-  position: absolute;
-  top: calc(100% + 5px); /* Un poco de espacio debajo del icono */
-  right: 0;
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1200;
-  min-width: 190px;
-}
-
-.profile-dropdown ul {
-  list-style: none;
-  margin: 0;
-  padding: 0.5rem 0;
-}
-
-.profile-dropdown li {
+  gap: 0.75rem;
   padding: 0.5rem 1rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  background: rgba(13, 110, 253, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+.user-pill {
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.75);
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: default;
 }
 
-.profile-dropdown li:hover {
-  background-color: rgba(0, 0, 0, 0.035);
+.user-role-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  background: white;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border: 1px solid var(--topbar-border);
 }
 
-.profile-dropdown li i {
-  font-size: 1rem;
-  margin-right: 0.5rem;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-/* Estilos para los iconos del email */
-.email-icon {
-  font-size: 1.05rem; /* ligeramente mayor */
-  color: #6c757d;
-  margin-right: 0.35rem;
-}
-
-.email-text {
-  font-size: 0.95rem; /* texto un poco más legible */
-  color: #495057;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.legajo-text { font-weight: 600; margin-right: 0.25rem; }
-
-.role-text {
-  font-size: 0.95rem;
-  color: #495057; /* mismo color que el texto principal */
-  margin-left: 0.25rem;
-  text-transform: none; /* respetar mayúsculas tal como vienen (SuperAdmin) */
-  white-space: nowrap;
-  max-width: 110px; /* un poco más de ancho para roles cortos/medios */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 600; /* hacer el rol igual de prominente que el legajo */
-}
-
-/* Pill visual para el role: icono + texto */
-.role-pill {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(0,0,0,0.02);
-  padding: 0.12rem 0.3rem;
-  border-radius: 10px;
-  margin-left: 0.35rem;
-}
-
-.role-icon {
-  font-size: 0.95rem;
-  color: #495057;
-  margin-right: 0.35rem;
-}
-
-/* Estilos específicos para mobile */
-.topbar-mobile .user-email-pill {
-  max-width: 140px;
-  min-width: 120px;
-}
-
-.topbar-mobile .email-text {
-  max-width: 80px;
-}
-
-/* Título de la aplicación */
-.app-title {
+/* Botón de logout (icono) */
+.logout-icon-btn {
+  background: none;
+  border: none;
   font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text, #495057);
-  margin: 0;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
-.topbar-mobile .app-title {
-  font-size: 1rem;
+.logout-icon-btn i {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
 }
 
-@media (max-width: 575.98px) {
-  .topbar-mobile {
-    height: 60px; /* Altura reducida en móviles */
+.logout-icon-btn:hover i {
+  color: #ff5722; /* Naranja oscuro */
+}
+
+.logout-icon-btn:focus {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   PERFIL Y DROPDOWN
+   ======================================== */
+/* Eliminados los estilos de .profile-dropdown, .profile-toggle, .profile-container, .profile-avatar, .profile-arrow, etc. */
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablets */
+@media (max-width: 991.98px) {
+  .btn-hamburguesa {
+    display: block;
   }
 
-  .top-bar {
-    height: 55px; /* Altura reducida en móviles */
+  .topbar-container {
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .page-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.125rem;
+  }
+
+  .user-info {
+    padding: 0.375rem 0.75rem;
+  }
+
+  .user-pill {
+    font-size: 0.8rem;
   }
 }
 
-/* Logo pequeño para mobile */
-.logo-small img {
-  height: 32px;
-  width: auto;
-  cursor: pointer;
-}
-
-.hamburger-menu {
-  cursor: pointer;
-  padding: 0.25rem;
-  margin-left: 0.5rem;
-}
-
-.hamburger-menu i {
-  font-size: 1.5rem;
-  color: #495057;
-}
-
-/* Estilos responsivos para el topbar */
+/* Móviles */
 @media (max-width: 767.98px) {
-  .top-bar {
-    padding: 0.3rem 0.5rem;
+  :root {
+    --topbar-height: 60px;
   }
 
-  .topbar-mobile {
-    height: 60px; /* Altura reducida en móviles */
+  .topbar-container {
+    padding: 0 0.75rem;
   }
 
-  .logo-container img {
-    max-height: 40px; /* Logo más pequeño en móviles */
+  .breadcrumbs {
+    display: none; /* Ocultar breadcrumbs en móvil */
   }
-}
 
-@media (max-width: 575.98px) {
-  .top-bar {
+  .page-title-wrapper {
+    gap: 0.5rem;
+  }
+
+  .page-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.125rem;
+  }
+
+  .page-subtitle {
+    display: none; /* Ocultar subtítulo en móvil */
+  }
+
+  .user-info {
+    display: none; /* Ocultar info de usuario en móvil */
+  }
+
+  .profile-toggle {
+    padding: 0.375rem 0.5rem;
+  }
+
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1.25rem;
+  }
+
+  .profile-arrow {
+    display: none; /* Ocultar flecha en móvil */
+  }
+
+  .profile-dropdown {
+    width: calc(100vw - 1.5rem);
+    right: 0.75rem;
+  }
+
+  .page-title .badge {
+    font-size: 0.65rem;
     padding: 0.2rem 0.5rem;
   }
-
-  .profile-toggle, .notification-toggle {
-    padding: 0.15rem;
-  }
-
-  .hamburger-menu {
-    margin-left: 0.25rem;
-  }
-
-  .email-icon { font-size: 1rem; margin-right: 0.3rem; }
-  .email-text { font-size: 0.88rem; }
-  .profile-icon { font-size: 1.4rem; }
 }
+
+/* Móviles pequeños */
+@media (max-width: 575.98px) {
+  .page-title {
+    font-size: 1rem;
+  }
+
+  .page-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+
+  .profile-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 1.125rem;
+  }
+}
+
+/* ========================================
+   ANIMACIONES ADICIONALES
+   ======================================== */
+
+/* Animación para el badge de notificaciones */
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+  }
+}
+
+.page-title .badge.bg-danger {
+  animation: badgePulse 2s infinite;
+}
+
+/* Efecto de hover suave en breadcrumbs */
+.breadcrumb-link i {
+  transition: transform 0.2s ease;
+}
+
+.breadcrumb-link:hover i {
+  transform: translateX(-2px);
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+
+/* Focus visible para navegación por teclado */
+.profile-toggle:focus-visible,
+.dropdown-item:focus-visible,
+.breadcrumb-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reducir animaciones para usuarios con preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   ESTADOS DE CARGA Y SKELETON
+   ======================================== */
+
+.topbar.loading .page-title,
+.topbar.loading .page-subtitle {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  color: transparent;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ========================================
+   UTILIDADES
+   ======================================== */
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Separador vertical */
+.vertical-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--topbar-border);
+  margin: 0 0.75rem;
+}
+

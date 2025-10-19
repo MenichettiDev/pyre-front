@@ -6,6 +6,7 @@ import { CboHerramientasComponent, HerramientaOption } from '../../../shared/com
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { MovimientoService, CreateMovimientoDto } from '../../../services/movimiento.service';
 import { AuthService } from '../../../services/auth.service';
+import { PageTitleService } from '../../../services/page-title.service';
 
 interface MovimientoInfo {
   idHerramienta: number;
@@ -57,10 +58,12 @@ export class DevolucionComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private movimientoService: MovimientoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pageTitleService: PageTitleService
   ) { }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Devoluciones');
     this.buildForm();
   }
 

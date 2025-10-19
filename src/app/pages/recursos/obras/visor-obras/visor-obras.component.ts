@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ObrasService, ObraDto } from '../../../../services/obras.service';
 import { AlertaService } from '../../../../services/alerta.service';
 import { ObraEditModalComponent } from '../modal-obras/modal-obras.component';
+import { PageTitleService } from '../../../../services/page-title.service';
 
 @Component({
   selector: 'app-visor-obras',
@@ -42,9 +43,10 @@ export class VisorObrasComponent implements OnInit {
   showDetailsModal = false;
   detailsData: any = null;
 
-  constructor(private obrasService: ObrasService, private alertService: AlertaService) { }
+  constructor(private obrasService: ObrasService, private alertService: AlertaService, private pageTitleService: PageTitleService) { }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Obras');
     this.fetchObras();
   }
 

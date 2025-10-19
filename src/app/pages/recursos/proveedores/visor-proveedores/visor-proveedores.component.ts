@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProveedoresService } from '../../../../services/proveedores.service';
 import { AlertaService } from '../../../../services/alerta.service';
 import { ModalProveedorComponent } from '../modal-proveedor/modal-proveedor.component';
+import { PageTitleService } from '../../../../services/page-title.service';
 
 export interface ProveedorDto {
   idProveedor: number;
@@ -53,9 +54,10 @@ export class VisorProveedoresComponent implements OnInit {
   showDetailsModal = false;
   detailsData: any = null;
 
-  constructor(private proveedoresService: ProveedoresService, private alertService: AlertaService) { }
+  constructor(private proveedoresService: ProveedoresService, private alertService: AlertaService, private pageTitleService: PageTitleService) { }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Proveedores');
     this.fetchProveedores();
   }
 

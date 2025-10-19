@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HerramientaService } from '../../../services/herramienta.service';
 import { AlertaService } from '../../../services/alerta.service';
+import { PageTitleService } from '../../../services/page-title.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,10 +20,12 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private herramientaService: HerramientaService,
-    private alertaService: AlertaService
+    private alertaService: AlertaService,
+    private pageTitleService: PageTitleService
   ) { }
 
   ngOnInit() {
+    this.pageTitleService.setTitle('Dashboard');
     this.herramientaService.getCountHerramientasTotales().subscribe((resp: any) => {
       this.herramientasTotales = resp?.data ?? 0;
     });

@@ -49,6 +49,7 @@ export class CboObraComponent implements OnInit, OnDestroy, ControlValueAccessor
   @Input() isId: string = '';
   @Input() isDisabled: boolean = false;
   @Input() placeholder: string = 'Seleccionar obra...';
+  @Input() labelClass: string = '';
   @Input() showOnlyActive: boolean = true;
   @Input() objectErrors: any = null;
   @Input() isTouched: boolean = false;
