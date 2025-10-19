@@ -4,10 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface TipoMovimientoDto {
-  id: number;
-  nombre: string;
-  descripcion?: string;
-  activo?: boolean;
+  idTipoMovimiento: number;
+  nombreTipoMovimiento: string;
 }
 
 @Injectable({
@@ -19,8 +17,8 @@ export class TipoMovimientoHerramientaService {
 
   constructor(private http: HttpClient) { }
 
-  getTiposMovimiento(): Observable<{ data: TipoMovimientoDto[]; total: number }> {
-    return this.http.get<{ data: TipoMovimientoDto[]; total: number }>(`${this.baseUrl}`);
+  getTiposMovimiento(): Observable<{ data: TipoMovimientoDto[]; success: boolean; message: string; errors: any[] }> {
+    return this.http.get<{ data: TipoMovimientoDto[]; success: boolean; message: string; errors: any[] }>(`${this.baseUrl}`);
   }
 
   getTipoMovimientoById(id: number): Observable<{ data: TipoMovimientoDto }> {

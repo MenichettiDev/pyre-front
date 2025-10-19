@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, forwardRef }
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, of, Subject } from 'rxjs';
-import { ProveedorService } from '../../../services/proveedor.service';
+import { ProveedoresService } from '../../../../services/proveedores.service';
 
 @Component({
   selector: 'app-cbo-proveedor',
@@ -39,7 +39,7 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
   private onChange = (value: any) => { };
   private onTouched = () => { };
 
-  constructor(private proveedorService: ProveedorService) { }
+  constructor(private proveedorService: ProveedoresService) { }
 
   ngOnInit(): void {
     this.setupSearch();
@@ -77,30 +77,71 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
       distinctUntilChanged(),
       switchMap(searchTerm => {
         if (!searchTerm || searchTerm.length < 2) {
-          return of([]);
+          return of(this.proveedores);
         }
         this.isLoading = true;
-        return this.proveedorService.searchProveedores(searchTerm, this.showOnlyActive).pipe(
-          catchError(error => {
-            console.error('Error searching proveedores:', error);
-            return of([]);
-          })
-        );
+        return this.searchProveedores(searchTerm);
       })
-    ).subscribe(proveedores => {
-      this.proveedores = proveedores;
+    ).subscribe((proveedores: any) => {
+      if (!this.searchControl.value || this.searchControl.value.length < 2) {
+        // Don't update if it's just the initial load
+      } else {
+        this.proveedores = proveedores || [];
+      }
       this.isLoading = false;
     });
   }
 
-  private loadProveedores(): void {
-    this.isLoading = true;
-    this.proveedorService.getProveedores(this.showOnlyActive).pipe(
+  private searchProveedores(searchTerm: string) {
+    return this.proveedorService.getProveedores(1, 20).pipe(
+      switchMap(response => {
+        const rawList = response.data?.data || response.data || [];
+
+        // Filter client-side by search term
+        const filteredList = rawList.filter((proveedor: any) => {
+          const nombreProveedor = (proveedor.nombreProveedor || '').toLowerCase();
+          const contacto = (proveedor.contacto || '').toLowerCase();
+          const cuit = (proveedor.cuit || '').toLowerCase();
+          const email = (proveedor.email || '').toLowerCase();
+          const searchLower = searchTerm.toLowerCase();
+
+          return nombreProveedor.includes(searchLower) ||
+            contacto.includes(searchLower) ||
+            cuit.includes(searchLower) ||
+            email.includes(searchLower);
+        });
+
+        // Filter only active if required
+        let proveedores = filteredList;
+        if (this.showOnlyActive) {
+          proveedores = filteredList.filter((p: any) => p.activo !== false);
+        }
+
+        return of(proveedores);
+      }),
       catchError(error => {
-        console.error('Error loading proveedores:', error);
+        console.error('Error searching proveedores:', error);
         return of([]);
       })
-    ).subscribe(proveedores => {
+    );
+  }
+
+  private loadProveedores(): void {
+    this.isLoading = true;
+    this.proveedorService.getProveedores(1, 20).pipe(
+      catchError(error => {
+        console.error('Error loading proveedores:', error);
+        return of({ data: { data: [] } });
+      })
+    ).subscribe((response: any) => {
+      const rawList = response.data?.data || response.data || [];
+
+      // Filter only active if required
+      let proveedores = rawList;
+      if (this.showOnlyActive) {
+        proveedores = rawList.filter((p: any) => p.activo !== false);
+      }
+
       this.proveedores = proveedores;
       this.isLoading = false;
     });
@@ -173,14 +214,14 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
 
   private updatePlaceholder(): void {
     if (this.selectedProveedor) {
-      this.placeholder = this.selectedProveedor.nombre || 'Proveedor seleccionado';
+      this.placeholder = this.selectedProveedor.nombreProveedor || 'Proveedor seleccionado';
     } else {
       this.placeholder = 'Seleccionar proveedor...';
     }
   }
 
   trackByProveedor(index: number, proveedor: any): any {
-    return proveedor.id || proveedor.idProveedor || index;
+    return proveedor.idProveedor || index;
   }
 
   hasErrors(): boolean {

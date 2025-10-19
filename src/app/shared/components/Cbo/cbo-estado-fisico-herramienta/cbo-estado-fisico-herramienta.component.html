@@ -49,16 +49,11 @@
 
                 <!-- Options list -->
                 <div *ngFor="let estadoFisico of estadosFisicos; trackBy: trackByEstadoFisico" class="dropdown-option"
-                    [class.selected]="selectedEstadoFisico?.id === estadoFisico.id"
+                    [class.selected]="selectedEstadoFisico?.idEstadoFisico === estadoFisico.idEstadoFisico"
                     (click)="onOptionClick(estadoFisico)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-nombre">{{ estadoFisico.nombre }}</span>
-                            <span *ngIf="!estadoFisico.activo" class="option-status-inactive">Inactivo</span>
-                        </div>
-                        <div class="option-details"
-                            *ngIf="estadoFisico.descripcion && estadoFisico.descripcion !== estadoFisico.nombre">
-                            <span class="option-descripcion">{{ estadoFisico.descripcion }}</span>
+                            <span class="option-nombre">{{ estadoFisico.descripcionEstado }}</span>
                         </div>
                     </div>
                 </div>

@@ -49,15 +49,16 @@
 
                 <!-- Options list -->
                 <div *ngFor="let proveedor of proveedores; trackBy: trackByProveedor" class="dropdown-option"
-                    [class.selected]="selectedProveedor?.id === proveedor.id" (click)="onOptionClick(proveedor)">
+                    [class.selected]="selectedProveedor?.idProveedor === proveedor.idProveedor"
+                    (click)="onOptionClick(proveedor)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-nombre">{{ proveedor.nombre }}</span>
+                            <span class="option-nombre">{{ proveedor.nombreProveedor }}</span>
                             <span *ngIf="!proveedor.activo" class="option-status-inactive">Inactivo</span>
                         </div>
-                        <div class="option-details"
-                            *ngIf="proveedor.descripcion && proveedor.descripcion !== proveedor.nombre">
-                            <span class="option-descripcion">{{ proveedor.descripcion }}</span>
+                        <div class="option-details">
+                            <span *ngIf="proveedor.contacto" class="option-contacto">{{ proveedor.contacto }}</span>
+                            <span *ngIf="proveedor.cuit" class="option-cuit">CUIT: {{ proveedor.cuit }}</span>
                         </div>
                     </div>
                 </div>

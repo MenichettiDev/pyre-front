@@ -98,7 +98,6 @@ export class HistorialComponent implements OnInit {
     this.fetchMovimientos();
   }
 
-
   onTipoMovimientoSelected(tipoMovimiento: any): void {
     this.filtroIdTipoMovimiento = tipoMovimiento?.idTipoMovimiento || null;
     this.fetchMovimientos();
@@ -110,12 +109,12 @@ export class HistorialComponent implements OnInit {
   }
 
   onDisponibilidadSelected(disponibilidad: any): void {
-    this.filtroDisponibilidad = disponibilidad.idEstadoDisponibilidad || null;
+    this.filtroDisponibilidad = disponibilidad?.idEstadoDisponibilidad || null;
     this.fetchMovimientos();
   }
 
   onEstadoFisicoSelected(estadoFisico: any): void {
-    this.filtroEstadoFisico = estadoFisico.idEstadoFisico || null;
+    this.filtroEstadoFisico = estadoFisico?.idEstadoFisico || null;
     this.fetchMovimientos();
   }
 

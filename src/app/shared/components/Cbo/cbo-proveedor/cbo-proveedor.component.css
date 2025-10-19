@@ -1,0 +1,44 @@
+/* Import shared styles */
+@import '../cbo.component.css';
+
+/* Specific styles for proveedor component */
+.option-nombre {
+    font-weight: 600;
+    color: var(--color-text, #111827);
+}
+
+.option-contacto {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary, #6b7280);
+    font-style: italic;
+}
+
+.option-cuit {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #9ca3af);
+    font-family: 'Courier New', monospace;
+}
+
+.option-status-inactive {
+    background: var(--color-error, #ef4444);
+    color: var(--color-white, #ffffff);
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Responsive adjustments for proveedor specific content */
+@media (max-width: 768px) {
+    .option-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .option-contacto,
+    .option-cuit {
+        font-size: 0.75rem;
+    }
+}

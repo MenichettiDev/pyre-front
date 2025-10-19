@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, forwardRef }
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, of, Subject } from 'rxjs';
-import { TipoMovimientoService } from '../../../../shared/services/tipo-movimiento.service';
+import { TipoMovimientoHerramientaService } from '../../../../services/tipo-movimiento-herramienta.service';
 
 @Component({
   selector: 'app-cbo-tipo-movimiento-herramienta',
@@ -39,7 +39,7 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
   private onChange = (value: any) => { };
   private onTouched = () => { };
 
-  constructor(private tipoMovimientoService: TipoMovimientoService) { }
+  constructor(private tipoMovimientoService: TipoMovimientoHerramientaService) { }
 
   ngOnInit(): void {
     this.setupSearch();
@@ -80,12 +80,7 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
           return of(this.tiposMovimiento);
         }
         this.isLoading = true;
-        return this.tipoMovimientoService.searchTiposMovimiento(searchTerm, this.showOnlyActive).pipe(
-          catchError(error => {
-            console.error('Error searching tipos movimiento:', error);
-            return of([]);
-          })
-        );
+        return this.searchTiposMovimiento(searchTerm);
       })
     ).subscribe((tipos: any) => {
       if (!this.searchControl.value || this.searchControl.value.length < 2) {
@@ -97,15 +92,36 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
     });
   }
 
-  private loadTiposMovimiento(): void {
-    this.isLoading = true;
-    this.tipoMovimientoService.getTiposMovimiento(this.showOnlyActive).pipe(
+  private searchTiposMovimiento(searchTerm: string) {
+    return this.tipoMovimientoService.getTiposMovimiento().pipe(
+      switchMap(response => {
+        const rawList = response.data || [];
+
+        // Filter client-side by search term
+        const filteredList = rawList.filter((tipoMovimiento: any) => {
+          const nombre = (tipoMovimiento.nombreTipoMovimiento || '').toLowerCase();
+          const searchLower = searchTerm.toLowerCase();
+          return nombre.includes(searchLower);
+        });
+
+        return of(filteredList);
+      }),
       catchError(error => {
-        console.error('Error loading tipos movimiento:', error);
+        console.error('Error searching tipos movimiento:', error);
         return of([]);
       })
-    ).subscribe((tipos: any) => {
-      this.tiposMovimiento = tipos || [];
+    );
+  }
+
+  private loadTiposMovimiento(): void {
+    this.isLoading = true;
+    this.tipoMovimientoService.getTiposMovimiento().pipe(
+      catchError(error => {
+        console.error('Error loading tipos movimiento:', error);
+        return of({ data: [] });
+      })
+    ).subscribe((response: any) => {
+      this.tiposMovimiento = response.data || [];
       this.isLoading = false;
     });
   }

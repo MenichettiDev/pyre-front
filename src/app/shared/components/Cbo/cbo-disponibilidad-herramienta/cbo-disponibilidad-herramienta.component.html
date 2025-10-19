@@ -49,16 +49,12 @@
 
                 <!-- Options list -->
                 <div *ngFor="let disponibilidad of disponibilidades; trackBy: trackByDisponibilidad"
-                    class="dropdown-option" [class.selected]="selectedDisponibilidad?.id === disponibilidad.id"
+                    class="dropdown-option"
+                    [class.selected]="selectedDisponibilidad?.idEstadoDisponibilidad === disponibilidad.idEstadoDisponibilidad"
                     (click)="onOptionClick(disponibilidad)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-nombre">{{ disponibilidad.nombre }}</span>
-                            <span *ngIf="!disponibilidad.activo" class="option-status-inactive">Inactivo</span>
-                        </div>
-                        <div class="option-details"
-                            *ngIf="disponibilidad.descripcion && disponibilidad.descripcion !== disponibilidad.nombre">
-                            <span class="option-descripcion">{{ disponibilidad.descripcion }}</span>
+                            <span class="option-nombre">{{ disponibilidad.descripcionEstado }}</span>
                         </div>
                     </div>
                 </div>

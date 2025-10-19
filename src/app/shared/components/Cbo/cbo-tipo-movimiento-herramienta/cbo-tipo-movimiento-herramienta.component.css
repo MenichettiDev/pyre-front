@@ -1,12 +1,24 @@
-/* Import generic combo styles */
+/* Import shared styles */
 @import '../cbo.component.css';
 
-/* Specific styles for tipo movimiento combo */
+/* Specific styles for tipo movimiento component */
 .option-nombre {
-    flex: 1;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--color-text, #374151);
+    font-weight: 600;
+    color: var(--color-text, #111827);
+    display: block;
+    width: 100%;
+}
+
+/* Simple and clean layout for tipo movimiento */
+.option-content {
+    display: block;
+}
+
+.option-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .dropdown-option.selected .option-nombre {
