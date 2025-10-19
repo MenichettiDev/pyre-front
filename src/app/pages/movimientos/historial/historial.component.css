@@ -1,0 +1,21 @@
+/* Estilos básicos para el componente de historial */
+
+.custom-table-container {
+    margin-top: 1rem;
+}
+
+.empty-message {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+/* Estilo de la cabecera de la tabla */
+.custom-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: bold;
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+}

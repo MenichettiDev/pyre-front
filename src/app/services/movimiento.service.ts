@@ -43,6 +43,23 @@ export class MovimientoService {
     return this.http.post<any>(`${this.baseUrl}`, data);
   }
 
-
-
+  // Obtener movimientos paginados con filtros
+  getMovimientos(
+    page: number,
+    pageSize: number,
+    filters: {
+      nombreHerramienta?: string;
+      familiaHerramienta?: string;
+      idUsuarioGenera?: number;
+      idUsuarioResponsable?: number;
+      idTipoMovimiento?: number;
+      idObra?: number;
+      idProveedor?: number;
+      fechaDesde?: string;
+      fechaHasta?: string;
+    }
+  ): Observable<any> {
+    const params = { page, pageSize, ...filters };
+    return this.http.get<any>(`${this.baseUrl}`, { params });
+  }
 }

@@ -49,16 +49,12 @@
 
                 <!-- Options list -->
                 <div *ngFor="let tipoMovimiento of tiposMovimiento; trackBy: trackByTipoMovimiento"
-                    class="dropdown-option" [class.selected]="selectedTipoMovimiento?.id === tipoMovimiento.id"
+                    class="dropdown-option"
+                    [class.selected]="selectedTipoMovimiento?.idTipoMovimiento === tipoMovimiento.idTipoMovimiento"
                     (click)="onOptionClick(tipoMovimiento)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-nombre">{{ tipoMovimiento.nombre }}</span>
-                            <span *ngIf="!tipoMovimiento.activo" class="option-status-inactive">Inactivo</span>
-                        </div>
-                        <div class="option-details"
-                            *ngIf="tipoMovimiento.descripcion && tipoMovimiento.descripcion !== tipoMovimiento.nombre">
-                            <span class="option-descripcion">{{ tipoMovimiento.descripcion }}</span>
+                            <span class="option-nombre">{{ tipoMovimiento.nombreTipoMovimiento }}</span>
                         </div>
                     </div>
                 </div>
