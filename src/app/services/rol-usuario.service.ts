@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface RolDto {
-  id: number;
-  nombre: string;
+  idRol: number;
+  nombreRol: string;
   descripcion?: string;
   activo?: boolean;
 }
@@ -19,8 +19,18 @@ export class RolUsuarioService {
 
   constructor(private http: HttpClient) { }
 
-  getRoles(): Observable<{ data: RolDto[]; total: number }> {
-    return this.http.get<{ data: RolDto[]; total: number }>(`${this.baseUrl}`);
+  getRoles(): Observable<{
+    data: RolDto[];
+    success: boolean;
+    message: string;
+    errors: any[];
+  }> {
+    return this.http.get<{
+      data: RolDto[];
+      success: boolean;
+      message: string;
+      errors: any[];
+    }>(`${this.baseUrl}`);
   }
 
   getRolById(id: number): Observable<{ data: RolDto }> {

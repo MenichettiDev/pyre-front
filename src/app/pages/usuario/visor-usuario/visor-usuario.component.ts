@@ -10,6 +10,8 @@ import { Roles } from '../../../shared/enums/roles';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PageTitleService } from '../../../services/page-title.service';
+import { CboRolUsuarioComponent } from '../../../shared/components/Cbo/cbo-rol-usuario/cbo-rol-usuario.component';
+import { CboEstadoComponent } from '../../../shared/components/Cbo/cbo-estado/cbo-estado.component';
 
 interface UserRaw {
   [key: string]: any;
@@ -61,7 +63,9 @@ interface ApiResponse {
     RouterModule,
     PaginatorComponent,
     NgbTooltipModule,
-    UsuariosModalComponent
+    UsuariosModalComponent,
+    CboRolUsuarioComponent,
+    CboEstadoComponent
   ],
   templateUrl: './visor-usuario.component.html',
   styleUrls: ['../../../../styles/visor-style.css'],
@@ -84,7 +88,7 @@ export class VisorUsuariosComponent implements OnInit {
   filtroLegajo: string = '';
   filtroNombre: string = '';
   filtroApellido: string = '';
-  filtroRol: string = '';
+  filtroRol: number | null = null;
   filtroEstado: string = '';
 
   // Modal control
@@ -98,7 +102,7 @@ export class VisorUsuariosComponent implements OnInit {
   constructor(private userService: UsuarioService, private router: Router, private alertService: AlertaService, private pageTitleService: PageTitleService) { }
 
   ngOnInit(): void {
-    this.pageTitleService.setTitle('Usuarios');
+    this.pageTitleService.setTitle('Listado de Usuarios');
     this.fetchUsers();
   }
 
@@ -111,7 +115,17 @@ export class VisorUsuariosComponent implements OnInit {
     if (this.filtroLegajo?.trim()) filters.legajo = this.filtroLegajo.trim();
     if (this.filtroNombre?.trim()) filters.nombre = this.filtroNombre.trim();
     if (this.filtroApellido?.trim()) filters.apellido = this.filtroApellido.trim();
-    if (this.filtroRol?.trim()) filters.rol = Number(this.filtroRol.trim());
+    // Validar filtroRol: sólo incluir si está definido y es un número válido
+    if (this.filtroRol !== null && this.filtroRol !== undefined) {
+      // Permitir que filtroRol sea number o string (por seguridad). Convertir a Number y validar.
+      const rolVal = Number((this.filtroRol as any));
+      if (!Number.isNaN(rolVal)) {
+        filters.rol = rolVal;
+      } else {
+        // Evitar enviar valores inválidos como NaN
+        console.warn('[UserList] filtroRol tiene un valor no numérico, se omitirá en la consulta:', this.filtroRol);
+      }
+    }
 
     // Convertir estado de string a boolean para el backend
     if (this.filtroEstado) {
@@ -229,7 +243,7 @@ export class VisorUsuariosComponent implements OnInit {
     this.filtroLegajo = '';
     this.filtroNombre = '';
     this.filtroApellido = '';
-    this.filtroRol = '';
+    this.filtroRol = null;
     this.filtroEstado = '';
     this.currentPage = 1;
     this.fetchUsers();
@@ -259,7 +273,7 @@ export class VisorUsuariosComponent implements OnInit {
   }
 
   hasActiveFilters(): boolean {
-    return !!(this.filtroLegajo?.trim() || this.filtroNombre?.trim() || this.filtroApellido?.trim() || this.filtroRol?.trim() || this.filtroEstado);
+    return !!(this.filtroLegajo?.trim() || this.filtroNombre?.trim() || this.filtroApellido?.trim() || this.filtroRol !== null || this.filtroEstado);
   }
 
   onPageChange(page: number): void {
@@ -292,20 +306,10 @@ export class VisorUsuariosComponent implements OnInit {
     return pages;
   }
 
-  // Obtener las opciones de roles para el select
-  getRolesOptions(): { value: string; label: string }[] {
-    return Object.entries(Roles)
-      .filter(([key, value]) => typeof value === 'number' && key !== 'Administrativo')
-      .map(([key, value]) => ({
-        value: value.toString(),
-        label: key === 'SuperAdmin' ? 'Super Admin' : key
-      }));
-  }
-
   // Helper para obtener nombre del rol por ID
   getRolNameById(rolId: number): string {
-    const rol = this.getRolesOptions().find(r => Number(r.value) === rolId);
-    return rol?.label || '';
+    // Nota: Este método puede no ser necesario si el componente maneja la visualización
+    return '';
   }
 
   editUser(item: DisplayUser): void {

@@ -200,3 +200,5 @@
 .dropdown-option:has(.option-nombre:contains("Supervisor")) {
     background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
 }
+
+

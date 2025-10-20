@@ -8,6 +8,17 @@
     position: relative;
 }
 
+/* Estilos para igualar la altura del select con los inputs de la vista */
+
+select.form-select {
+    height: 47px; /* Altura estándar de inputs en Bootstrap 5 */
+    width: 100%; /* Ajustar al ancho del contenedor padre */
+    padding: 0.375rem 0.75rem; /* Padding consistente con form-control */
+    box-sizing: border-box; /* Incluir padding y border en la altura total */
+    font-size: 1rem; /* Tamaño de fuente estándar */
+    line-height: 1.5; /* Line-height para alineación vertical */
+}
+
 .form-label {
     font-size: 0.875rem;
     font-weight: 600;
