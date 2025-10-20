@@ -55,6 +55,8 @@ export class MovimientoService {
       idTipoMovimiento?: number;
       idObra?: number;
       idProveedor?: number;
+      idDisponibilidad?: string;
+      idEstadoFisico?: string;
       fechaDesde?: string;
       fechaHasta?: string;
     }

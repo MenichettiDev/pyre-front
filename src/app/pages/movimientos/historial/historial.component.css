@@ -19,3 +19,41 @@
     padding: 0.75rem;
     border-bottom: 2px solid #dee2e6;
 }
+
+/* Estilos para los filtros de fecha */
+.date-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+    display: block;
+    font-weight: 500;
+}
+
+.filter-item input[type="date"] {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    width: 100%;
+    min-width: 140px;
+}
+
+.filter-item input[type="date"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+/* Responsive adjustments for date inputs */
+@media (max-width: 768px) {
+    .filter-item input[type="date"] {
+        min-width: 120px;
+        font-size: 0.85rem;
+        padding: 6px 8px;
+    }
+
+    .date-label {
+        font-size: 0.7rem;
+    }
+}

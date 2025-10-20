@@ -49,16 +49,11 @@
 
                 <!-- Options list -->
                 <div *ngFor="let familia of familias; trackBy: trackByFamilia" class="dropdown-option"
-                    [class.selected]="selectedFamilia?.id === familia.id" (click)="onOptionClick(familia)">
+                    [class.selected]="selectedFamilia?.idFamilia === familia.idFamilia"
+                    (click)="onOptionClick(familia)">
                     <div class="option-content">
                         <div class="option-main">
-                            <span class="option-codigo">{{ familia.codigo || 'S/C' }}</span>
-                            <span class="option-nombre">{{ familia.nombre }}</span>
-                            <span *ngIf="!familia.activo" class="option-status-inactive">Inactivo</span>
-                        </div>
-                        <div class="option-details"
-                            *ngIf="familia.descripcion && familia.descripcion !== familia.nombre">
-                            <span class="option-descripcion">{{ familia.descripcion }}</span>
+                            <span class="option-nombre">{{ familia.nombreFamilia }}</span>
                         </div>
                     </div>
                 </div>

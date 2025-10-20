@@ -8,8 +8,9 @@ import { AlertaService } from '../../../services/alerta.service';
 import { CboObraComponent } from '../../../shared/components/Cbo/cbo-obra/cbo-obra.component';
 import { CboTipoMovimientoHerramientaComponent } from '../../../shared/components/Cbo/cbo-tipo-movimiento-herramienta/cbo-tipo-movimiento-herramienta.component';
 import { CboProveedorComponent } from '../../../shared/components/Cbo/cbo-proveedor/cbo-proveedor.component';
-import { CboDisponibilidadHerramientaComponent } from '../../../shared/components/Cbo/cbo-disponibilidad-herramienta/cbo-disponibilidad-herramienta.component';
 import { CboEstadoFisicoHerramientaComponent } from '../../../shared/components/Cbo/cbo-estado-fisico-herramienta/cbo-estado-fisico-herramienta.component';
+import { CboFamiliaHerramientaComponent } from "../../../shared/components/Cbo/cbo-familia-herramienta/cbo-familia-herramienta.component";
+import { CboUsuarioComponent } from "../../../shared/components/Cbo/cbo-usuario/cbo-usuario.component";
 
 @Component({
   selector: 'app-historial',
@@ -22,8 +23,9 @@ import { CboEstadoFisicoHerramientaComponent } from '../../../shared/components/
     CboObraComponent,
     CboTipoMovimientoHerramientaComponent,
     CboProveedorComponent,
-    CboDisponibilidadHerramientaComponent,
-    CboEstadoFisicoHerramientaComponent
+    CboEstadoFisicoHerramientaComponent,
+    CboFamiliaHerramientaComponent,
+    CboUsuarioComponent
   ],
   templateUrl: './historial.component.html',
   styleUrls: ['./historial.component.css']
@@ -37,13 +39,12 @@ export class HistorialComponent implements OnInit {
 
   // Filtros
   filtroNombreHerramienta = '';
-  filtroFamiliaHerramienta = '';
+  filtroFamiliaHerramienta: number | null = null;
   filtroIdUsuarioGenera: number | null = null;
   filtroIdUsuarioResponsable: number | null = null;
   filtroIdTipoMovimiento: number | null = null;
   filtroObra: number | null = null;
   filtroProveedor: number | null = null;
-  filtroDisponibilidad: string | null = null;
   filtroEstadoFisico: string | null = null;
   filtroFechaDesde = '';
   filtroFechaHasta = '';
@@ -58,13 +59,12 @@ export class HistorialComponent implements OnInit {
     this.loading = true;
     let filters: any = {
       nombreHerramienta: this.filtroNombreHerramienta,
-      familiaHerramienta: this.filtroFamiliaHerramienta,
+      idFamiliaHerramienta: this.filtroFamiliaHerramienta ?? undefined,
       idUsuarioGenera: this.filtroIdUsuarioGenera ?? undefined,
       idUsuarioResponsable: this.filtroIdUsuarioResponsable ?? undefined,
       idTipoMovimiento: this.filtroIdTipoMovimiento ?? undefined,
       idObra: this.filtroObra ?? undefined,
       idProveedor: this.filtroProveedor ?? undefined,
-      idDisponibilidad: this.filtroDisponibilidad ?? undefined,
       idEstadoFisico: this.filtroEstadoFisico ?? undefined,
       fechaDesde: this.filtroFechaDesde,
       fechaHasta: this.filtroFechaHasta
@@ -103,30 +103,38 @@ export class HistorialComponent implements OnInit {
     this.fetchMovimientos();
   }
 
+  onUsuarioGeneraSelected(usuario: any): void {
+    this.filtroIdUsuarioGenera = usuario?.id || null;
+    this.fetchMovimientos();
+  }
+  onUsuarioResponsableSelected(usuario: any): void {
+    this.filtroIdUsuarioResponsable = usuario?.id || null;
+    this.fetchMovimientos();
+  }
+
   onProveedorSelected(proveedor: any): void {
     this.filtroProveedor = proveedor?.idProveedor || null;
     this.fetchMovimientos();
   }
 
-  onDisponibilidadSelected(disponibilidad: any): void {
-    this.filtroDisponibilidad = disponibilidad?.idEstadoDisponibilidad || null;
-    this.fetchMovimientos();
-  }
 
   onEstadoFisicoSelected(estadoFisico: any): void {
     this.filtroEstadoFisico = estadoFisico?.idEstadoFisico || null;
     this.fetchMovimientos();
   }
+  onFamiliaHerramientaSelected(familia: any): void {
+    this.filtroFamiliaHerramienta = familia?.idFamilia || null;
+    this.fetchMovimientos();
+  }
 
   onResetFilters(): void {
     this.filtroNombreHerramienta = '';
-    this.filtroFamiliaHerramienta = '';
+    this.filtroFamiliaHerramienta = null;
     this.filtroIdUsuarioGenera = null;
     this.filtroIdUsuarioResponsable = null;
     this.filtroIdTipoMovimiento = null;
     this.filtroObra = null;
     this.filtroProveedor = null;
-    this.filtroDisponibilidad = null;
     this.filtroEstadoFisico = null;
     this.filtroFechaDesde = '';
     this.filtroFechaHasta = '';

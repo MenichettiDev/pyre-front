@@ -14,16 +14,27 @@
                         (keyup.enter)="onSearch()" />
                 </div>
                 <div class="filter-item">
-                    <input type="text" [(ngModel)]="filtroFamiliaHerramienta" placeholder="Familia Herramienta"
-                        (keyup.enter)="onSearch()" />
+                    <app-cbo-familia-herramienta [isLabel]="'Familia Herramienta'" [isId]="'familiaHerramientaSelect'"
+                        (familiaSelected)="onFamiliaHerramientaSelected($event)">
+                    </app-cbo-familia-herramienta>
                 </div>
                 <div class="filter-item">
-                    <input type="number" [(ngModel)]="filtroIdUsuarioGenera" placeholder="ID Usuario Genera"
-                        (keyup.enter)="onSearch()" />
+                    <app-cbo-usuario [isLabel]="'Usuario Genera'" [isId]="'usuarioGeneraSelect'"
+                        (usuarioSelected)="onUsuarioGeneraSelected($event)">
+                    </app-cbo-usuario>
                 </div>
                 <div class="filter-item">
-                    <input type="number" [(ngModel)]="filtroIdUsuarioResponsable" placeholder="ID Usuario Responsable"
-                        (keyup.enter)="onSearch()" />
+                    <app-cbo-usuario [isLabel]="'Usuario Responsable'" [isId]="'usuarioResponsableSelect'"
+                        (usuarioSelected)="onUsuarioResponsableSelected($event)">
+                    </app-cbo-usuario>
+                </div>
+                <div class="filter-item">
+                    <label class="date-label">Fecha Desde:</label>
+                    <input type="date" [(ngModel)]="filtroFechaDesde" (change)="onSearch()" />
+                </div>
+                <div class="filter-item">
+                    <label class="date-label">Fecha Hasta:</label>
+                    <input type="date" [(ngModel)]="filtroFechaHasta" (change)="onSearch()" />
                 </div>
             </div>
 
@@ -43,11 +54,6 @@
                     <app-cbo-proveedor [isLabel]="'Proveedor'" [isId]="'proveedorSelect'"
                         (proveedorSelected)="onProveedorSelected($event)">
                     </app-cbo-proveedor>
-                </div>
-                <div class="filter-item">
-                    <app-cbo-disponibilidad-herramienta [isLabel]="'Disponibilidad'" [isId]="'disponibilidadSelect'"
-                        (disponibilidadSelected)="onDisponibilidadSelected($event)">
-                    </app-cbo-disponibilidad-herramienta>
                 </div>
                 <div class="filter-item">
                     <app-cbo-estado-fisico-herramienta [isLabel]="'Estado Físico'" [isId]="'estadoFisicoSelect'"

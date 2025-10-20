@@ -4,10 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface FamiliaHerramientaDto {
-  id: number;
-  nombre: string;
-  descripcion?: string;
-  activo?: boolean;
+  idFamilia: number;
+  nombreFamilia: string;
 }
 
 @Injectable({
@@ -19,8 +17,8 @@ export class FamiliaHerramientaService {
 
   constructor(private http: HttpClient) { }
 
-  getFamilias(): Observable<{ data: FamiliaHerramientaDto[]; total: number }> {
-    return this.http.get<{ data: FamiliaHerramientaDto[]; total: number }>(`${this.baseUrl}`);
+  getFamilias(): Observable<{ data: FamiliaHerramientaDto[]; success: boolean; message: string; errors: any[] }> {
+    return this.http.get<{ data: FamiliaHerramientaDto[]; success: boolean; message: string; errors: any[] }>(`${this.baseUrl}`);
   }
 
   getFamiliaById(id: number): Observable<{ data: FamiliaHerramientaDto }> {
