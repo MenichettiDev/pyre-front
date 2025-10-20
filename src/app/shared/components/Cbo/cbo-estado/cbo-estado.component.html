@@ -1,0 +1,26 @@
+<div class="form-group">
+  <label *ngIf="isLabel" [for]="isId" class="form-label">
+    {{ isLabel }}
+    <span *ngIf="objectErrors?.required" class="required-indicator">*</span>
+  </label>
+
+  <select
+    [id]="isId"
+    [(ngModel)]="selectedEstado"
+    class="form-select"
+    [disabled]="isDisabled"
+    (change)="onSelectionChange($event)"
+    [class.is-invalid]="hasErrors()">
+
+    <!-- Opción por defecto -->
+    <option value="">{{ placeholder }}</option>
+
+    <!-- Opciones fijas -->
+    <option value="activo">Activo</option>
+    <option value="inactivo">Inactivo</option>
+  </select>
+
+  <div *ngIf="hasErrors()" class="invalid-feedback">
+    {{ getErrorMessage() }}
+  </div>
+</div>
