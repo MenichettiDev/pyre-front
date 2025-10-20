@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CboHerramientasComponent, HerramientaOption } from '../../../shared/components/Cbo/cbo-herramientas/cbo-herramientas.component';
-import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { MovimientoService, CreateMovimientoDto } from '../../../services/movimiento.service';
 import { AuthService } from '../../../services/auth.service';
 import { PageTitleService } from '../../../services/page-title.service';
+import { AlertaService } from '../../../services/alerta.service';
 
 interface MovimientoInfo {
   idHerramienta: number;
@@ -36,10 +37,17 @@ interface MovimientoInfo {
     RouterModule,
     ReactiveFormsModule,
     CboHerramientasComponent,
-    ConfirmModalComponent,
   ],
   templateUrl: './devolucion.component.html',
-  styleUrl: './devolucion.component.css'
+  styleUrls: ['../../../../styles/visor-style.css', './devolucion.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class DevolucionComponent implements OnInit {
 
@@ -47,36 +55,82 @@ export class DevolucionComponent implements OnInit {
   selectedHerramientaInfo: HerramientaOption | null = null;
   movimientoInfo: MovimientoInfo | null = null;
 
-  // Modal properties
-  showModal = false;
-  modalTitle = '';
-  modalMessage = '';
-  isSuccess = false;
   isLoading = false;
   isLoadingMovimiento = false;
+
+  // Campos requeridos para calcular el progreso
+  private requiredFields = ['herramientaId', 'fechaDevolucion', 'estadoFisicoId'];
+
+  // Placeholder original para observaciones
+  private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre la devolución... (Opcional)';
+
+  // Opciones para estado físico (ejemplo; adaptar según servicio si existe)
+  estadoFisicoOptions = [
+    { id: 1, nombre: 'Excelente' },
+    { id: 2, nombre: 'Bueno' },
+    { id: 3, nombre: 'Regular' },
+    { id: 4, nombre: 'Malo' }
+  ];
 
   constructor(
     private fb: FormBuilder,
     private movimientoService: MovimientoService,
     private authService: AuthService,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private alertService: AlertaService
   ) { }
 
   ngOnInit(): void {
-    this.pageTitleService.setTitle('Devoluciones');
+    this.pageTitleService.setTitle('Registrar Devolución');
     this.buildForm();
+    this.setupFormListeners();
+    this.setInitialPlaceholder();
   }
 
   private buildForm(): void {
     this.devolucionForm = this.fb.group({
       herramientaId: ['', Validators.required],
       fechaDevolucion: [this.getTodayDate(), Validators.required],
-      observaciones: ['']
+      estadoFisicoId: ['', Validators.required],
+      observaciones: ['', Validators.maxLength(500)]
+    });
+  }
+
+  private setupFormListeners(): void {
+    // Escuchar cambios en el formulario para actualizar el progreso en tiempo real
+    this.devolucionForm.valueChanges.subscribe(() => {
+      // Podrías agregar lógica adicional aquí si es necesario
+    });
+  }
+
+  private setInitialPlaceholder(): void {
+    setTimeout(() => {
+      const textarea = document.querySelector('textarea[formControlName="observaciones"]') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.placeholder = this.originalPlaceholder;
+      }
     });
   }
 
   private getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
+  }
+
+  /**
+   * Calcula el porcentaje de completitud del formulario
+   */
+  getFormCompletionPercentage(): number {
+    let filledFields = 0;
+    const totalFields = this.requiredFields.length;
+
+    this.requiredFields.forEach(field => {
+      const control = this.devolucionForm.get(field);
+      if (control && control.value && control.valid) {
+        filledFields++;
+      }
+    });
+
+    return Math.round((filledFields / totalFields) * 100);
   }
 
   onHerramientaSelected(herramienta: HerramientaOption | null): void {
@@ -88,7 +142,6 @@ export class DevolucionComponent implements OnInit {
       this.loadMovimientoInfo(herramienta.id);
     }
   }
-
 
   private loadMovimientoInfo(herramientaId: number): void {
     this.isLoadingMovimiento = true;
@@ -116,71 +169,78 @@ export class DevolucionComponent implements OnInit {
       };
       this.isLoadingMovimiento = false;
     }, 1000);
-
   }
 
   onSubmit(): void {
-    if (this.devolucionForm.valid && this.movimientoInfo) {
-      this.isLoading = true;
-
-      const formData = this.devolucionForm.value;
-      const currentUserId = this.authService.getUserId();
-
-      if (!currentUserId) {
-        this.isLoading = false;
-        this.isSuccess = false;
-        this.modalTitle = 'Error de Autenticación';
-        this.modalMessage = 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.';
-        this.showModal = true;
-        return;
-      }
-
-      const devolucionData: CreateMovimientoDto = {
-        idHerramienta: this.movimientoInfo.idHerramienta,
-        idUsuarioGenera: currentUserId,
-        idUsuarioResponsable: this.movimientoInfo.idUsuarioResponsable,
-        idTipoMovimiento: 2, // Devolución
-        fechaMovimiento: formData.fechaDevolucion,
-        estadoHerramientaAlDevolver: formData.estadoFisicoId,
-        idObra: this.movimientoInfo.idObra,
-        idProveedor: this.movimientoInfo.idProveedor,
-        observaciones: formData.observaciones || undefined,
-      };
-      console.log('Datos de devolución a enviar:', devolucionData);
-
-
-      this.movimientoService.registrarDevolucion(devolucionData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          this.isSuccess = true;
-          this.modalTitle = 'Devolución Registrada';
-          this.modalMessage = `La devolución de la herramienta ${this.selectedHerramientaInfo?.codigo} ha sido registrada exitosamente.`;
-          this.showModal = true;
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.isSuccess = false;
-          this.modalTitle = 'Error al Registrar Devolución';
-          this.modalMessage = error.error?.message || 'Ha ocurrido un error inesperado. Por favor, intente nuevamente.';
-          this.showModal = true;
-          console.error('Error al crear devolución:', error);
-        }
-      });
-    } else {
+    // Marcar todos los campos como tocados para mostrar errores
+    if (this.devolucionForm.invalid) {
       this.devolucionForm.markAllAsTouched();
-      console.log('Formulario inválido o falta información del movimiento');
+      this.scrollToFirstError();
+      return;
     }
+
+    // Crear mensaje de confirmación con los datos esenciales de la devolución
+    const confirmMessage = `¿Confirmar registro de devolución?<br><br>Herramienta: ${this.selectedHerramientaInfo?.nombre}<br>Fecha: ${this.devolucionForm.get('fechaDevolucion')?.value}`;
+
+    this.alertService.confirm(confirmMessage, 'Confirmar Devolución').then((result) => {
+      if (result.isConfirmed) {
+        this.registrarDevolucion();
+      }
+    });
   }
 
-  onModalConfirm(): void {
-    this.showModal = false;
-    if (this.isSuccess) {
-      this.resetForm();
+  private registrarDevolucion(): void {
+    this.isLoading = true;
+
+    const formData = this.devolucionForm.value;
+    const currentUserId = this.authService.getUserId();
+
+    if (!currentUserId) {
+      this.isLoading = false;
+      this.alertService.error('No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.', 'Error de Autenticación');
+      return;
     }
+
+    const devolucionData: CreateMovimientoDto = {
+      idHerramienta: this.movimientoInfo!.idHerramienta,
+      idUsuarioGenera: currentUserId,
+      idUsuarioResponsable: this.movimientoInfo!.idUsuarioResponsable,
+      idTipoMovimiento: 2, // Devolución
+      fechaMovimiento: formData.fechaDevolucion,
+      estadoHerramientaAlDevolver: formData.estadoFisicoId,
+      idObra: this.movimientoInfo!.idObra,
+      idProveedor: this.movimientoInfo!.idProveedor,
+      observaciones: formData.observaciones || undefined,
+    };
+
+    this.movimientoService.registrarDevolucion(devolucionData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.alertService.success(`La devolución de la herramienta ${this.selectedHerramientaInfo?.codigo} ha sido registrada exitosamente.`, '✓ Devolución Registrada');
+        this.resetForm();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.alertService.error(error.error?.message || 'Ha ocurrido un error inesperado. Por favor, intente nuevamente.', '✗ Error al Registrar');
+        console.error('Error al crear devolución:', error);
+      }
+    });
   }
 
-  onModalCancel(): void {
-    this.showModal = false;
+  private formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  }
+
+  /**
+   * Hace scroll al primer campo con error
+   */
+  private scrollToFirstError(): void {
+    const firstError = document.querySelector('.is-invalid, .has-error');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   resetForm(): void {
@@ -192,8 +252,22 @@ export class DevolucionComponent implements OnInit {
     this.movimientoInfo = null;
   }
 
-  isFormValid(): boolean {
-    return this.devolucionForm.valid && this.movimientoInfo !== null;
+  // Métodos para manejar el placeholder del textarea
+  onTextareaFocus(): void {
+    const textarea = document.querySelector('textarea[formControlName="observaciones"]') as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.placeholder = '';
+    }
+  }
+
+  onTextareaBlur(): void {
+    const control = this.devolucionForm.get('observaciones');
+    if (!control?.value) {
+      const textarea = document.querySelector('textarea[formControlName="observaciones"]') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.placeholder = this.originalPlaceholder;
+      }
+    }
   }
 
   getDaysOverdue(): number {
