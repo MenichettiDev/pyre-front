@@ -72,6 +72,12 @@ export class DevolucionComponent implements OnInit {
     { id: 4, nombre: 'Malo' }
   ];
 
+  // Declaración de las propiedades faltantes
+  isSuccess: boolean = false;
+  modalTitle: string = '';
+  modalMessage: string = '';
+  showModal: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private movimientoService: MovimientoService,
@@ -185,7 +191,7 @@ export class DevolucionComponent implements OnInit {
         // Show error modal
         this.isSuccess = false;
         this.modalTitle = 'Error al Cargar Información';
-        this.modalMessage = 'No se pudo cargar la información del préstamo de esta herramienta.';
+        this.modalMessage = 'No se pudo cargar la información de devolución.';
         this.showModal = true;
       }
     });
@@ -216,21 +222,27 @@ export class DevolucionComponent implements OnInit {
     const currentUserId = this.authService.getUserId();
 
     if (!currentUserId) {
-      this.isLoading = false;
-      this.alertService.error('No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.', 'Error de Autenticación');
-      return;
+        this.isLoading = false;
+        this.alertService.error('No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.', 'Error de Autenticación');
+        return;
+    }
+
+    if (!this.movimientoInfo) {
+        this.isLoading = false;
+        this.alertService.error('No se encontró información del movimiento. Por favor, seleccione una herramienta válida.', 'Error de Datos');
+        return;
     }
 
     const devolucionData: CreateMovimientoDto = {
-      idHerramienta: this.movimientoInfo.idHerramienta,
-      idUsuarioGenera: currentUserId,
-      idUsuarioResponsable: this.movimientoInfo.idUsuarioResponsable || null,
-      idTipoMovimiento: 2, // Devolución
-      fechaMovimiento: formData.fechaDevolucion,
-      estadoHerramientaAlDevolver: formData.estadoFisicoId,
-      idObra: this.movimientoInfo.idObra,
-      idProveedor: this.movimientoInfo.idProveedor,
-      observaciones: formData.observaciones || undefined,
+        idHerramienta: this.movimientoInfo.idHerramienta,
+        idUsuarioGenera: currentUserId,
+        idUsuarioResponsable: this.movimientoInfo.idUsuarioResponsable || null,
+        idTipoMovimiento: 2, // Devolución
+        fechaMovimiento: formData.fechaDevolucion,
+        estadoHerramientaAlDevolver: formData.estadoFisicoId,
+        idObra: this.movimientoInfo.idObra || undefined,
+        idProveedor: this.movimientoInfo.idProveedor || undefined,
+        observaciones: formData.observaciones || undefined,
     };
     console.log('Datos de devolución a enviar:', devolucionData);
 
