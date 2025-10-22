@@ -343,5 +343,10 @@ export class HerramientaService {
   getHerramientasPorDisponibilidad(disponibilidadId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/disponibilidad/${disponibilidadId}`);
   }
+  // Overload to accept multiple disponibilidad IDs
+  getHerramientasPorDisponibilidadArray(idDisponibilidad: number[]): Observable<any> {
+    const ids = idDisponibilidad.join(',');
+    return this.http.get<any>(`${this.baseUrl}/disponibilidad?ids=${ids}`);
+  }
 
 }

@@ -48,7 +48,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
   @Input() isId: string = '';
   @Input() isDisabled: boolean = false;
   @Input() placeholder: string = 'Seleccionar herramienta...';
-  @Input() idDisponibilidad: number = 1;
+  @Input() idDisponibilidad: number | number[] = 1;
   @Input() objectErrors: any = null;
   @Input() isTouched: boolean = false;
 
@@ -107,9 +107,20 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
     });
   }
 
+  private getHerramientasByDisponibilidad() {
+    console.log('idDisponibilidad:', this.idDisponibilidad); // Debug log
+    if (Array.isArray(this.idDisponibilidad)) {
+      console.log('Using array endpoint with IDs:', this.idDisponibilidad); // Debug log
+      return this.herramientaService.getHerramientasPorDisponibilidadArray(this.idDisponibilidad);
+    } else {
+      console.log('Using single endpoint with ID:', this.idDisponibilidad); // Debug log
+      return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad);
+    }
+  }
+
   private loadInitialData() {
     this.isLoading = true;
-    return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad)
+    return this.getHerramientasByDisponibilidad()
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
@@ -143,7 +154,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
   private searchHerramientas(searchTerm: string) {
     this.isLoading = true;
-    return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad)
+    return this.getHerramientasByDisponibilidad()
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];

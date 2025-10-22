@@ -39,7 +39,7 @@
                                             [isId]="'herramientaSelect'"
                                             [objectErrors]="devolucionForm.get('herramientaId')?.errors"
                                             [isTouched]="!!(devolucionForm.get('herramientaId')?.touched)"
-                                            formControlName="herramientaId" [idDisponibilidad]="2"
+                                            formControlName="herramientaId" [idDisponibilidad]="[2, 3]"
                                             (herramientaSelected)="onHerramientaSelected($event)">
                                         </app-cbo-herramientas>
                                         <small class="text-muted">Solo se muestran herramientas actualmente

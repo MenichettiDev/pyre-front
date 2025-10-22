@@ -10,13 +10,13 @@ export interface MovimientoDto {
 export interface CreateMovimientoDto {
   idHerramienta: number;
   idUsuarioGenera: number;
-  idUsuarioResponsable: number;
+  idUsuarioResponsable: number | null;
   idTipoMovimiento: number;
   fechaMovimiento: string;
   fechaEstimadaDevolucion?: string;
-  estadoHerramientaAlDevolver?: number;
-  idObra?: number;
-  idProveedor?: number;
+  estadoHerramientaAlDevolver?: number | null;
+  idObra?: number | null;
+  idProveedor?: number | null;
   observaciones?: string;
 }
 
@@ -41,6 +41,11 @@ export class MovimientoService {
   // Registrar devolucion de herramienta
   registrarDevolucion(data: CreateMovimientoDto): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}`, data);
+  }
+
+  // Obtener movimientos por herramienta ID
+  getMovimientosByHerramienta(herramientaId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramienta/${herramientaId}`);
   }
 
   // Obtener movimientos paginados con filtros

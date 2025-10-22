@@ -13,6 +13,11 @@ export const movimientosRoutes: Routes = [
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
   },
   {
+    path: 'reparacion',
+    loadComponent: () => import('./reparacion/reparacion.component').then(m => m.ReparacionComponent),
+    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
+  },
+  {
     path: 'devolucion',
     loadComponent: () => import('./devolucion/devolucion.component').then(m => m.DevolucionComponent),
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
@@ -22,9 +27,4 @@ export const movimientosRoutes: Routes = [
     loadComponent: () => import('./historial/historial.component').then(m => m.HistorialComponent),
     data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
   },
-  {
-    path: 'operario',
-    loadComponent: () => import('./operario/operario.component').then(m => m.OperarioComponent),
-    data: { requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] }
-  }
 ];

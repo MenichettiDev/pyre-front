@@ -70,9 +70,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // Movimientos / Trazabilidad
     { id: 9, descripcion: 'Movimientos', icono: 'bi bi-arrow-left-right', link: '/movimientos', grupo: 'GM03', principal: true, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
     { id: 10, descripcion: 'Registrar Préstamo', icono: 'bi bi-box-arrow-in-right', link: '/movimientos/prestamo', grupo: 'GM03', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 11, descripcion: 'Registrar Devolución', icono: 'bi bi-box-arrow-in-left', link: '/movimientos/devolucion', grupo: 'GM03', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 12, descripcion: 'Historial de Herramienta', icono: 'bi bi-clock-history', link: '/movimientos/historial', grupo: 'GM03', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 13, descripcion: 'Movimientos por Operario', icono: 'bi bi-person-lines-fill', link: '/movimientos/operario', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 11, descripcion: 'Registrar Reparación', icono: 'bi bi-tools', link: '/movimientos/reparacion', grupo: 'GM03', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 12, descripcion: 'Registrar Devolución', icono: 'bi bi-box-arrow-in-left', link: '/movimientos/devolucion', grupo: 'GM03', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
+    { id: 13, descripcion: 'Historial de Herramienta', icono: 'bi bi-clock-history', link: '/movimientos/historial', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
 
     // Gestión de Usuarios
     { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
