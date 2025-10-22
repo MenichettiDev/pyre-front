@@ -146,29 +146,49 @@ export class DevolucionComponent implements OnInit {
   private loadMovimientoInfo(herramientaId: number): void {
     this.isLoadingMovimiento = true;
 
-    // TODO: Replace with actual service call to get movement info by herramientaId
-    // For now, simulate the API call
-    setTimeout(() => {
-      // Mock data - replace with actual service call
-      this.movimientoInfo = {
-        idHerramienta: herramientaId,
-        idUsuarioGenera: 1,
-        idUsuarioResponsable: 2,
-        idTipoMovimiento: 1,
-        fechaMovimiento: '2024-01-15',
-        fechaEstimadaDevolucion: '2024-01-30',
-        idObra: 1,
-        observaciones: 'Préstamo para obra principal',
-        // Display fields
-        herramientaCodigo: this.selectedHerramientaInfo?.codigo,
-        herramientaNombre: this.selectedHerramientaInfo?.nombre,
-        usuarioNombre: 'Juan',
-        usuarioApellido: 'Pérez',
-        usuarioLegajo: 'EMP001',
-        obraNombre: 'Obra Principal'
-      };
-      this.isLoadingMovimiento = false;
-    }, 1000);
+    this.movimientoService.getMovimientosByHerramienta(herramientaId).subscribe({
+      next: (response) => {
+        this.isLoadingMovimiento = false;
+        if (response.success && response.data && response.data.length > 0) {
+          // Get the most recent active loan (should be the last one)
+          const lastMovimiento = response.data[response.data.length - 1];
+
+          this.movimientoInfo = {
+            idHerramienta: herramientaId,
+            idUsuarioGenera: lastMovimiento.idUsuarioGenera,
+            idUsuarioResponsable: lastMovimiento.idUsuarioResponsable || null,
+            idTipoMovimiento: 2, // Devolución
+            fechaMovimiento: new Date().toISOString(),
+            fechaEstimadaDevolucion: "",
+            idObra: lastMovimiento.idObra || null,
+            idProveedor: lastMovimiento.idProveedor || null,
+            observaciones: lastMovimiento.observaciones || '',
+            // Display fields
+            herramientaCodigo: this.selectedHerramientaInfo?.codigo,
+            herramientaNombre: this.selectedHerramientaInfo?.nombre,
+            usuarioNombre: lastMovimiento.usuarioResponsableNombre || lastMovimiento.usuarioNombre || 'N/A',
+            usuarioApellido: lastMovimiento.usuarioResponsableApellido || lastMovimiento.usuarioApellido || '',
+            usuarioLegajo: lastMovimiento.usuarioResponsableLegajo || lastMovimiento.usuarioLegajo || 'N/A',
+            obraNombre: lastMovimiento.obraNombre || 'N/A'
+          };
+        } else {
+          // No active loan found
+          this.movimientoInfo = null;
+          console.warn('No se encontró información de préstamo activo para esta herramienta');
+        }
+      },
+      error: (error) => {
+        this.isLoadingMovimiento = false;
+        this.movimientoInfo = null;
+        console.error('Error al cargar información del movimiento:', error);
+
+        // Show error modal
+        this.isSuccess = false;
+        this.modalTitle = 'Error al Cargar Información';
+        this.modalMessage = 'No se pudo cargar la información del préstamo de esta herramienta.';
+        this.showModal = true;
+      }
+    });
   }
 
   onSubmit(): void {
@@ -202,16 +222,18 @@ export class DevolucionComponent implements OnInit {
     }
 
     const devolucionData: CreateMovimientoDto = {
-      idHerramienta: this.movimientoInfo!.idHerramienta,
+      idHerramienta: this.movimientoInfo.idHerramienta,
       idUsuarioGenera: currentUserId,
-      idUsuarioResponsable: this.movimientoInfo!.idUsuarioResponsable,
+      idUsuarioResponsable: this.movimientoInfo.idUsuarioResponsable || null,
       idTipoMovimiento: 2, // Devolución
       fechaMovimiento: formData.fechaDevolucion,
       estadoHerramientaAlDevolver: formData.estadoFisicoId,
-      idObra: this.movimientoInfo!.idObra,
-      idProveedor: this.movimientoInfo!.idProveedor,
+      idObra: this.movimientoInfo.idObra,
+      idProveedor: this.movimientoInfo.idProveedor,
       observaciones: formData.observaciones || undefined,
     };
+    console.log('Datos de devolución a enviar:', devolucionData);
+
 
     this.movimientoService.registrarDevolucion(devolucionData).subscribe({
       next: (response) => {
