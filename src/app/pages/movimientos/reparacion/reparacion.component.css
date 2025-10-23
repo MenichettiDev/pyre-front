@@ -1,0 +1,195 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS - COMPONENTE REPARACIÓN
+   ========================================
+
+   Los estilos comunes se han movido a movimientos-style.css
+   Este archivo contiene estilos específicos para reparaciones.
+   ======================================== */
+
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA PROVEEDOR CARD
+   ======================================== */
+
+/* Card Principal con efectos avanzados */
+.info-card.proveedor-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: white;
+}
+
+.info-card.proveedor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0dcaf0, #0aa2c0);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.info-card.proveedor-card:hover::before {
+  transform: scaleX(1);
+}
+
+.info-card.proveedor-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(13, 202, 240, 0.15),
+              0 0 0 1px rgba(13, 202, 240, 0.1);
+}
+
+/* Header con animación de gradiente */
+.info-card.proveedor-card .card-header {
+  background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+  padding: 1rem 1.25rem;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card.proveedor-card .card-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.info-card.proveedor-card:hover .card-header::before {
+  left: 100%;
+}
+
+.info-card.proveedor-card .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.info-card.proveedor-card .card-title i {
+  font-size: 1.25rem;
+  animation: buildingPulse 3s ease-in-out infinite;
+}
+
+@keyframes buildingPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Body con efectos */
+.info-card.proveedor-card .card-body {
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, white, #f8f9fa);
+}
+
+/* ========================================
+   LISTA DE INFORMACIÓN PROVEEDOR MEJORADA
+   ======================================== */
+.info-list-proveedor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.info-item-proveedor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-item-proveedor::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #0dcaf0, #0aa2c0);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.info-item-proveedor:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-color: #0dcaf0;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(13, 202, 240, 0.08);
+}
+
+.info-item-proveedor:hover::before {
+  transform: scaleY(1);
+}
+
+.info-item-proveedor:nth-child(1) {
+  animation: itemSlideIn 0.4s ease 0.1s both;
+}
+
+.info-item-proveedor:nth-child(2) {
+  animation: itemSlideIn 0.4s ease 0.2s both;
+}
+
+.info-item-proveedor:nth-child(3) {
+  animation: itemSlideIn 0.4s ease 0.3s both;
+}
+
+.info-item-proveedor:nth-child(4) {
+  animation: itemSlideIn 0.4s ease 0.4s both;
+}
+
+.info-label-proveedor {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.info-item-proveedor:hover .info-label-proveedor {
+  color: #212529;
+  transform: translateX(2px);
+}
+
+.info-label-proveedor i {
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.info-item-proveedor:hover .info-label-proveedor i {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 4px rgba(13, 202, 240, 0.4));
+}
+
+.info-value-proveedor {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #212529;
+  text-align: right;
+  background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.info-item-proveedor:hover .info-value-proveedor {
+  transform: scale(1.05);
+  letter-spacing: 0.3px;
+}

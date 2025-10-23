@@ -13,6 +13,7 @@ import { CboProveedorComponent } from "../../../shared/components/Cbo/cbo-provee
 
 @Component({
   selector: 'app-reparacion',
+  standalone: true,
   imports: [
     CommonModule,
     RouterModule,
@@ -21,7 +22,7 @@ import { CboProveedorComponent } from "../../../shared/components/Cbo/cbo-provee
     CboProveedorComponent
   ],
   templateUrl: './reparacion.component.html',
-  styleUrls: ['../../../../styles/visor-style.css', './reparacion.component.css'],
+  styleUrls: ['../../../../styles/visor-style.css', '../../../../styles/movimientos-style.css', './reparacion.component.css'],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -37,12 +38,21 @@ export class ReparacionComponent implements OnInit {
   selectedProveedorInfo: any | null = null;
 
   isLoading = false;
+  isLoadingMovimiento = false;
 
   // Campos requeridos para calcular el progreso
   private requiredFields = ['herramientaId', 'proveedorId', 'fechaReparacion', 'fechaEstimadaFinalizacion'];
 
   // Placeholder original para observaciones
   private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre la reparación... (Opcional)';
+
+  // Opciones para estado físico (ejemplo; no usado en reparación pero para consistencia)
+  estadoFisicoOptions = [
+    { id: 1, nombre: 'Excelente' },
+    { id: 2, nombre: 'Bueno' },
+    { id: 3, nombre: 'Regular' },
+    { id: 4, nombre: 'Malo' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -173,14 +183,14 @@ export class ReparacionComponent implements OnInit {
 
     const reparacionData: CreateMovimientoDto = {
       idHerramienta: formData.herramientaId,
-      idUsuarioResponsable: formData.responsableId || null,
       idUsuarioGenera: currentUserId,
+      idUsuarioResponsable: null, // Para reparaciones no hay usuario responsable
       idTipoMovimiento: 3, // Reparación
-      fechaMovimiento: formData.fechaReparacion,
+      fechaMovimiento: formData.fechaReparacion, // Fecha cuando se registra la reparación
       fechaEstimadaDevolucion: formData.fechaEstimadaFinalizacion,
-      estadoHerramientaAlDevolver: null,
-      idObra: null,
-      idProveedor: formData.proveedorId.idProveedor,
+      estadoHerramientaAlDevolver: 0, // Estado inicial
+      idObra: 0, // No aplica para reparaciones
+      idProveedor: formData.proveedorId.idProveedor, // El ID del proveedor seleccionado
       observaciones: formData.observaciones || undefined,
     };
 
@@ -239,5 +249,15 @@ export class ReparacionComponent implements OnInit {
         textarea.placeholder = this.originalPlaceholder;
       }
     }
+  }
+
+  getDaysOverdue(): number {
+    // Para reparación, no aplica overdue ya que es futuro
+    return 0;
+  }
+
+  isOverdue(): boolean {
+    // Para reparación, no aplica overdue
+    return false;
   }
 }
