@@ -273,27 +273,83 @@ input:checked + .toggle-slider::before {
   margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: visible; /* permitir que elementos absolutos (botón en móvil) no se recorten */
 }
 
-.filter-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+.user-list-container .pyre-filter-bar .filter-row {
+  /* Desktop: forzar grid en la vista del usuario para que los 7 controles ocupen todo el ancho de forma equitativa */
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important; /* 7 columnas iguales: Legajo, Nombre, Apellido, Roles, Estado, reset, Buscar */
   gap: 12px;
   align-items: center;
   position: relative;
-  padding-right: 60px;
+  width: 100%;
 }
 
 .filter-item {
-  display: flex;
-  min-width: 140px;
-  flex: 1;
+  display: block;
+  width: 100%;
 }
+
+/* Asignar columnas específicas para cada filter-item (por orden en el DOM) */
+.filter-row > .filter-item:nth-child(1) { grid-column: 1 / 2; } /* Legajo */
+.filter-row > .filter-item:nth-child(2) { grid-column: 2 / 3; } /* Nombre */
+.filter-row > .filter-item:nth-child(3) { grid-column: 3 / 4; } /* Apellido */
+.filter-row > .filter-item:nth-child(4) { grid-column: 4 / 5; } /* Roles */
+.filter-row > .filter-item:nth-child(5) { grid-column: 5 / 6; } /* Estado */
+.filter-row > .filter-item.filter-item-with-reset { grid-column: 6 / 7; } /* Reset */
+.filter-row > .filter-actions { grid-column: 7 / 8; justify-self: end; } /* Buscar */
 
 .filter-item-with-reset {
   display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Asegurar que los hijos ocupen el ancho del item y no se desborden */
+.filter-item > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Reglas de seguridad para componentes CBO dentro del grid */
+.filter-item app-cbo-rol-usuario,
+.filter-item app-cbo-estado {
+  display: block;
+  width: 100% !important;
+}
+
+.filter-item app-cbo-rol-usuario select.form-select,
+.filter-item app-cbo-estado select.form-select {
+  width: 100% !important;
+}
+
+/* Forzar selects dentro de .filter-item a usar 100% (sobrescribe estilos locales de componentes si es necesario) */
+.filter-item select.form-select,
+.filter-item .form-select {
+  width: 100% !important;
+}
+
+/* Forzar que los componentes CBO ocupen el 100% del item y que su select interno también lo haga */
+.filter-item app-cbo-rol-usuario,
+.filter-item app-cbo-estado {
+  display: block;
+  width: 100% !important;
+}
+
+.filter-item input,
+.filter-item select,
+.filter-item textarea {
+  width: 100% !important;
+}
+
+/* Asegurar un ancho mínimo para inputs y selects dentro de filtros para evitar que se toquen */
+.filter-item input,
+.filter-item select,
+.filter-item textarea,
+.filter-item app-cbo-rol-usuario,
+.filter-item app-cbo-estado {
   min-width: 180px;
-  flex: 1;
 }
 
 .filter-input-group {
@@ -322,13 +378,11 @@ input:checked + .toggle-slider::before {
 }
 
 .filter-actions {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-self: end; /* asegurar que quede alineado a la derecha dentro de su celda */
 }
 
 .search-button {
@@ -723,11 +777,13 @@ input:checked + .toggle-slider::before {
     flex-wrap: wrap;
   }
 
-  .filter-row {
-    grid-template-columns: 1fr;
+  .user-list-container .pyre-filter-bar .filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     padding-right: 0;
     padding-bottom: 70px;
-    gap: 16px;
+    width: 100%;
   }
 
   .filter-item,
@@ -737,6 +793,7 @@ input:checked + .toggle-slider::before {
   }
 
   .filter-actions {
+    /* En móvil el botón de búsqueda se posiciona fijo al fondo de la tarjeta de filtros */
     position: absolute;
     left: 0;
     right: 0;

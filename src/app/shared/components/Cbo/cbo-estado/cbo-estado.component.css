@@ -1,6 +1,18 @@
 /* Import generic combo styles */
 @import '../cbo.component.css';
 
+/* Force dropdown arrow for form-select */
+select.form-select {
+  position: relative;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+    min-width: 200px; /* aumentar un poco el ancho del combo estado */
+}
+
 /* Specific styles for rol usuario combo */
 .option-codigo {
     font-family: monospace;
@@ -200,5 +212,3 @@
 .dropdown-option:has(.option-nombre:contains("Supervisor")) {
     background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
 }
-
-

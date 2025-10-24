@@ -1,7 +1,7 @@
 <!-- Título y botón en la misma línea -->
 <div class="container-fluid page-shell page-header-container">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="page-title mb-0" style="margin-left: 3rem;">Lista de Usuarios</h1>
+    <div></div>
     <a class="btn btn-primary header-action" (click)="createNewUser()" role="button">
       <i class="bx bx-user-plus bx-tada me-1" aria-hidden="true"></i> Nuevo Usuario
     </a>
@@ -23,18 +23,22 @@
           <input type="text" [(ngModel)]="filtroApellido" placeholder="Apellido" (keyup.enter)="onSearch()" />
         </div>
         <div class="filter-item">
-          <select [(ngModel)]="filtroRol">
-            <option value="">Todos los roles</option>
-            <option *ngFor="let rol of getRolesOptions()" [value]="rol.value">{{ rol.label }}</option>
-          </select>
+          <app-cbo-rol-usuario
+            [(ngModel)]="filtroRol"
+            [showOnlyActive]="true"
+            [isId]="'filtroRolSelect'"
+            placeholder="Todos los roles">
+          </app-cbo-rol-usuario>
+        </div>
+        <div class="filter-item">
+          <app-cbo-estado
+            [(ngModel)]="filtroEstado"
+            [isId]="'filtroEstadoSelect'"
+            placeholder="Todos los estados">
+          </app-cbo-estado>
         </div>
         <div class="filter-item filter-item-with-reset">
           <div class="filter-input-group">
-            <select [(ngModel)]="filtroEstado">
-              <option value="">Todos los estados</option>
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-            </select>
             <button *ngIf="hasActiveFilters()" type="button" class="reset-button-inline" (click)="onResetFilters()"
               title="Limpiar todos los filtros">
               <i class="pi pi-filter-slash"></i>

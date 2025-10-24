@@ -6,19 +6,18 @@
 
   <select
     [id]="isId"
-    [(ngModel)]="selectedRolId"
+    [(ngModel)]="selectedEstado"
     class="form-select"
     [disabled]="isDisabled"
-  (change)="onSelectionChange()"
+    (change)="onSelectionChange($event)"
     [class.is-invalid]="hasErrors()">
 
     <!-- Opción por defecto -->
-    <option [ngValue]="null">{{ placeholder }}</option>
+    <option value="">{{ placeholder }}</option>
 
-    <!-- Opciones dinámicas -->
-    <option *ngFor="let rol of roles" [ngValue]="rol.idRol">
-      {{ rol.nombreRol }}
-    </option>
+    <!-- Opciones fijas -->
+    <option value="activo">Activo</option>
+    <option value="inactivo">Inactivo</option>
   </select>
 
   <div *ngIf="hasErrors()" class="invalid-feedback">
