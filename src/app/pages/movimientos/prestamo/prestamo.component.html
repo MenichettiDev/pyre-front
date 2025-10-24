@@ -3,7 +3,7 @@
   <div class="row g-4 d-flex align-items-stretch">
     <!-- FORMULARIO PRINCIPAL -->
     <div class="col-lg-8">
-      <div class="card prestamo-form-card shadow-sm h-100">
+      <div class="card prestamo-form-card shadow-sm">
         <!-- Header del formulario con indicador de progreso -->
         <div class="card-header border-0 bg-white">
           <div class="d-flex justify-content-between align-items-center">
@@ -13,27 +13,37 @@
             </h5>
             <div class="form-progress">
               <span class="badge bg-light text-dark border">
-                <i class="bi bi-check-circle-fill text-success me-1" *ngIf="prestamoForm.valid"></i>
-                <i class="bi bi-hourglass-split text-warning me-1" *ngIf="!prestamoForm.valid"></i>
+                <i
+                  class="bi bi-check-circle-fill text-success me-1"
+                  *ngIf="prestamoForm.valid"
+                ></i>
+                <i
+                  class="bi bi-hourglass-split text-warning me-1"
+                  *ngIf="!prestamoForm.valid"
+                ></i>
                 {{ getFormCompletionPercentage() }}% completado
               </span>
             </div>
           </div>
           <!-- Barra de progreso visual -->
-          <div class="progress mt-3" style="height: 4px;">
-            <div class="progress-bar bg-success transition-smooth"
-                 role="progressbar"
-                 [style.width.%]="getFormCompletionPercentage()"
-                 [attr.aria-valuenow]="getFormCompletionPercentage()"
-                 aria-valuemin="0"
-                 aria-valuemax="100">
-            </div>
+          <div class="progress mt-3" style="height: 4px">
+            <div
+              class="progress-bar bg-success transition-smooth"
+              role="progressbar"
+              [style.width.%]="getFormCompletionPercentage()"
+              [attr.aria-valuenow]="getFormCompletionPercentage()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
           </div>
         </div>
 
         <div class="card-body p-4 d-flex flex-column">
-          <form [formGroup]="prestamoForm" (ngSubmit)="onSubmit()" class="flex-grow-1">
-
+          <form
+            [formGroup]="prestamoForm"
+            (ngSubmit)="onSubmit()"
+            class="flex-grow-1"
+          >
             <!-- SECCIÓN 1: Selección de Herramienta y Responsable -->
             <div class="mb-4">
               <h6 class="form-section-title">
@@ -41,16 +51,10 @@
                 Herramienta y Responsable
               </h6>
               <div class="row g-3">
-                <!-- Labels -->
-                <div class="col-md-6">
+                <!-- Label -->
+                <div class="col-12">
                   <label class="form-label soft-label">
-                    Seleccionar Herramienta
-                    <span class="text-danger">*</span>
-                  </label>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label soft-label">
-                    Seleccionar Responsable
+                    Seleccionar Herramienta y Responsable
                     <span class="text-danger">*</span>
                   </label>
                 </div>
@@ -58,37 +62,58 @@
               <div class="row g-3">
                 <!-- Herramienta -->
                 <div class="col-md-6">
-                  <div class="form-field-wrapper"
-                       [class.has-value]="prestamoForm.get('herramientaId')?.value"
-                       [class.has-error]="prestamoForm.get('herramientaId')?.invalid && prestamoForm.get('herramientaId')?.touched">
+                  <div
+                    class="form-field-wrapper"
+                    [class.has-value]="prestamoForm.get('herramientaId')?.value"
+                    [class.has-error]="
+                      prestamoForm.get('herramientaId')?.invalid &&
+                      prestamoForm.get('herramientaId')?.touched
+                    "
+                  >
                     <app-cbo-herramientas
                       [isId]="'herramientaSelect'"
-                      [idDisponibilidad]=1
+                      [idDisponibilidad]="1"
                       [objectErrors]="prestamoForm.get('herramientaId')?.errors"
-                      [isTouched]="!!(prestamoForm.get('herramientaId')?.touched)"
+                      [isTouched]="!!prestamoForm.get('herramientaId')?.touched"
                       formControlName="herramientaId"
-                      (herramientaSelected)="onHerramientaSelected($event)">
+                      (herramientaSelected)="onHerramientaSelected($event)"
+                    >
                     </app-cbo-herramientas>
-                    <span class="field-check-icon" *ngIf="prestamoForm.get('herramientaId')?.valid">
+                    <span
+                      class="field-check-icon"
+                      *ngIf="prestamoForm.get('herramientaId')?.valid"
+                    >
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
+                  <small class="text-muted"
+                    >Solo se muestran herramientas disponibles</small
+                  >
                 </div>
 
                 <!-- Responsable -->
                 <div class="col-md-6">
-                  <div class="form-field-wrapper"
-                       [class.has-value]="prestamoForm.get('responsableId')?.value"
-                       [class.has-error]="prestamoForm.get('responsableId')?.invalid && prestamoForm.get('responsableId')?.touched">
+                  <div
+                    class="form-field-wrapper"
+                    [class.has-value]="prestamoForm.get('responsableId')?.value"
+                    [class.has-error]="
+                      prestamoForm.get('responsableId')?.invalid &&
+                      prestamoForm.get('responsableId')?.touched
+                    "
+                  >
                     <app-cbo-usuario
                       [isId]="'responsableSelect'"
                       [showOnlyActive]="true"
                       [objectErrors]="prestamoForm.get('responsableId')?.errors"
-                      [isTouched]="!!(prestamoForm.get('responsableId')?.touched)"
+                      [isTouched]="!!prestamoForm.get('responsableId')?.touched"
                       formControlName="responsableId"
-                      (usuarioSelected)="onUsuarioSelected($event)">
+                      (usuarioSelected)="onUsuarioSelected($event)"
+                    >
                     </app-cbo-usuario>
-                    <span class="field-check-icon" *ngIf="prestamoForm.get('responsableId')?.valid">
+                    <span
+                      class="field-check-icon"
+                      *ngIf="prestamoForm.get('responsableId')?.valid"
+                    >
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
@@ -96,7 +121,7 @@
               </div>
             </div>
 
-            <hr class="soft-divider">
+            <hr class="soft-divider" />
 
             <!-- SECCIÓN 2: Fechas -->
             <div class="mb-4">
@@ -119,14 +144,29 @@
                       type="date"
                       class="form-control border-start-0 ps-0"
                       formControlName="fechaPrestamo"
-                      [class.is-invalid]="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched"
-                      [class.is-valid]="prestamoForm.get('fechaPrestamo')?.valid && prestamoForm.get('fechaPrestamo')?.touched">
-                    <span class="input-group-text bg-white border-start-0" *ngIf="prestamoForm.get('fechaPrestamo')?.valid">
+                      [class.is-invalid]="
+                        prestamoForm.get('fechaPrestamo')?.invalid &&
+                        prestamoForm.get('fechaPrestamo')?.touched
+                      "
+                      [class.is-valid]="
+                        prestamoForm.get('fechaPrestamo')?.valid &&
+                        prestamoForm.get('fechaPrestamo')?.touched
+                      "
+                    />
+                    <span
+                      class="input-group-text bg-white border-start-0"
+                      *ngIf="prestamoForm.get('fechaPrestamo')?.valid"
+                    >
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
-                  <div class="invalid-feedback d-block"
-                       *ngIf="prestamoForm.get('fechaPrestamo')?.invalid && prestamoForm.get('fechaPrestamo')?.touched">
+                  <div
+                    class="invalid-feedback d-block"
+                    *ngIf="
+                      prestamoForm.get('fechaPrestamo')?.invalid &&
+                      prestamoForm.get('fechaPrestamo')?.touched
+                    "
+                  >
                     <i class="bi bi-exclamation-circle me-1"></i>
                     La fecha de préstamo es requerida
                   </div>
@@ -146,19 +186,37 @@
                       type="date"
                       class="form-control border-start-0 ps-0"
                       formControlName="fechaEstimadaDevolucion"
-                      [class.is-invalid]="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched"
-                      [class.is-valid]="prestamoForm.get('fechaEstimadaDevolucion')?.valid && prestamoForm.get('fechaEstimadaDevolucion')?.touched">
-                    <span class="input-group-text bg-white border-start-0" *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.valid">
+                      [class.is-invalid]="
+                        prestamoForm.get('fechaEstimadaDevolucion')?.invalid &&
+                        prestamoForm.get('fechaEstimadaDevolucion')?.touched
+                      "
+                      [class.is-valid]="
+                        prestamoForm.get('fechaEstimadaDevolucion')?.valid &&
+                        prestamoForm.get('fechaEstimadaDevolucion')?.touched
+                      "
+                    />
+                    <span
+                      class="input-group-text bg-white border-start-0"
+                      *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.valid"
+                    >
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
-                  <div class="invalid-feedback d-block"
-                       *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.invalid && prestamoForm.get('fechaEstimadaDevolucion')?.touched">
+                  <div
+                    class="invalid-feedback d-block"
+                    *ngIf="
+                      prestamoForm.get('fechaEstimadaDevolucion')?.invalid &&
+                      prestamoForm.get('fechaEstimadaDevolucion')?.touched
+                    "
+                  >
                     <i class="bi bi-exclamation-circle me-1"></i>
                     La fecha estimada de devolución es requerida
                   </div>
                   <!-- Alerta si la fecha es muy lejana -->
-                  <div class="form-text text-warning mt-2" *ngIf="isDaysExceeded()">
+                  <div
+                    class="form-text text-warning mt-2"
+                    *ngIf="isDaysExceeded()"
+                  >
                     <i class="bi bi-exclamation-triangle me-1"></i>
                     El préstamo excede los 30 días recomendados
                   </div>
@@ -166,7 +224,7 @@
               </div>
             </div>
 
-            <hr class="soft-divider">
+            <hr class="soft-divider" />
 
             <!-- SECCIÓN 3: Obra y Observaciones -->
             <div class="mb-4">
@@ -175,19 +233,26 @@
                 Información Adicional
               </h6>
               <div class="row g-3">
-                <!-- Obra/Proyecto -->
+                <!-- Obra -->
                 <div class="col-md-6">
-                  <div class="form-field-wrapper"
-                       [class.has-value]="prestamoForm.get('obraId')?.value">
+                  <label class="form-label soft-label"> Obra/Proyecto </label>
+                  <div
+                    class="form-field-wrapper"
+                    [class.has-value]="prestamoForm.get('obraId')?.value"
+                  >
                     <app-cbo-obra
                       [isLabel]="'Seleccionar Obra (Opcional)'"
                       [isId]="'obraSelect'"
                       [showOnlyActive]="true"
                       [labelClass]="'soft-label'"
                       formControlName="obraId"
-                      (obraSelected)="onObraSelected($event)">
+                      (obraSelected)="onObraSelected($event)"
+                    >
                     </app-cbo-obra>
-                    <span class="field-check-icon" *ngIf="prestamoForm.get('obraId')?.value">
+                    <span
+                      class="field-check-icon"
+                      *ngIf="prestamoForm.get('obraId')?.value"
+                    >
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
@@ -195,9 +260,7 @@
 
                 <!-- Observaciones -->
                 <div class="col-12">
-                  <label class="form-label soft-label">
-                    Observaciones
-                  </label>
+                  <label class="form-label soft-label"> Observaciones </label>
                   <textarea
                     class="form-control modern-textarea"
                     rows="4"
@@ -205,32 +268,47 @@
                     placeholder=""
                     maxlength="500"
                     (focus)="onTextareaFocus()"
-                    (blur)="onTextareaBlur()">
+                    (blur)="onTextareaBlur()"
+                  >
                   </textarea>
                   <div class="form-text text-end">
-                    {{ prestamoForm.get('observaciones')?.value?.length || 0 }} / 500 caracteres
+                    {{
+                      prestamoForm.get("observaciones")?.value?.length || 0
+                    }}
+                    / 500 caracteres
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- BOTONES DE ACCIÓN -->
-            <div class="form-actions d-flex gap-3 mt-auto border-top justify-content-end">
+            <div
+              class="form-actions d-flex gap-3 mt-auto border-top justify-content-end"
+            >
               <button
                 type="button"
                 class="btn btn-outline-secondary"
                 (click)="resetForm()"
-                [disabled]="isLoading">
+                [disabled]="isLoading"
+              >
                 <i class="bi bi-arrow-clockwise me-1"></i>
                 <span>Limpiar</span>
               </button>
               <button
                 type="submit"
                 class="btn btn-success d-flex align-items-center gap-2"
-                [disabled]="prestamoForm.invalid || isLoading">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                [disabled]="prestamoForm.invalid || isLoading"
+              >
+                <span
+                  *ngIf="isLoading"
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
                 <i *ngIf="!isLoading" class="bi bi-check-circle-fill"></i>
-                <span>{{ isLoading ? 'Registrando...' : 'Registrar Préstamo' }}</span>
+                <span>{{
+                  isLoading ? "Registrando..." : "Registrar Préstamo"
+                }}</span>
               </button>
             </div>
           </form>
@@ -240,63 +318,84 @@
 
     <!-- PANEL LATERAL DE INFORMACIÓN -->
     <div class="col-lg-4">
-      <!-- Card de Estado de Herramienta -->
-      <div class="info-card card mb-3 shadow-sm"
-           [class.card-skeleton]="!selectedHerramientaInfo"
-           [class.card-filled]="selectedHerramientaInfo">
-        <div class="card-header bg-secondary text-white">
+      <!-- Información de la Herramienta -->
+      <div
+        class="info-card herramienta-card card mb-3 shadow-sm"
+        [class.card-skeleton]="!selectedHerramientaInfo"
+        [class.card-filled]="selectedHerramientaInfo"
+        @fadeIn
+      >
+        <div class="card-header bg-gradient-primary text-white">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-tools me-2"></i>
-            Estado de Herramienta
+            Herramienta a Prestar
           </h6>
         </div>
         <div class="card-body">
           <!-- Estado sin selección -->
-          <div *ngIf="!selectedHerramientaInfo" class="text-center text-muted py-4">
+          <div
+            *ngIf="!selectedHerramientaInfo"
+            class="empty-state-herramienta text-center text-muted py-4"
+          >
             <div class="empty-state-icon mb-3">
-              <i class="bi bi-tools" style="font-size: 3rem; opacity: 0.3;"></i>
+              <i class="bi bi-tools" style="font-size: 3rem"></i>
             </div>
-            <p class="mb-0 small">Seleccione una herramienta para ver su información</p>
+            <p class="mb-0 small">
+              Seleccione una herramienta para el préstamo
+            </p>
           </div>
 
           <!-- Estado con herramienta seleccionada -->
-          <div *ngIf="selectedHerramientaInfo" class="info-content">
-            <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+          <div *ngIf="selectedHerramientaInfo" class="info-content-herramienta">
+            <div
+              class="alert alert-success d-flex align-items-center mb-3"
+              role="alert"
+            >
               <i class="bi bi-check-circle-fill me-2"></i>
               <div>
-                <strong>{{ selectedHerramientaInfo.disponibilidad }}</strong>
-                <small class="d-block text-muted">Actualizado: Hoy</small>
+                <strong>Disponible para Préstamo</strong>
+                <small class="d-block text-muted"
+                  >Herramienta en buen estado</small
+                >
               </div>
             </div>
 
-            <div class="info-list">
-              <div class="info-item">
-                <span class="info-label">
+            <div class="info-list-herramienta">
+              <div class="info-item-herramienta">
+                <span class="info-label-herramienta">
                   <i class="bi bi-hash text-primary"></i> Código:
                 </span>
-                <span class="info-value">{{ selectedHerramientaInfo.codigo }}</span>
+                <span class="info-value-herramienta">{{
+                  selectedHerramientaInfo.codigo
+                }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">
-                  <i class="bi bi-wrench text-primary"></i> Nombre:
+              <div class="info-item-herramienta">
+                <span class="info-label-herramienta">
+                  <i class="bi bi-wrench text-primary"></i> Herramienta:
                 </span>
-                <span class="info-value">{{ selectedHerramientaInfo.nombre }}</span>
+                <span class="info-value-herramienta">{{
+                  selectedHerramientaInfo.nombre
+                }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">
+              <div class="info-item-herramienta">
+                <span class="info-label-herramienta">
                   <i class="bi bi-tag text-primary"></i> Marca:
                 </span>
-                <span class="info-value">{{ selectedHerramientaInfo.marca }}</span>
+                <span class="info-value-herramienta">{{
+                  selectedHerramientaInfo.marca
+                }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Card de Información del Responsable -->
-      <div class="info-card card mb-3 shadow-sm"
-           *ngIf="selectedUsuarioInfo"
-           @fadeIn>
+      <!-- Información del Responsable -->
+      <div
+        class="info-card responsable-card card mb-3 shadow-sm"
+        *ngIf="selectedUsuarioInfo"
+        @fadeIn
+      >
         <div class="card-header bg-gradient-info text-white">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-person-badge me-2"></i>
@@ -304,39 +403,36 @@
           </h6>
         </div>
         <div class="card-body">
-          <div class="info-list">
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-person-vcard text-info"></i> Legajo:
-              </span>
-              <span class="info-value">{{ selectedUsuarioInfo.legajo }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-person text-info"></i> Nombre:
-              </span>
-              <span class="info-value">{{ selectedUsuarioInfo.nombre }} {{ selectedUsuarioInfo.apellido }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-card-text text-info"></i> DNI:
-              </span>
-              <span class="info-value">{{ selectedUsuarioInfo.dni }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-shield-check text-info"></i> Rol:
-              </span>
-              <span class="badge bg-info">{{ selectedUsuarioInfo.rolNombre }}</span>
+          <div class="info-content-responsable">
+            <div class="info-list-responsable">
+              <div class="info-item-responsable">
+                <span class="info-label-responsable">
+                  <i class="bi bi-person-vcard text-info"></i> Legajo:
+                </span>
+                <span class="info-value-responsable">{{
+                  selectedUsuarioInfo.legajo
+                }}</span>
+              </div>
+              <div class="info-item-responsable">
+                <span class="info-label-responsable">
+                  <i class="bi bi-person text-info"></i> Nombre:
+                </span>
+                <span class="info-value-responsable">
+                  {{ selectedUsuarioInfo.nombre }}
+                  {{ selectedUsuarioInfo.apellido }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Card de Información de la Obra -->
-      <div class="info-card card mb-3 shadow-sm"
-           *ngIf="selectedObraInfo"
-           @fadeIn>
+      <!-- Información de la Obra -->
+      <div
+        class="info-card obra-card card mb-5 shadow-sm"
+        *ngIf="selectedObraInfo"
+        @fadeIn
+      >
         <div class="card-header bg-gradient-warning text-dark">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-building me-2"></i>
@@ -344,46 +440,40 @@
           </h6>
         </div>
         <div class="card-body">
-          <div class="info-list">
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-hash text-warning"></i> Código:
-              </span>
-              <span class="info-value">{{ selectedObraInfo.codigo || 'Sin código' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-building text-warning"></i> Nombre:
-              </span>
-              <span class="info-value">{{ selectedObraInfo.nombreObra }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-geo-alt text-warning"></i> Ubicación:
-              </span>
-              <span class="info-value">{{ selectedObraInfo.ubicacion || 'No especificada' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">
-                <i class="bi bi-calendar-event text-warning"></i> Inicio:
-              </span>
-              <span class="info-value">{{ selectedObraInfo.fechaInicio | date:'dd/MM/yyyy' }}</span>
+          <div class="info-content-obra">
+            <div class="info-list-obra">
+              <div class="info-item-obra">
+                <span class="info-label-obra">
+                  <i class="bi bi-hash text-warning"></i> Código:
+                </span>
+                <span class="info-value-obra">{{
+                  selectedObraInfo.codigo || "Sin código"
+                }}</span>
+              </div>
+              <div class="info-item-obra">
+                <span class="info-label-obra">
+                  <i class="bi bi-building text-warning"></i> Nombre:
+                </span>
+                <span class="info-value-obra">{{
+                  selectedObraInfo.nombreObra
+                }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <style>
+    .prestamo-form-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .form-actions {
+      margin-top: auto;
+    }
+  </style>
 </div>
-
-<style>
-  .prestamo-form-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .form-actions {
-    margin-top: auto;
-  }
-</style>

@@ -39,7 +39,7 @@ interface MovimientoInfo {
     CboHerramientasComponent,
   ],
   templateUrl: './devolucion.component.html',
-  styleUrls: ['../../../../styles/visor-style.css', './devolucion.component.css'],
+  styleUrls: ['../../../../styles/visor-style.css', '../../../../styles/movimientos-style.css', './devolucion.component.css'],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -172,9 +172,9 @@ export class DevolucionComponent implements OnInit {
             obraNombre: lastMovimiento.nombreObra || 'N/A'
           };
         } else {
-          // No active loan found
+          // No movements found
           this.movimientoInfo = null;
-          console.warn('No se encontró información de préstamo activo para esta herramienta');
+          console.warn('No se encontraron movimientos para esta herramienta');
         }
       },
       error: (error) => {
@@ -183,10 +183,7 @@ export class DevolucionComponent implements OnInit {
         console.error('Error al cargar información del movimiento:', error);
 
         // Show error modal
-        this.isSuccess = false;
-        this.modalTitle = 'Error al Cargar Información';
-        this.modalMessage = 'No se pudo cargar la información del préstamo de esta herramienta.';
-        this.showModal = true;
+        this.alertService.error('No se pudo cargar la información de devolución.', 'Error al Cargar Información');
       }
     });
   }
@@ -221,6 +218,12 @@ export class DevolucionComponent implements OnInit {
       return;
     }
 
+    if (!this.movimientoInfo) {
+      this.isLoading = false;
+      this.alertService.error('No se encontró información del movimiento. Por favor, seleccione una herramienta válida.', 'Error de Datos');
+      return;
+    }
+
     const devolucionData: CreateMovimientoDto = {
       idHerramienta: this.movimientoInfo.idHerramienta,
       idUsuarioGenera: currentUserId,
@@ -228,12 +231,10 @@ export class DevolucionComponent implements OnInit {
       idTipoMovimiento: 2, // Devolución
       fechaMovimiento: formData.fechaDevolucion,
       estadoHerramientaAlDevolver: formData.estadoFisicoId,
-      idObra: this.movimientoInfo.idObra,
-      idProveedor: this.movimientoInfo.idProveedor,
+      idObra: this.movimientoInfo.idObra || undefined,
+      idProveedor: this.movimientoInfo.idProveedor || undefined,
       observaciones: formData.observaciones || undefined,
     };
-    console.log('Datos de devolución a enviar:', devolucionData);
-
 
     this.movimientoService.registrarDevolucion(devolucionData).subscribe({
       next: (response) => {
@@ -296,7 +297,8 @@ export class DevolucionComponent implements OnInit {
     if (!this.movimientoInfo?.fechaEstimadaDevolucion) return 0;
 
     const today = new Date();
-    const estimatedDate = new Date(this.movimientoInfo.fechaEstimadaDevolucion);
+    // Parse the estimated date as UTC to avoid timezone issues
+    const estimatedDate = new Date(this.movimientoInfo.fechaEstimadaDevolucion + (this.movimientoInfo.fechaEstimadaDevolucion.includes('Z') ? '' : 'Z'));
     const diffTime = today.getTime() - estimatedDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 

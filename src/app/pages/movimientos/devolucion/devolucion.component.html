@@ -24,286 +24,284 @@
                             [style.width.%]="getFormCompletionPercentage()"
                             [attr.aria-valuenow]="getFormCompletionPercentage()" aria-valuemin="0" aria-valuemax="100">
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <!-- Formulario de Devolución -->
-                            <div class="col-lg-8">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">
-                                            <i class="bi bi-clipboard-check me-2"></i>
-                                            Datos de la Devolución
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <form [formGroup]="devolucionForm" (ngSubmit)="onSubmit()">
-                                            <div class="row g-3">
+                <div class="card-body p-4 d-flex flex-column">
+                    <form [formGroup]="devolucionForm" (ngSubmit)="onSubmit()" class="flex-grow-1">
 
-                                                <!-- Selección de Herramienta -->
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Herramienta Prestada *</label>
-                                                    <app-cbo-herramientas [isLabel]="'Seleccionar Herramienta'"
-                                                        [isId]="'herramientaSelect'"
-                                                        [objectErrors]="devolucionForm.get('herramientaId')?.errors"
-                                                        [isTouched]="!!(devolucionForm.get('herramientaId')?.touched)"
-                                                        formControlName="herramientaId" [idDisponibilidad]="[2, 3]"
-                                                        (herramientaSelected)="onHerramientaSelected($event)">
-                                                    </app-cbo-herramientas>
-                                                    <small class="text-muted">Solo se muestran herramientas actualmente
-                                                        prestadas</small>
-                                                </div>
-
-                                                <hr class="soft-divider">
-
-                                                <!-- SECCIÓN 2: Fechas -->
-                                                <div class="mb-4">
-                                                    <h6 class="form-section-title">
-                                                        <i class="bi bi-2-circle-fill text-primary me-2"></i>
-                                                        Fechas de la Devolución
-                                                    </h6>
-                                                    <div class="row g-3">
-                                                        <!-- Fecha de Devolución -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label soft-label">
-                                                                Fecha de Devolución
-                                                                <span class="text-danger">*</span>
-                                                            </label>
-                                                            <div class="input-group input-group-modern">
-                                                                <span class="input-group-text bg-light border-end-0">
-                                                                    <i class="bi bi-calendar3 text-primary"></i>
-                                                                </span>
-                                                                <input type="date"
-                                                                    class="form-control border-start-0 ps-0"
-                                                                    formControlName="fechaDevolucion"
-                                                                    [class.is-invalid]="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched"
-                                                                    [class.is-valid]="devolucionForm.get('fechaDevolucion')?.valid && devolucionForm.get('fechaDevolucion')?.touched">
-                                                                <span class="input-group-text bg-white border-start-0"
-                                                                    *ngIf="devolucionForm.get('fechaDevolucion')?.valid">
-                                                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                                                </span>
-                                                            </div>
-                                                            <div class="invalid-feedback d-block"
-                                                                *ngIf="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched">
-                                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                                La fecha de devolución es requerida
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Fecha Estimada (solo display) -->
-                                                        <div class="col-md-6" *ngIf="movimientoInfo">
-                                                            <label class="form-label soft-label">
-                                                                Fecha Estimada Devolución
-                                                            </label>
-                                                            <div class="input-group input-group-modern">
-                                                                <span class="input-group-text bg-light border-end-0">
-                                                                    <i class="bi bi-calendar-check text-primary"></i>
-                                                                </span>
-                                                                <input type="text"
-                                                                    class="form-control border-start-0 ps-0"
-                                                                    [value]="movimientoInfo.fechaEstimadaDevolucion | date:'dd/MM/yyyy'"
-                                                                    readonly>
-                                                                <span class="input-group-text bg-white border-start-0"
-                                                                    *ngIf="!isOverdue()">
-                                                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                                                </span>
-                                                                <span class="input-group-text bg-white border-start-0"
-                                                                    *ngIf="isOverdue()">
-                                                                    <i
-                                                                        class="bi bi-exclamation-triangle-fill text-danger"></i>
-                                                                </span>
-                                                            </div>
-                                                            <div class="form-text text-danger mt-2" *ngIf="isOverdue()">
-                                                                <i class="bi bi-exclamation-triangle me-1"></i>
-                                                                Retraso: {{ getDaysOverdue() }} día(s) vencido
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <hr class="soft-divider">
-
-                                                <!-- SECCIÓN 3: Estado Físico y Observaciones -->
-                                                <div class="mb-4">
-                                                    <h6 class="form-section-title">
-                                                        <i class="bi bi-3-circle-fill text-primary me-2"></i>
-                                                        Información Adicional
-                                                    </h6>
-                                                    <div class="row g-3">
-                                                        <!-- Estado Físico -->
-                                                        <div class="col-md-6">
-                                                            <label class="form-label soft-label">
-                                                                Estado Físico al Devolver
-                                                                <span class="text-danger">*</span>
-                                                            </label>
-                                                            <div class="form-field-wrapper"
-                                                                [class.has-value]="devolucionForm.get('estadoFisicoId')?.value"
-                                                                [class.has-error]="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched">
-                                                                <select class="form-control"
-                                                                    formControlName="estadoFisicoId"
-                                                                    [class.is-invalid]="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched"
-                                                                    [class.is-valid]="devolucionForm.get('estadoFisicoId')?.valid && devolucionForm.get('estadoFisicoId')?.touched">
-                                                                    <option value="">Seleccionar Estado</option>
-                                                                    <option *ngFor="let estado of estadoFisicoOptions"
-                                                                        [value]="estado.id">{{ estado.nombre }}</option>
-                                                                </select>
-                                                                <span class="field-check-icon"
-                                                                    *ngIf="devolucionForm.get('estadoFisicoId')?.valid">
-                                                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                                                </span>
-                                                            </div>
-                                                            <div class="invalid-feedback d-block"
-                                                                *ngIf="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched">
-                                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                                El estado físico es requerido
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Observaciones -->
-                                                        <div class="col-12">
-                                                            <label class="form-label soft-label">
-                                                                Observaciones
-                                                            </label>
-                                                            <textarea class="form-control modern-textarea" rows="4"
-                                                                formControlName="observaciones" placeholder=""
-                                                                maxlength="500" (focus)="onTextareaFocus()"
-                                                                (blur)="onTextareaBlur()">
-                  </textarea>
-                                                            <div class="form-text text-end">
-                                                                {{ devolucionForm.get('observaciones')?.value?.length ||
-                                                                0 }} / 500 caracteres
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- BOTONES DE ACCIÓN -->
-                                                <div
-                                                    class="form-actions d-flex gap-3 mt-auto border-top justify-content-end">
-                                                    <button type="button" class="btn btn-outline-secondary"
-                                                        (click)="resetForm()" [disabled]="isLoading">
-                                                        <i class="bi bi-arrow-clockwise me-1"></i>
-                                                        <span>Limpiar</span>
-                                                    </button>
-                                                    <button type="submit"
-                                                        class="btn btn-success d-flex align-items-center gap-2"
-                                                        [disabled]="devolucionForm.invalid || isLoading">
-                                                        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"
-                                                            role="status" aria-hidden="true"></span>
-                                                        <i *ngIf="!isLoading" class="bi bi-check-circle-fill"></i>
-                                                        <span>{{ isLoading ? 'Registrando...' : 'Registrar Devolución'
-                                                            }}</span>
-                                                    </button>
-                                                </div>
-                                        </form>
-                                    </div>
+                        <!-- SECCIÓN 1: Selección de Herramienta -->
+                        <div class="mb-4">
+                            <h6 class="form-section-title">
+                                <i class="bi bi-1-circle-fill text-primary me-2"></i>
+                                Herramienta a Devolver
+                            </h6>
+                            <div class="row g-3">
+                                <!-- Label -->
+                                <div class="col-12">
+                                    <label class="form-label soft-label">
+                                        Seleccionar Herramienta Prestada
+                                        <span class="text-danger">*</span>
+                                    </label>
                                 </div>
                             </div>
-
-                            <!-- PANEL LATERAL DE INFORMACIÓN -->
-                            <div class="col-lg-4">
-                                <!-- Información del Préstamo Actual -->
-                                <div class="info-card card mb-3 shadow-sm"
-                                    [class.card-skeleton]="!movimientoInfo && isLoadingMovimiento"
-                                    [class.card-filled]="movimientoInfo">
-                                    <div class="card-header bg-light">
-                                        <h6 class="card-title mb-0">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            Información del Préstamo
-                                        </h6>
+                            <div class="row g-3">
+                                <!-- Herramienta -->
+                                <div class="col-12">
+                                    <div class="form-field-wrapper"
+                                        [class.has-value]="devolucionForm.get('herramientaId')?.value"
+                                        [class.has-error]="devolucionForm.get('herramientaId')?.invalid && devolucionForm.get('herramientaId')?.touched">
+                                        <app-cbo-herramientas [isId]="'herramientaSelect'" [idDisponibilidad]="[2, 3]"
+                                            [objectErrors]="devolucionForm.get('herramientaId')?.errors"
+                                            [isTouched]="!!(devolucionForm.get('herramientaId')?.touched)"
+                                            formControlName="herramientaId"
+                                            (herramientaSelected)="onHerramientaSelected($event)">
+                                        </app-cbo-herramientas>
+                                        <span class="field-check-icon"
+                                            *ngIf="devolucionForm.get('herramientaId')?.valid">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        </span>
                                     </div>
-                                    <div class="card-body">
-                                        <div *ngIf="isLoadingMovimiento" class="text-center py-3">
-                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                <span class="visually-hidden">Cargando...</span>
-                                            </div>
-                                            <p class="mb-0 mt-2">Cargando información...</p>
-                                        </div>
+                                    <small class="text-muted">Solo se muestran herramientas actualmente prestadas</small>
+                                </div>
+                            </div>
+                        </div>
 
-                                        <div *ngIf="movimientoInfo && !isLoadingMovimiento">
-                                            <!-- Alert de retraso si aplica -->
-                                            <div *ngIf="isOverdue()" class="alert alert-warning py-2 mb-3">
-                                                <i class="bi bi-exclamation-triangle me-1"></i>
-                                                <strong>Retraso:</strong> {{ getDaysOverdue() }} día(s) vencido
-                                            </div>
+                        <hr class="soft-divider">
 
-                                            <div class="info-list">
-                                                <div class="info-item">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-hash text-primary"></i> Código:
-                                                    </span>
-                                                    <span class="info-value">{{ movimientoInfo.herramientaCodigo
-                                                        }}</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-wrench text-primary"></i> Herramienta:
-                                                    </span>
-                                                    <span class="info-value">{{ movimientoInfo.herramientaNombre
-                                                        }}</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-person text-primary"></i> Responsable:
-                                                    </span>
-                                                    <span class="info-value">{{ movimientoInfo.usuarioNombre }} {{
-                                                        movimientoInfo.usuarioApellido }}</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-calendar-event text-primary"></i> Fecha
-                                                        Préstamo:
-                                                    </span>
-                                                    <span class="info-value">{{ movimientoInfo.fechaMovimiento |
-                                                        date:'dd/MM/yyyy' }}</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-calendar-check text-primary"></i> Fecha
-                                                        Estimada:
-                                                    </span>
-                                                    <span class="info-value" [class.text-danger]="isOverdue()">
-                                                        {{ movimientoInfo.fechaEstimadaDevolucion | date:'dd/MM/yyyy' }}
-                                                    </span>
-                                                </div>
-                                                <div class="info-item" *ngIf="movimientoInfo.obraNombre">
-                                                    <span class="info-label">
-                                                        <i class="bi bi-building text-primary"></i> Obra:
-                                                    </span>
-                                                    <span class="info-value">{{ movimientoInfo.obraNombre }}</span>
-                                                </div>
-                                            </div>
-                                            <div *ngIf="movimientoInfo.observaciones" class="mt-3">
-                                                <small class="text-muted">Observaciones del préstamo:</small>
-                                                <p class="small mb-0">{{ movimientoInfo.observaciones }}</p>
-                                            </div>
-                                        </div>
+                        <!-- SECCIÓN 2: Fechas -->
+                        <div class="mb-4">
+                            <h6 class="form-section-title">
+                                <i class="bi bi-2-circle-fill text-primary me-2"></i>
+                                Fechas de la Devolución
+                            </h6>
+                            <div class="row g-3">
+                                <!-- Fecha de Devolución -->
+                                <div class="col-md-6">
+                                    <label class="form-label soft-label">
+                                        Fecha de Devolución
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-modern">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-calendar3 text-primary"></i>
+                                        </span>
+                                        <input type="date" class="form-control border-start-0 ps-0"
+                                            formControlName="fechaDevolucion"
+                                            [class.is-invalid]="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched"
+                                            [class.is-valid]="devolucionForm.get('fechaDevolucion')?.valid && devolucionForm.get('fechaDevolucion')?.touched">
+                                        <span class="input-group-text bg-white border-start-0"
+                                            *ngIf="devolucionForm.get('fechaDevolucion')?.valid">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        </span>
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                        *ngIf="devolucionForm.get('fechaDevolucion')?.invalid && devolucionForm.get('fechaDevolucion')?.touched">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        La fecha de devolución es requerida
+                                    </div>
+                                </div>
 
-                                        <div *ngIf="!movimientoInfo && !isLoadingMovimiento && selectedHerramientaInfo"
-                                            class="text-center text-muted py-3">
-                                            <i class="bi bi-exclamation-circle" style="font-size: 2rem;"></i>
-                                            <p class="mb-0 mt-2">No se encontró información de préstamo para esta
-                                                herramienta</p>
-                                        </div>
-
-                                        <div *ngIf="!selectedHerramientaInfo" class="text-center text-muted py-3">
-                                            <i class="bi bi-search" style="font-size: 2rem;"></i>
-                                            <p class="mb-0 mt-2">Seleccione una herramienta para ver la información del
-                                                préstamo</p>
-                                        </div>
+                                <!-- Fecha Estimada (solo display) -->
+                                <div class="col-md-6" *ngIf="movimientoInfo">
+                                    <label class="form-label soft-label">
+                                        Fecha Estimada Devolución
+                                    </label>
+                                    <div class="input-group input-group-modern">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-calendar-check text-primary"></i>
+                                        </span>
+                                        <input type="text"
+                                            class="form-control border-start-0 ps-0"
+                                            [value]="movimientoInfo.fechaEstimadaDevolucion | date:'dd/MM/yyyy':'UTC'"
+                                            readonly>
+                                        <span class="input-group-text bg-white border-start-0"
+                                            *ngIf="!isOverdue()">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        </span>
+                                        <span class="input-group-text bg-white border-start-0"
+                                            *ngIf="isOverdue()">
+                                            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-text text-danger mt-2" *ngIf="isOverdue()">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        Retraso: {{ getDaysOverdue() }} día(s) vencido
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <hr class="soft-divider">
+
+                        <!-- SECCIÓN 3: Estado Físico y Observaciones -->
+                        <div class="mb-4">
+                            <h6 class="form-section-title">
+                                <i class="bi bi-3-circle-fill text-primary me-2"></i>
+                                Información Adicional
+                            </h6>
+                            <div class="row g-3">
+                                <!-- Estado Físico -->
+                                <div class="col-md-6">
+                                    <label class="form-label soft-label">
+                                        Estado Físico al Devolver
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="form-field-wrapper"
+                                        [class.has-value]="devolucionForm.get('estadoFisicoId')?.value"
+                                        [class.has-error]="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched">
+                                        <select class="form-control"
+                                            formControlName="estadoFisicoId"
+                                            [class.is-invalid]="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched"
+                                            [class.is-valid]="devolucionForm.get('estadoFisicoId')?.valid && devolucionForm.get('estadoFisicoId')?.touched">
+                                            <option value="">Seleccionar Estado</option>
+                                            <option *ngFor="let estado of estadoFisicoOptions"
+                                                [value]="estado.id">{{ estado.nombre }}</option>
+                                        </select>
+                                        <span class="field-check-icon"
+                                            *ngIf="devolucionForm.get('estadoFisicoId')?.valid">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        </span>
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                        *ngIf="devolucionForm.get('estadoFisicoId')?.invalid && devolucionForm.get('estadoFisicoId')?.touched">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        El estado físico es requerido
+                                    </div>
+                                </div>
+
+                                <!-- Observaciones -->
+                                <div class="col-12">
+                                    <label class="form-label soft-label">
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control modern-textarea" rows="4"
+                                        formControlName="observaciones" placeholder="" maxlength="500"
+                                        (focus)="onTextareaFocus()" (blur)="onTextareaBlur()">
+                  </textarea>
+                                    <div class="form-text text-end">
+                                        {{ devolucionForm.get('observaciones')?.value?.length || 0 }} / 500 caracteres
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="form-actions d-flex gap-3 mt-auto border-top justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary" (click)="resetForm()"
+                                [disabled]="isLoading">
+                                <i class="bi bi-arrow-clockwise me-1"></i>
+                                <span>Limpiar</span>
+                            </button>
+                            <button type="submit" class="btn btn-success d-flex align-items-center gap-2"
+                                [disabled]="devolucionForm.invalid || isLoading">
+                                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                                <i *ngIf="!isLoading" class="bi bi-check-circle-fill"></i>
+                                <span>{{ isLoading ? 'Registrando...' : 'Registrar Devolución' }}</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL LATERAL DE INFORMACIÓN -->
+        <div class="col-lg-4">
+            <!-- Información del Préstamo Actual -->
+            <div class="info-card herramienta-card card mb-3 shadow-sm"
+                [class.card-skeleton]="!movimientoInfo && isLoadingMovimiento"
+                [class.card-filled]="movimientoInfo"
+                @fadeIn>
+                <div class="card-header bg-gradient-primary text-white">
+                    <h6 class="card-title mb-0 d-flex align-items-center">
+                        <i class="bi bi-tools me-2"></i>
+                        Herramienta a Devolver
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Estado sin selección -->
+                    <div *ngIf="!selectedHerramientaInfo" class="empty-state-herramienta text-center text-muted py-4">
+                        <div class="empty-state-icon mb-3">
+                            <i class="bi bi-tools" style="font-size: 3rem;"></i>
+                        </div>
+                        <p class="mb-0 small">Seleccione una herramienta para enviar a devolución</p>
                     </div>
 
-                    <style>
-                        .prestamo-form-card {
-                            display: flex;
-                            flex-direction: column;
-                            height: 100%;
-                        }
+                    <!-- Estado con herramienta seleccionada -->
+                    <div *ngIf="movimientoInfo" class="info-content-herramienta">
+                        <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <div>
+                                <strong>Información del Préstamo</strong>
+                                <small class="d-block text-muted">Datos del último movimiento</small>
+                            </div>
+                        </div>
 
-                        .form-actions {
-                            margin-top: auto;
-                        }
-                    </style>
+                        <div class="info-list-herramienta">
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-hash text-primary"></i> Código:
+                                </span>
+                                <span class="info-value-herramienta">{{ movimientoInfo.herramientaCodigo }}</span>
+                            </div>
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-wrench text-primary"></i> Herramienta:
+                                </span>
+                                <span class="info-value-herramienta">{{ movimientoInfo.herramientaNombre }}</span>
+                            </div>
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-person text-primary"></i> Responsable:
+                                </span>
+                                <span class="info-value-herramienta">{{ movimientoInfo.usuarioNombre }} {{ movimientoInfo.usuarioApellido }}</span>
+                            </div>
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-calendar-event text-primary"></i> Fecha Préstamo:
+                                </span>
+                                <span class="info-value-herramienta">{{ movimientoInfo.fechaMovimiento | date:'dd/MM/yyyy' }}</span>
+                            </div>
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-calendar-check text-primary"></i> Fecha Estimada:
+                                </span>
+                                <span class="info-value-herramienta" [class.text-danger]="isOverdue()">
+                                    {{ movimientoInfo.fechaEstimadaDevolucion | date:'dd/MM/yyyy':'UTC' }}
+                                </span>
+                            </div>
+                            <div class="info-item-herramienta" *ngIf="movimientoInfo.obraNombre">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-building text-primary"></i> Obra:
+                                </span>
+                                <span class="info-value-herramienta">{{ movimientoInfo.obraNombre }}</span>
+                            </div>
+                        </div>
+                        <div *ngIf="movimientoInfo.observaciones" class="mt-3">
+                            <small class="text-muted">Observaciones del préstamo:</small>
+                            <p class="small mb-0">{{ movimientoInfo.observaciones }}</p>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!movimientoInfo && !isLoadingMovimiento && selectedHerramientaInfo" class="text-center text-muted py-3">
+                        <i class="bi bi-exclamation-circle" style="font-size: 2rem;"></i>
+                        <p class="mb-0 mt-2">No se encontró un préstamo activo para esta herramienta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .prestamo-form-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .form-actions {
+        margin-top: auto;
+    }
+</style>

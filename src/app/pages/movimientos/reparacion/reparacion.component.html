@@ -1,9 +1,9 @@
 <!-- COMPONENTE REPARACIÓN - HTML -->
-<div class="container-fluid mt-4 reparacion-container">
+<div class="container-fluid mt-4 prestamo-container">
     <div class="row g-4 d-flex align-items-stretch">
         <!-- FORMULARIO PRINCIPAL -->
         <div class="col-lg-8">
-            <div class="card reparacion-form-card shadow-sm h-100">
+            <div class="card prestamo-form-card shadow-sm h-100">
                 <!-- Header del formulario con indicador de progreso -->
                 <div class="card-header border-0 bg-white">
                     <div class="d-flex justify-content-between align-items-center">
@@ -38,16 +38,10 @@
                                 Herramienta y Proveedor de Reparación
                             </h6>
                             <div class="row g-3">
-                                <!-- Labels -->
-                                <div class="col-md-6">
+                                <!-- Label -->
+                                <div class="col-12">
                                     <label class="form-label soft-label">
-                                        Seleccionar Herramienta a Reparar
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label soft-label">
-                                        Proveedor de Reparación
+                                        Seleccionar Herramienta y Proveedor
                                         <span class="text-danger">*</span>
                                     </label>
                                 </div>
@@ -69,6 +63,7 @@
                                             <i class="bi bi-check-circle-fill text-success"></i>
                                         </span>
                                     </div>
+                                    <small class="text-muted">Solo se muestran herramientas disponibles</small>
                                 </div>
 
                                 <!-- Proveedor -->
@@ -163,7 +158,7 @@
                         <div class="mb-4">
                             <h6 class="form-section-title">
                                 <i class="bi bi-3-circle-fill text-primary me-2"></i>
-                                Observaciones
+                                Información Adicional
                             </h6>
                             <div class="row g-3">
                                 <!-- Observaciones -->
@@ -204,10 +199,12 @@
 
         <!-- PANEL LATERAL DE INFORMACIÓN -->
         <div class="col-lg-4">
-            <!-- Card de Estado de Herramienta -->
-            <div class="info-card card mb-3 shadow-sm" [class.card-skeleton]="!selectedHerramientaInfo"
-                [class.card-filled]="selectedHerramientaInfo">
-                <div class="card-header bg-secondary text-white">
+            <!-- Información de la Herramienta -->
+            <div class="info-card herramienta-card card mb-3 shadow-sm"
+                [class.card-skeleton]="!selectedHerramientaInfo"
+                [class.card-filled]="selectedHerramientaInfo"
+                @fadeIn>
+                <div class="card-header bg-gradient-primary text-white">
                     <h6 class="card-title mb-0 d-flex align-items-center">
                         <i class="bi bi-tools me-2"></i>
                         Herramienta a Reparar
@@ -215,15 +212,15 @@
                 </div>
                 <div class="card-body">
                     <!-- Estado sin selección -->
-                    <div *ngIf="!selectedHerramientaInfo" class="text-center text-muted py-4">
+                    <div *ngIf="!selectedHerramientaInfo" class="empty-state-herramienta text-center text-muted py-4">
                         <div class="empty-state-icon mb-3">
-                            <i class="bi bi-tools" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <i class="bi bi-tools" style="font-size: 3rem;"></i>
                         </div>
                         <p class="mb-0 small">Seleccione una herramienta para enviar a reparación</p>
                     </div>
 
                     <!-- Estado con herramienta seleccionada -->
-                    <div *ngIf="selectedHerramientaInfo" class="info-content">
+                    <div *ngIf="selectedHerramientaInfo" class="info-content-herramienta">
                         <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             <div>
@@ -232,32 +229,32 @@
                             </div>
                         </div>
 
-                        <div class="info-list">
-                            <div class="info-item">
-                                <span class="info-label">
+                        <div class="info-list-herramienta">
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
                                     <i class="bi bi-hash text-primary"></i> Código:
                                 </span>
-                                <span class="info-value">{{ selectedHerramientaInfo.codigo }}</span>
+                                <span class="info-value-herramienta">{{ selectedHerramientaInfo.codigo }}</span>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">
-                                    <i class="bi bi-wrench text-primary"></i> Nombre:
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
+                                    <i class="bi bi-wrench text-primary"></i> Herramienta:
                                 </span>
-                                <span class="info-value">{{ selectedHerramientaInfo.nombre }}</span>
+                                <span class="info-value-herramienta">{{ selectedHerramientaInfo.nombre }}</span>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">
+                            <div class="info-item-herramienta">
+                                <span class="info-label-herramienta">
                                     <i class="bi bi-tag text-primary"></i> Marca:
                                 </span>
-                                <span class="info-value">{{ selectedHerramientaInfo.marca }}</span>
+                                <span class="info-value-herramienta">{{ selectedHerramientaInfo.marca }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card de Información del Proveedor -->
-            <div class="info-card card mb-3 shadow-sm" *ngIf="selectedProveedorInfo" @fadeIn>
+            <!-- Información del Proveedor -->
+            <div class="info-card proveedor-card card mb-3 shadow-sm" *ngIf="selectedProveedorInfo" @fadeIn>
                 <div class="card-header bg-gradient-info text-white">
                     <h6 class="card-title mb-0 d-flex align-items-center">
                         <i class="bi bi-building me-2"></i>
@@ -265,30 +262,30 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="info-list">
-                        <div class="info-item">
-                            <span class="info-label">
+                    <div class="info-list-proveedor">
+                        <div class="info-item-proveedor">
+                            <span class="info-label-proveedor">
                                 <i class="bi bi-building text-info"></i> Nombre:
                             </span>
-                            <span class="info-value">{{ selectedProveedorInfo.nombreProveedor }}</span>
+                            <span class="info-value-proveedor">{{ selectedProveedorInfo.nombreProveedor }}</span>
                         </div>
-                        <div class="info-item" *ngIf="selectedProveedorInfo.contacto">
-                            <span class="info-label">
+                        <div class="info-item-proveedor" *ngIf="selectedProveedorInfo.contacto">
+                            <span class="info-label-proveedor">
                                 <i class="bi bi-person text-info"></i> Contacto:
                             </span>
-                            <span class="info-value">{{ selectedProveedorInfo.contacto }}</span>
+                            <span class="info-value-proveedor">{{ selectedProveedorInfo.contacto }}</span>
                         </div>
-                        <div class="info-item" *ngIf="selectedProveedorInfo.cuit">
-                            <span class="info-label">
+                        <div class="info-item-proveedor" *ngIf="selectedProveedorInfo.cuit">
+                            <span class="info-label-proveedor">
                                 <i class="bi bi-card-text text-info"></i> CUIT:
                             </span>
-                            <span class="info-value">{{ selectedProveedorInfo.cuit }}</span>
+                            <span class="info-value-proveedor">{{ selectedProveedorInfo.cuit }}</span>
                         </div>
-                        <div class="info-item" *ngIf="selectedProveedorInfo.email">
-                            <span class="info-label">
+                        <div class="info-item-proveedor" *ngIf="selectedProveedorInfo.email">
+                            <span class="info-label-proveedor">
                                 <i class="bi bi-envelope text-info"></i> Email:
                             </span>
-                            <span class="info-value">{{ selectedProveedorInfo.email }}</span>
+                            <span class="info-value-proveedor">{{ selectedProveedorInfo.email }}</span>
                         </div>
                     </div>
                 </div>
@@ -298,7 +295,7 @@
 </div>
 
 <style>
-    .reparacion-form-card {
+    .prestamo-form-card {
         display: flex;
         flex-direction: column;
         height: 100%;

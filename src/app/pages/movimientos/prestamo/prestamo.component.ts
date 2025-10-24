@@ -23,7 +23,7 @@ import { AlertaService } from '../../../services/alerta.service';
     CboObraComponent,
   ],
   templateUrl: './prestamo.component.html',
-  styleUrls: ['../../../../styles/visor-style.css', './prestamo.component.css'],
+  styleUrls: ['../../../../styles/visor-style.css', '../../../../styles/movimientos-style.css', './prestamo.component.css'],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -40,12 +40,21 @@ export class PrestamoComponent implements OnInit {
   selectedObraInfo: ObraOption | null = null;
 
   isLoading = false;
+  isLoadingMovimiento = false;
 
   // Campos requeridos para calcular el progreso
   private requiredFields = ['herramientaId', 'responsableId', 'fechaPrestamo', 'fechaEstimadaDevolucion', 'obraId'];
 
   // Placeholder original para observaciones
   private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre el préstamo... (Opcional)';
+
+  // Opciones para estado físico (ejemplo; no usado en préstamo pero para consistencia)
+  estadoFisicoOptions = [
+    { id: 1, nombre: 'Excelente' },
+    { id: 2, nombre: 'Bueno' },
+    { id: 3, nombre: 'Regular' },
+    { id: 4, nombre: 'Malo' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -252,5 +261,15 @@ export class PrestamoComponent implements OnInit {
         textarea.placeholder = this.originalPlaceholder;
       }
     }
+  }
+
+  getDaysOverdue(): number {
+    // Para préstamo, no aplica overdue ya que es futuro
+    return 0;
+  }
+
+  isOverdue(): boolean {
+    // Para préstamo, no aplica overdue
+    return false;
   }
 }
