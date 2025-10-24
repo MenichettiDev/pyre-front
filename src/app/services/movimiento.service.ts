@@ -47,6 +47,10 @@ export class MovimientoService {
   getMovimientosByHerramienta(herramientaId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/herramienta/${herramientaId}`);
   }
+  // Obtener ultimo movimiento por herramienta ID
+  getUltimoMovimientoByHerramienta(herramientaId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/herramienta/${herramientaId}/ultimo`);
+  }
 
   // Obtener movimientos paginados con filtros
   getMovimientos(

@@ -92,30 +92,30 @@ export class DevolucionComponent implements OnInit {
   private loadMovimientoInfo(herramientaId: number): void {
     this.isLoadingMovimiento = true;
 
-    this.movimientoService.getMovimientosByHerramienta(herramientaId).subscribe({
+    this.movimientoService.getUltimoMovimientoByHerramienta(herramientaId).subscribe({
       next: (response) => {
         this.isLoadingMovimiento = false;
-        if (response.success && response.data && response.data.length > 0) {
+        if (response.success && response.data) {
           // Get the most recent active loan (should be the last one)
-          const lastMovimiento = response.data[response.data.length - 1];
+          const lastMovimiento = response.data;
 
           this.movimientoInfo = {
-            idHerramienta: herramientaId,
+            idHerramienta: lastMovimiento.idHerramienta,
             idUsuarioGenera: lastMovimiento.idUsuarioGenera,
-            idUsuarioResponsable: lastMovimiento.idUsuarioResponsable || null,
-            idTipoMovimiento: 2, // Devolución
-            fechaMovimiento: new Date().toISOString(),
-            fechaEstimadaDevolucion: "",
-            idObra: lastMovimiento.idObra || null,
-            idProveedor: lastMovimiento.idProveedor || null,
+            idUsuarioResponsable: lastMovimiento.idUsuarioResponsable,
+            idTipoMovimiento: lastMovimiento.idTipoMovimiento,
+            fechaMovimiento: lastMovimiento.fecha,
+            fechaEstimadaDevolucion: lastMovimiento.fechaEstimadaDevolucion,
+            idObra: lastMovimiento.idObra,
+            idProveedor: lastMovimiento.idProveedor,
             observaciones: lastMovimiento.observaciones || '',
             // Display fields
-            herramientaCodigo: this.selectedHerramientaInfo?.codigo,
-            herramientaNombre: this.selectedHerramientaInfo?.nombre,
-            usuarioNombre: lastMovimiento.usuarioResponsableNombre || lastMovimiento.usuarioNombre || 'N/A',
-            usuarioApellido: lastMovimiento.usuarioResponsableApellido || lastMovimiento.usuarioApellido || '',
-            usuarioLegajo: lastMovimiento.usuarioResponsableLegajo || lastMovimiento.usuarioLegajo || 'N/A',
-            obraNombre: lastMovimiento.obraNombre || 'N/A'
+            herramientaCodigo: lastMovimiento.codigoHerramienta,
+            herramientaNombre: lastMovimiento.nombreHerramienta,
+            usuarioNombre: lastMovimiento.nombreUsuarioResponsable || 'N/A',
+            usuarioApellido: '', // Not provided in API response
+            usuarioLegajo: 'N/A', // Not provided in API response
+            obraNombre: lastMovimiento.nombreObra || 'N/A'
           };
         } else {
           // No active loan found
