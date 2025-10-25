@@ -51,15 +51,25 @@ export class LoginComponent implements OnInit {
 
       this.loginService.login(legajo, password).subscribe({
         next: (response) => {
+          // Mapear la respuesta del backend a la estructura esperada por el frontend
+          const normalizedUser = {
+            id: response.usuario.Id,
+            nombre: response.usuario.Nombre,
+            email: response.usuario.Email,
+            dni: response.usuario.Dni,
+            legajo: response.usuario.Legajo,
+            rolId: response.usuario.RolId,
+            rolNombre: response.usuario.RolNombre,
+            avatar: response.usuario.Avatar
+          };
+
           // Save token and user data
-          this.authService.saveAuthData(response.token, response.usuario);
+          this.authService.saveAuthData(response.token, normalizedUser);
 
           // Redirect to dashboard where sidebar and topbar are always visible
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          console.error('Error al iniciar sesión:', error);
-
           let errorMessage = 'Hubo un problema al intentar iniciar sesión. Por favor, intente nuevamente.';
 
           if (error.status === 401) {

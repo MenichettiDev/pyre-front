@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ export class AuthService {
 
   private loggedIn = new BehaviorSubject<boolean>(this.isLoggedIn());
   loggedIn$ = this.loggedIn.asObservable();
-  private apiBase = ''; // Ajustar si hace falta
+  private apiBase = environment.apiUrl || 'http://localhost:5000/api';
 
   constructor(private http?: HttpClient) { }
 
@@ -24,6 +25,8 @@ export class AuthService {
       nombre: user.nombre,
       apellido: user.apellido || '',
       email: user.email || user.email,
+      dni: user.dni || '',
+      legajo: user.legajo || '',
       id_acceso: user.rolId ?? user.id_acceso ?? null,
       rolNombre: user.rolNombre ?? user.rolNombre ?? null,
       avatar: user.avatar ?? null,
@@ -35,10 +38,24 @@ export class AuthService {
     this.loggedIn.next(true);
   }
 
+  // Verificar si el token ha expirado
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convertir a milliseconds
+      return Date.now() >= exp;
+    } catch (error) {
+      return true;
+    }
+  }
+
   // Intenta recargar el perfil del backend si hay token pero falta user
   async ensureProfileLoaded(): Promise<boolean> {
     const token = this.getToken();
-    if (!token) return false;
+    if (!token || this.isTokenExpired()) return false;
     if (this.getUser()) return true;
 
     try {
@@ -72,7 +89,8 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!sessionStorage.getItem(this.TOKEN_KEY);
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired();
   }
 
   logout(): void {

@@ -51,17 +51,7 @@ export class UsuarioService {
     }
 
     // Solicitamos la respuesta completa para leer headers (p. ej. X-Total-Count)
-    // DEBUG: logear URL con params para ayudar a diagnosticar filtros
-    try {
-      const debugUrl = `${this.baseUrl}?${params.toString()}`;
-      // usar console.debug para no ensuciar demasiado la consola en producción
-      console.debug('[UserService] GET URL:', debugUrl);
-    } catch (e) {
-      // ignore
-    }
-
     return this.http.get<any>(`${this.baseUrl}`, { params, observe: 'response' as const }).pipe(
-      tap((r: any) => console.debug('[UserService] raw response:', r)),
       map(resp => {
         const body = resp.body ?? {};
         // Intenta leer header 'X-Total-Count' o 'x-total-count'
@@ -112,7 +102,6 @@ export class UsuarioService {
         return { data: dataArray, total, pagination };
       }),
       catchError(err => {
-        console.error('[UserService] getUsers error', err);
         return of({ data: [], total: 0 });
       })
     );

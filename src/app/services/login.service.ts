@@ -8,12 +8,14 @@ interface LoginResponse {
   message: string;
   token: string;
   usuario: {
-    id: number;
-    nombre: string;
-    email: string;
-    rolId: number;
-    rolNombre: string;
-    avatar: string | null;
+    Id: number;
+    Nombre: string;
+    Email: string;
+    Dni: string;
+    Legajo: string;
+    RolId: number;
+    RolNombre: string;
+    Avatar: string | null;
   };
 }
 
@@ -21,7 +23,7 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class LoginService {
-  private apiUrl = environment.apiUrl; // Usa la URL del entorno
+  private apiUrl = environment.apiUrl || 'http://localhost:5000/api';
 
   constructor(
     private http: HttpClient
@@ -30,5 +32,4 @@ export class LoginService {
   login(legajo: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { legajo, password });
   }
-
 }
