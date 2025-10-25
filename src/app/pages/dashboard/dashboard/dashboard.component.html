@@ -1,117 +1,122 @@
 <div class="dashboard-container">
   <div class="dashboard-header">
-    <h1>Dashboard Principal</h1>
-    <p>Bienvenido al panel de control de gestión de herramientas</p>
+    <!-- <h1>Dashboard Principal</h1> -->
+    <p class="dashboard-title">Panel de gestión de herramientas</p>
+    <!-- <p>Bienvenido al panel de control de gestión de herramientas</p> -->
   </div>
 
-  <div class="dashboard-content">
-    <div class="row">
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-tools"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ herramientasTotales }}</h3>
-            <p>Herramientas Totales</p>
-          </div>
+  <!-- Fila de alertas principales -->
+  <div class="stats-row stats-row-alertas">
+    <div class="stat-card stat-card-alerta">
+      <div class="stat-icon alert big">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="stat-info">
+        <h3>
+          {{ alertasPendientes }}
+          <span class="badge badge-warning">Pendientes</span>
+        </h3>
+        <p>Alertas pendientes que requieren atención inmediata</p>
+      </div>
+    </div>
+    <div class="stat-card stat-card-alerta">
+      <div class="stat-icon danger big">
+        <i class="bi bi-exclamation-octagon"></i>
+      </div>
+      <div class="stat-info">
+        <h3>
+          {{ alertasVencidas }}
+          <span class="badge badge-danger">Vencidas</span>
+        </h3>
+        <p>Alertas vencidas sin resolver</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila del resto de estadísticas -->
+  <div class="stats-row stats-row-resto">
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <i class="bi bi-tools"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ herramientasTotales }}</h3>
+        <p>Herramientas Totales</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ herramientasDisponibles }}</h3>
+        <p>Disponibles</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon info">
+        <i class="bi bi-arrow-right-circle"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ herramientasEnPrestamo }}</h3>
+        <p>En Préstamo</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <i class="bi bi-wrench-adjustable"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ herramientasEnReparacion }}</h3>
+        <p>En Reparación</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de gráficos y actividad reciente -->
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="chart-card">
+        <h4>Uso de Herramientas <span class="subtitle">Últimos 30 días</span></h4>
+        <div class="chart-placeholder">
+          <!-- Aquí se integrará el gráfico real -->
+          <p>Gráfico de uso de herramientas</p>
         </div>
       </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-check-circle"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ herramientasDisponibles }}</h3>
-            <p>Disponibles</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-arrow-right-circle"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ herramientasEnPrestamo }}</h3>
-            <p>En Préstamo</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-arrow-right-circle"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ herramientasEnReparacion }}</h3>
-            <p>En Reparación</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <!-- Ícono amarillo -->
-            <i class="bi bi-exclamation-triangle" style="color: #ffc107; font-size: 2rem;"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ alertasPendientes }}</h3>
-            <p>Alertas Pendientes</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <!-- Ícono rojo -->
-            <i class="bi bi-exclamation-triangle" style="color: #dc3545; font-size: 2rem;"></i>
-          </div>
-          <div class="stat-info">
-            <h3>{{ alertasVencidas }}</h3>
-            <p>Alertas Vencidas</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-md-8">
-          <div class="chart-card">
-            <h4>Uso de Herramientas - Últimos 30 días</h4>
-            <div class="chart-placeholder">
-              <p>Gráfico de uso de herramientas</p>
+    </div>
+    <div class="col-md-4">
+      <div class="recent-activity">
+        <h4>Actividad Reciente</h4>
+        <div class="activity-list">
+          <div class="activity-item stat-card">
+            <div class="stat-icon success">
+              <i class="bi bi-arrow-right"></i>
+            </div>
+            <div class="stat-info">
+              <span>Préstamo: Taladro #001</span>
+              <small>Hace 2 horas</small>
             </div>
           </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="recent-activity">
-            <h4>Actividad Reciente</h4>
-            <div class="activity-list">
-              <div class="activity-item">
-                <i class="bi bi-arrow-right text-success"></i>
-                <span>Préstamo: Taladro #001</span>
-                <small>Hace 2 horas</small>
-              </div>
-              <div class="activity-item">
-                <i class="bi bi-arrow-left text-info"></i>
-                <span>Devolución: Sierra #015</span>
-                <small>Hace 4 horas</small>
-              </div>
-              <div class="activity-item">
-                <i class="bi bi-plus-circle text-primary"></i>
-                <span>Nueva herramienta registrada</span>
-                <small>Hace 6 horas</small>
-              </div>
+          <div class="activity-item stat-card">
+            <div class="stat-icon info">
+              <i class="bi bi-arrow-left"></i>
+            </div>
+            <div class="stat-info">
+              <span>Devolución: Sierra #015</span>
+              <small>Hace 4 horas</small>
+            </div>
+          </div>
+          <div class="activity-item stat-card">
+            <div class="stat-icon primary">
+              <i class="bi bi-plus-circle"></i>
+            </div>
+            <div class="stat-info">
+              <span>Nueva herramienta registrada</span>
+              <small>Hace 6 horas</small>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
