@@ -1,4 +1,4 @@
-<div class="cbo-wrapper">
+<div class="cbo-proveedor-wrapper">
     <!-- Conditional Label -->
     <label *ngIf="isLabel" [for]="isId" class="form-label">
         {{ isLabel }}
@@ -49,8 +49,7 @@
 
                 <!-- Options list -->
                 <div *ngFor="let proveedor of proveedores; trackBy: trackByProveedor" class="dropdown-option"
-                    [class.selected]="selectedProveedor?.idProveedor === proveedor.idProveedor"
-                    (click)="onOptionClick(proveedor)">
+                    [class.selected]="selectedProveedor?.idProveedor === proveedor.idProveedor" (click)="onOptionClick(proveedor)">
                     <div class="option-content">
                         <div class="option-main">
                             <span class="option-nombre">{{ proveedor.nombreProveedor }}</span>

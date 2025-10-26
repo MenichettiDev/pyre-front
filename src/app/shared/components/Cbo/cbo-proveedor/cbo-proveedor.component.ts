@@ -1,15 +1,25 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR, FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, of, Subject } from 'rxjs';
+import { ReactiveFormsModule, FormControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, of, Subscription, map } from 'rxjs';
 import { ProveedoresService } from '../../../../services/proveedores.service';
+
+export interface ProveedorOption {
+  idProveedor: number;
+  nombreProveedor: string;
+  contacto: string;
+  cuit: string;
+  email: string;
+  activo: boolean;
+  displayText: string;
+}
 
 @Component({
   selector: 'app-cbo-proveedor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cbo-proveedor.component.html',
-  styleUrls: ['./cbo-proveedor.component.css'],
+  styleUrls: ['./cbo-proveedor.component.css', '../cbo.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -19,43 +29,281 @@ import { ProveedoresService } from '../../../../services/proveedores.service';
   ]
 })
 export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  // Internal FormControl for search
+  searchControl = new FormControl('');
+  selectedControl = new FormControl<ProveedorOption | null>(null);
+
+  // Subscriptions for cleanup
+  private subscriptions: Subscription[] = [];
+
+  // ControlValueAccessor callbacks
+  private onChange = (value: any) => { };
+  private onTouched = () => { };
+
+  // Component inputs
   @Input() isLabel: string = '';
   @Input() isId: string = 'proveedor-select';
   @Input() isDisabled: boolean = false;
+  @Input() placeholder: string = 'Seleccionar proveedor...';
   @Input() showOnlyActive: boolean = true;
   @Input() objectErrors: any = null;
+  @Input() isTouched: boolean = false;
 
-  @Output() proveedorSelected = new EventEmitter<any>();
+  // Output events
+  @Output() isEmiterTouched = new EventEmitter<boolean>();
+  @Output() proveedorSelected = new EventEmitter<ProveedorOption | null>();
 
-  // Internal state
-  proveedores: any[] = [];
-  selectedProveedor: any = null;
-  searchControl = new FormControl('');
-  isOpen = false;
+  // Component state
+  proveedores: ProveedorOption[] = [];
   isLoading = false;
-  placeholder = 'Seleccionar proveedor...';
-
-  private destroy$ = new Subject<void>();
-  private onChange = (value: any) => { };
-  private onTouched = () => { };
+  isOpen = false; // Start collapsed
+  selectedProveedor: ProveedorOption | null = null;
 
   constructor(private proveedorService: ProveedoresService) { }
 
   ngOnInit(): void {
-    this.setupSearch();
-    this.loadProveedores();
+    this.setupSearchSubscription();
+    this.loadInitialProveedores();
+    this.updateDisabledState();
+    this.updatePlaceholderText();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private setupSearchSubscription(): void {
+    const searchSub = this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(term => {
+          if (!this.isOpen) {
+            return of([] as ProveedorOption[]);
+          }
+          const searchTerm = (term || '').toString().trim();
+          if (searchTerm.length >= 2) {
+            return this.searchProveedores(searchTerm);
+          } else if (searchTerm.length === 0) {
+            return this.loadInitialData();
+          } else {
+            return of([] as ProveedorOption[]);
+          }
+        })
+      )
+      .subscribe(proveedores => {
+        this.proveedores = Array.isArray(proveedores) ? proveedores : [];
+      });
+
+    this.subscriptions.push(searchSub);
+  }
+
+  private loadInitialProveedores(): void {
+    this.loadInitialData().subscribe(proveedores => {
+      this.proveedores = Array.isArray(proveedores) ? proveedores : [];
+    });
+  }
+
+  private loadInitialData() {
+    this.isLoading = true;
+    return this.proveedorService.getProveedores(1, 20)
+      .pipe(
+        map(response => {
+          const rawList = response.data?.data || response.data || [];
+
+          // Filter only active if required
+          let proveedores = rawList;
+          if (this.showOnlyActive) {
+            proveedores = rawList.filter((p: any) => p.activo !== false);
+          }
+
+          const mapped = this.mapProveedoresToOptions(proveedores);
+          this.isLoading = false;
+          return mapped as ProveedorOption[];
+        }),
+        catchError(error => {
+          console.error('Error loading proveedores:', error);
+          this.isLoading = false;
+          return of([] as ProveedorOption[]);
+        })
+      );
+  }
+
+  private searchProveedores(searchTerm: string) {
+    this.isLoading = true;
+    return this.proveedorService.getProveedores(1, 20)
+      .pipe(
+        map(response => {
+          const rawList = response.data?.data || response.data || [];
+
+          // Filter client-side by search term
+          const filteredList = rawList.filter((proveedor: any) => {
+            const nombreProveedor = (proveedor.nombreProveedor || '').toLowerCase();
+            const contacto = (proveedor.contacto || '').toLowerCase();
+            const cuit = (proveedor.cuit || '').toLowerCase();
+            const email = (proveedor.email || '').toLowerCase();
+            const searchLower = searchTerm.toLowerCase();
+
+            return nombreProveedor.includes(searchLower) ||
+              contacto.includes(searchLower) ||
+              cuit.includes(searchLower) ||
+              email.includes(searchLower);
+          });
+
+          // Filter only active if required
+          let proveedores = filteredList;
+          if (this.showOnlyActive) {
+            proveedores = filteredList.filter((p: any) => p.activo !== false);
+          }
+
+          const mapped = this.mapProveedoresToOptions(proveedores);
+          this.isLoading = false;
+          return mapped;
+        }),
+        catchError(error => {
+          console.error('Error searching proveedores:', error);
+          this.isLoading = false;
+          return of([] as ProveedorOption[]);
+        })
+      );
+  }
+
+  private mapProveedoresToOptions(proveedores: any[]): ProveedorOption[] {
+    return proveedores.map(p => ({
+      idProveedor: p.idProveedor || p.id,
+      nombreProveedor: p.nombreProveedor || '',
+      contacto: p.contacto || '',
+      cuit: p.cuit || '',
+      email: p.email || '',
+      activo: p.activo !== false,
+      displayText: this.buildDisplayText(p)
+    }));
+  }
+
+  private buildDisplayText(proveedor: any): string {
+    const nombre = proveedor.nombreProveedor || '';
+    const contacto = proveedor.contacto ? ` - ${proveedor.contacto}` : '';
+    return `${nombre}${contacto}`;
+  }
+
+  // Input interaction methods (copied from herramientas component)
+  onMainInputClick(): void {
+    if (this.isDisabled) return;
+
+    if (!this.isOpen) {
+      this.openDropdown();
+    }
+  }
+
+  onMainInputFocus(): void {
+    if (this.isDisabled) return;
+
+    if (!this.isOpen) {
+      this.openDropdown();
+    }
+  }
+
+  onMainInputBlur(): void {
+    // Delay to allow option clicks
+    setTimeout(() => {
+      if (this.isOpen) {
+        this.closeDropdown();
+      }
+      this.onTouched();
+      this.isEmiterTouched.emit(true);
+    }, 150);
+  }
+
+  onMainInputChange(event: Event): void {
+    if (!this.isOpen) return;
+
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    this.searchControl.setValue(value, { emitEvent: true });
+  }
+
+  toggleDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (this.isDisabled) return;
+
+    if (this.isOpen) {
+      this.closeDropdown();
+    } else {
+      this.openDropdown();
+    }
+  }
+
+  private openDropdown(): void {
+    this.isOpen = true;
+
+    // Load initial data when opening
+    this.loadInitialData().subscribe(proveedores => {
+      this.proveedores = proveedores;
+    });
+
+    // Clear search when opening if no selection
+    if (!this.selectedProveedor) {
+      this.searchControl.setValue('', { emitEvent: false });
+    }
+  }
+
+  private closeDropdown(): void {
+    this.isOpen = false;
+    this.updatePlaceholderText();
+  }
+
+  onOptionClick(proveedor: ProveedorOption): void {
+    this.selectProveedor(proveedor);
+    this.closeDropdown();
+  }
+
+  private selectProveedor(proveedor: ProveedorOption | null): void {
+    this.selectedProveedor = proveedor;
+    this.selectedControl.setValue(proveedor);
+
+    if (proveedor) {
+      this.onChange(proveedor);
+    } else {
+      this.onChange(null);
+    }
+
+    this.proveedorSelected.emit(proveedor);
+    this.updatePlaceholderText();
+  }
+
+  clearSelection(): void {
+    this.selectProveedor(null);
+    this.searchControl.setValue('', { emitEvent: false });
+    this.loadInitialProveedores();
+  }
+
+  private updatePlaceholderText(): void {
+    if (this.selectedProveedor) {
+      this.placeholder = this.selectedProveedor.displayText;
+    } else {
+      this.placeholder = 'Seleccionar proveedor...';
+    }
+  }
+
+  private updateDisabledState(): void {
+    if (this.isDisabled) {
+      this.searchControl.disable({ emitEvent: false });
+      this.selectedControl.disable({ emitEvent: false });
+    } else {
+      this.searchControl.enable({ emitEvent: false });
+      this.selectedControl.enable({ emitEvent: false });
+    }
   }
 
   // ControlValueAccessor implementation
   writeValue(value: any): void {
-    if (value && value !== this.selectedProveedor) {
-      this.selectedProveedor = value;
-      this.updatePlaceholder();
+    if (value && typeof value === 'object') {
+      this.selectProveedor(value);
+    } else {
+      this.selectProveedor(null);
     }
   }
 
@@ -69,172 +317,29 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
 
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
+    this.updateDisabledState();
   }
 
-  private setupSearch(): void {
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(searchTerm => {
-        if (!searchTerm || searchTerm.length < 2) {
-          return of(this.proveedores);
-        }
-        this.isLoading = true;
-        return this.searchProveedores(searchTerm);
-      })
-    ).subscribe((proveedores: any) => {
-      if (!this.searchControl.value || this.searchControl.value.length < 2) {
-        // Don't update if it's just the initial load
-      } else {
-        this.proveedores = proveedores || [];
-      }
-      this.isLoading = false;
-    });
-  }
-
-  private searchProveedores(searchTerm: string) {
-    return this.proveedorService.getProveedores(1, 20).pipe(
-      switchMap(response => {
-        const rawList = response.data?.data || response.data || [];
-
-        // Filter client-side by search term
-        const filteredList = rawList.filter((proveedor: any) => {
-          const nombreProveedor = (proveedor.nombreProveedor || '').toLowerCase();
-          const contacto = (proveedor.contacto || '').toLowerCase();
-          const cuit = (proveedor.cuit || '').toLowerCase();
-          const email = (proveedor.email || '').toLowerCase();
-          const searchLower = searchTerm.toLowerCase();
-
-          return nombreProveedor.includes(searchLower) ||
-            contacto.includes(searchLower) ||
-            cuit.includes(searchLower) ||
-            email.includes(searchLower);
-        });
-
-        // Filter only active if required
-        let proveedores = filteredList;
-        if (this.showOnlyActive) {
-          proveedores = filteredList.filter((p: any) => p.activo !== false);
-        }
-
-        return of(proveedores);
-      }),
-      catchError(error => {
-        console.error('Error searching proveedores:', error);
-        return of([]);
-      })
-    );
-  }
-
-  private loadProveedores(): void {
-    this.isLoading = true;
-    this.proveedorService.getProveedores(1, 20).pipe(
-      catchError(error => {
-        console.error('Error loading proveedores:', error);
-        return of({ data: { data: [] } });
-      })
-    ).subscribe((response: any) => {
-      const rawList = response.data?.data || response.data || [];
-
-      // Filter only active if required
-      let proveedores = rawList;
-      if (this.showOnlyActive) {
-        proveedores = rawList.filter((p: any) => p.activo !== false);
-      }
-
-      this.proveedores = proveedores;
-      this.isLoading = false;
-    });
-  }
-
-  onMainInputClick(): void {
-    if (!this.isDisabled) {
-      this.toggleDropdown();
-    }
-  }
-
-  onMainInputFocus(): void {
-    if (!this.isDisabled && !this.isOpen) {
-      this.isOpen = true;
-      this.loadProveedores();
-    }
-  }
-
-  onMainInputBlur(): void {
-    setTimeout(() => {
-      if (this.isOpen) {
-        this.isOpen = false;
-        this.updatePlaceholder();
-      }
-    }, 200);
-  }
-
-  onMainInputChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.searchControl.setValue(target.value);
-  }
-
-  toggleDropdown(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    if (this.isDisabled) return;
-
-    this.isOpen = !this.isOpen;
-    if (this.isOpen) {
-      this.loadProveedores();
-    } else {
-      this.updatePlaceholder();
-    }
-  }
-
-  onOptionClick(proveedor: any): void {
-    this.selectedProveedor = proveedor;
-    this.isOpen = false;
-    this.updatePlaceholder();
-
-    // Emit events
-    this.proveedorSelected.emit(proveedor);
-    this.onChange(proveedor);
-    this.onTouched();
-  }
-
-  clearSelection(): void {
-    this.selectedProveedor = null;
-    this.searchControl.setValue('');
-    this.updatePlaceholder();
-
-    // Emit events
-    this.proveedorSelected.emit(null);
-    this.onChange(null);
-    this.onTouched();
-  }
-
-  private updatePlaceholder(): void {
-    if (this.selectedProveedor) {
-      this.placeholder = this.selectedProveedor.nombreProveedor || 'Proveedor seleccionado';
-    } else {
-      this.placeholder = 'Seleccionar proveedor...';
-    }
-  }
-
-  trackByProveedor(index: number, proveedor: any): any {
-    return proveedor.idProveedor || index;
-  }
-
+  // Helper methods for template
   hasErrors(): boolean {
-    return this.objectErrors && Object.keys(this.objectErrors).length > 0;
+    return !!(this.objectErrors && (this.isTouched || this.selectedControl.touched));
   }
 
   getErrorMessage(): string {
     if (!this.hasErrors()) return '';
 
-    const errors = this.objectErrors;
-    if (errors.required) return 'Este campo es requerido';
-    if (errors.invalid) return 'Selección inválida';
+    if (this.objectErrors?.required) {
+      return `${this.isLabel} es requerido`;
+    }
 
-    return 'Error en la selección';
+    if (typeof this.objectErrors === 'string') {
+      return this.objectErrors;
+    }
+
+    return 'Campo inválido';
+  }
+
+  trackByProveedor(index: number, proveedor: ProveedorOption): number {
+    return proveedor.idProveedor;
   }
 }
