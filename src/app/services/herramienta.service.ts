@@ -344,9 +344,15 @@ export class HerramientaService {
     return this.http.get<any>(`${this.baseUrl}/disponibilidad/${disponibilidadId}`);
   }
   // Overload to accept multiple disponibilidad IDs
-  getHerramientasPorDisponibilidadArray(idDisponibilidad: number[]): Observable<any> {
+  getHerramientasPorDisponibilidadArray(idDisponibilidad: number[], search?: string): Observable<any> {
     const ids = idDisponibilidad.join(',');
-    return this.http.get<any>(`${this.baseUrl}/disponibilidad?ids=${ids}`);
+    let params = new HttpParams().set('ids', ids);
+
+    if (search && search.trim() !== '') {
+      params = params.set('search', search.trim());
+    }
+
+    return this.http.get<any>(`${this.baseUrl}/disponibilidad`, { params });
   }
 
 }

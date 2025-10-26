@@ -85,7 +85,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
             return of([] as HerramientaOption[]);
           }
           const searchTerm = (term || '').toString().trim();
-          if (searchTerm.length >= 3) {
+          if (searchTerm.length >= 1) {
             return this.searchHerramientas(searchTerm);
           } else if (searchTerm.length === 0) {
             return this.loadInitialData();
@@ -107,14 +107,14 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
     });
   }
 
-  private getHerramientasByDisponibilidad() {
+  private getHerramientasByDisponibilidad(searchTerm: string = '') {
     console.log('idDisponibilidad:', this.idDisponibilidad); // Debug log
     if (Array.isArray(this.idDisponibilidad)) {
       console.log('Using array endpoint with IDs:', this.idDisponibilidad); // Debug log
-      return this.herramientaService.getHerramientasPorDisponibilidadArray(this.idDisponibilidad);
+      return this.herramientaService.getHerramientasPorDisponibilidadArray(this.idDisponibilidad, searchTerm);
     } else {
       console.log('Using single endpoint with ID:', this.idDisponibilidad); // Debug log
-      return this.herramientaService.getHerramientasPorDisponibilidad(this.idDisponibilidad);
+      return this.herramientaService.getHerramientasPorDisponibilidadArray([this.idDisponibilidad], searchTerm);
     }
   }
 
@@ -154,7 +154,7 @@ export class CboHerramientasComponent implements OnInit, OnDestroy, ControlValue
 
   private searchHerramientas(searchTerm: string) {
     this.isLoading = true;
-    return this.getHerramientasByDisponibilidad()
+    return this.getHerramientasByDisponibilidad(searchTerm)
       .pipe(
         switchMap(response => {
           const rawList = response.data || [];
