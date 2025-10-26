@@ -215,9 +215,7 @@ export class CboUsuarioComponent implements OnInit, OnDestroy, ControlValueAcces
 
   // New methods for handling input interactions
   onMainInputClick(): void {
-    if (this.isDisabled) return;
-
-    if (!this.isOpen) {
+    if (!this.isDisabled) {
       this.openDropdown();
     }
   }
@@ -265,16 +263,9 @@ export class CboUsuarioComponent implements OnInit, OnDestroy, ControlValueAcces
 
   private openDropdown(): void {
     this.isOpen = true;
-
-    // Load initial data when opening
     this.loadInitialData().subscribe(usuarios => {
       this.usuarios = usuarios;
     });
-
-    // Clear search when opening if no selection
-    if (!this.selectedUsuario) {
-      this.searchControl.setValue('', { emitEvent: false });
-    }
   }
 
   private closeDropdown(): void {

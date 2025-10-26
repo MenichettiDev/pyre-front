@@ -31,7 +31,7 @@ export class CboEstadoFisicoHerramientaComponent implements OnInit, OnDestroy, C
   estadosFisicos: any[] = [];
   selectedEstadoFisico: any = null;
   searchControl = new FormControl('');
-  isOpen = false;
+  isOpen = false; // Start collapsed
   isLoading = false;
   placeholder = 'Seleccionar estado físico...';
 
@@ -128,7 +128,7 @@ export class CboEstadoFisicoHerramientaComponent implements OnInit, OnDestroy, C
 
   onMainInputClick(): void {
     if (!this.isDisabled) {
-      this.toggleDropdown();
+      this.openDropdown();
     }
   }
 
@@ -151,6 +151,16 @@ export class CboEstadoFisicoHerramientaComponent implements OnInit, OnDestroy, C
   onMainInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchControl.setValue(target.value);
+  }
+
+  private openDropdown(): void {
+    this.isOpen = true;
+    this.loadEstadosFisicos();
+  }
+
+  private closeDropdown(): void {
+    this.isOpen = false;
+    this.updatePlaceholder();
   }
 
   toggleDropdown(event?: Event): void {

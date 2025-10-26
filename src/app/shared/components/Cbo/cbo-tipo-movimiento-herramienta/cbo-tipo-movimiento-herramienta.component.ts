@@ -31,7 +31,7 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
   tiposMovimiento: any[] = [];
   selectedTipoMovimiento: any = null;
   searchControl = new FormControl('');
-  isOpen = false;
+  isOpen = false; // Start collapsed
   isLoading = false;
   placeholder = 'Seleccionar tipo de movimiento...';
 
@@ -128,7 +128,7 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
 
   onMainInputClick(): void {
     if (!this.isDisabled) {
-      this.toggleDropdown();
+      this.openDropdown();
     }
   }
 
@@ -151,6 +151,16 @@ export class CboTipoMovimientoHerramientaComponent implements OnInit, OnDestroy,
   onMainInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchControl.setValue(target.value);
+  }
+
+  private openDropdown(): void {
+    this.isOpen = true;
+    this.loadTiposMovimiento();
+  }
+
+  private closeDropdown(): void {
+    this.isOpen = false;
+    this.updatePlaceholder();
   }
 
   toggleDropdown(event?: Event): void {
