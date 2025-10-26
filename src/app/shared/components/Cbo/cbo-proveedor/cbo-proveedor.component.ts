@@ -82,7 +82,7 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
             return of([] as ProveedorOption[]);
           }
           const searchTerm = (term || '').toString().trim();
-          if (searchTerm.length >= 2) {
+          if (searchTerm.length >= 1) {
             return this.searchProveedores(searchTerm);
           } else if (searchTerm.length === 0) {
             return this.loadInitialData();
@@ -106,18 +106,11 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
 
   private loadInitialData() {
     this.isLoading = true;
-    return this.proveedorService.getProveedores(1, 20)
+    return this.proveedorService.getProveedoresCombo()
       .pipe(
         map(response => {
-          const rawList = response.data?.data || response.data || [];
-
-          // Filter only active if required
-          let proveedores = rawList;
-          if (this.showOnlyActive) {
-            proveedores = rawList.filter((p: any) => p.activo !== false);
-          }
-
-          const mapped = this.mapProveedoresToOptions(proveedores);
+          const rawList = response.data || [];
+          const mapped = this.mapProveedoresToOptions(rawList);
           this.isLoading = false;
           return mapped as ProveedorOption[];
         }),
@@ -131,32 +124,11 @@ export class CboProveedorComponent implements OnInit, OnDestroy, ControlValueAcc
 
   private searchProveedores(searchTerm: string) {
     this.isLoading = true;
-    return this.proveedorService.getProveedores(1, 20)
+    return this.proveedorService.getProveedoresCombo(searchTerm)
       .pipe(
         map(response => {
-          const rawList = response.data?.data || response.data || [];
-
-          // Filter client-side by search term
-          const filteredList = rawList.filter((proveedor: any) => {
-            const nombreProveedor = (proveedor.nombreProveedor || '').toLowerCase();
-            const contacto = (proveedor.contacto || '').toLowerCase();
-            const cuit = (proveedor.cuit || '').toLowerCase();
-            const email = (proveedor.email || '').toLowerCase();
-            const searchLower = searchTerm.toLowerCase();
-
-            return nombreProveedor.includes(searchLower) ||
-              contacto.includes(searchLower) ||
-              cuit.includes(searchLower) ||
-              email.includes(searchLower);
-          });
-
-          // Filter only active if required
-          let proveedores = filteredList;
-          if (this.showOnlyActive) {
-            proveedores = filteredList.filter((p: any) => p.activo !== false);
-          }
-
-          const mapped = this.mapProveedoresToOptions(proveedores);
+          const rawList = response.data || [];
+          const mapped = this.mapProveedoresToOptions(rawList);
           this.isLoading = false;
           return mapped;
         }),
