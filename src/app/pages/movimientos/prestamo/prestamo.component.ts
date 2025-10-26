@@ -43,7 +43,7 @@ export class PrestamoComponent implements OnInit {
   isLoadingMovimiento = false;
 
   // Campos requeridos para calcular el progreso
-  private requiredFields = ['herramientaId', 'responsableId', 'fechaPrestamo', 'fechaEstimadaDevolucion', 'obraId'];
+  private requiredFields = ['herramientaId', 'responsableId', 'fechaEstimadaDevolucion', 'obraId'];
 
   // Placeholder original para observaciones
   private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre el préstamo... (Opcional)';
@@ -75,7 +75,6 @@ export class PrestamoComponent implements OnInit {
     this.prestamoForm = this.fb.group({
       herramientaId: ['', Validators.required],
       responsableId: ['', Validators.required],
-      fechaPrestamo: [this.getTodayDate(), Validators.required],
       fechaEstimadaDevolucion: ['', Validators.required],
       obraId: ['', Validators.required],
       observaciones: ['', Validators.maxLength(500)]
@@ -98,7 +97,7 @@ export class PrestamoComponent implements OnInit {
     });
   }
 
-  private getTodayDate(): string {
+  public getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
   }
 
@@ -117,25 +116,6 @@ export class PrestamoComponent implements OnInit {
     });
 
     return Math.round((filledFields / totalFields) * 100);
-  }
-
-  /**
-   * Verifica si el rango de fechas excede los 30 días recomendados
-   */
-  isDaysExceeded(): boolean {
-    const fechaPrestamo = this.prestamoForm.get('fechaPrestamo')?.value;
-    const fechaDevolucion = this.prestamoForm.get('fechaEstimadaDevolucion')?.value;
-
-    if (!fechaPrestamo || !fechaDevolucion) {
-      return false;
-    }
-
-    const inicio = new Date(fechaPrestamo);
-    const fin = new Date(fechaDevolucion);
-    const diffTime = Math.abs(fin.getTime() - inicio.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays > 30;
   }
 
   onHerramientaSelected(herramienta: HerramientaOption | null): void {
@@ -197,7 +177,7 @@ export class PrestamoComponent implements OnInit {
       idUsuarioResponsable: formData.responsableId,
       idUsuarioGenera: currentUserId,
       idTipoMovimiento: 1, // Préstamo
-      fechaMovimiento: formData.fechaPrestamo,
+      fechaMovimiento: new Date().toISOString(), // Enviar fecha actual
       fechaEstimadaDevolucion: formData.fechaEstimadaDevolucion,
       estadoHerramientaAlDevolver: formData.estadoFisicoHerramientaId,
       idObra: formData.obraId,
@@ -237,9 +217,6 @@ export class PrestamoComponent implements OnInit {
 
   resetForm(): void {
     this.prestamoForm.reset();
-    this.prestamoForm.patchValue({
-      fechaPrestamo: this.getTodayDate()
-    });
     this.selectedHerramientaInfo = null;
     this.selectedUsuarioInfo = null;
     this.selectedObraInfo = null;

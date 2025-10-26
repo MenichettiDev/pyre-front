@@ -13,37 +13,22 @@
             </h5>
             <div class="form-progress">
               <span class="badge bg-light text-dark border">
-                <i
-                  class="bi bi-check-circle-fill text-success me-1"
-                  *ngIf="prestamoForm.valid"
-                ></i>
-                <i
-                  class="bi bi-hourglass-split text-warning me-1"
-                  *ngIf="!prestamoForm.valid"
-                ></i>
+                <i class="bi bi-check-circle-fill text-success me-1" *ngIf="prestamoForm.valid"></i>
+                <i class="bi bi-hourglass-split text-warning me-1" *ngIf="!prestamoForm.valid"></i>
                 {{ getFormCompletionPercentage() }}% completado
               </span>
             </div>
           </div>
           <!-- Barra de progreso visual -->
           <div class="progress mt-3" style="height: 4px">
-            <div
-              class="progress-bar bg-success transition-smooth"
-              role="progressbar"
-              [style.width.%]="getFormCompletionPercentage()"
-              [attr.aria-valuenow]="getFormCompletionPercentage()"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            ></div>
+            <div class="progress-bar bg-success transition-smooth" role="progressbar"
+              [style.width.%]="getFormCompletionPercentage()" [attr.aria-valuenow]="getFormCompletionPercentage()"
+              aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
 
         <div class="card-body p-4 d-flex flex-column">
-          <form
-            [formGroup]="prestamoForm"
-            (ngSubmit)="onSubmit()"
-            class="flex-grow-1"
-          >
+          <form [formGroup]="prestamoForm" (ngSubmit)="onSubmit()" class="flex-grow-1">
             <!-- SECCIÓN 1: Selección de Herramienta y Responsable -->
             <div class="mb-4">
               <h6 class="form-section-title">
@@ -62,58 +47,36 @@
               <div class="row g-3">
                 <!-- Herramienta -->
                 <div class="col-md-6">
-                  <div
-                    class="form-field-wrapper"
-                    [class.has-value]="prestamoForm.get('herramientaId')?.value"
+                  <div class="form-field-wrapper" [class.has-value]="prestamoForm.get('herramientaId')?.value"
                     [class.has-error]="
                       prestamoForm.get('herramientaId')?.invalid &&
                       prestamoForm.get('herramientaId')?.touched
-                    "
-                  >
-                    <app-cbo-herramientas
-                      [isId]="'herramientaSelect'"
-                      [idDisponibilidad]="1"
+                    ">
+                    <app-cbo-herramientas [isId]="'herramientaSelect'" [idDisponibilidad]="1"
                       [objectErrors]="prestamoForm.get('herramientaId')?.errors"
-                      [isTouched]="!!prestamoForm.get('herramientaId')?.touched"
-                      formControlName="herramientaId"
-                      (herramientaSelected)="onHerramientaSelected($event)"
-                    >
+                      [isTouched]="!!prestamoForm.get('herramientaId')?.touched" formControlName="herramientaId"
+                      (herramientaSelected)="onHerramientaSelected($event)">
                     </app-cbo-herramientas>
-                    <span
-                      class="field-check-icon"
-                      *ngIf="prestamoForm.get('herramientaId')?.valid"
-                    >
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('herramientaId')?.valid">
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
-                  <small class="text-muted"
-                    >Solo se muestran herramientas disponibles</small
-                  >
+                  <small class="text-muted">Solo se muestran herramientas disponibles</small>
                 </div>
 
                 <!-- Responsable -->
                 <div class="col-md-6">
-                  <div
-                    class="form-field-wrapper"
-                    [class.has-value]="prestamoForm.get('responsableId')?.value"
+                  <div class="form-field-wrapper" [class.has-value]="prestamoForm.get('responsableId')?.value"
                     [class.has-error]="
                       prestamoForm.get('responsableId')?.invalid &&
                       prestamoForm.get('responsableId')?.touched
-                    "
-                  >
-                    <app-cbo-usuario
-                      [isId]="'responsableSelect'"
-                      [showOnlyActive]="true"
+                    ">
+                    <app-cbo-usuario [isId]="'responsableSelect'" [showOnlyActive]="true"
                       [objectErrors]="prestamoForm.get('responsableId')?.errors"
-                      [isTouched]="!!prestamoForm.get('responsableId')?.touched"
-                      formControlName="responsableId"
-                      (usuarioSelected)="onUsuarioSelected($event)"
-                    >
+                      [isTouched]="!!prestamoForm.get('responsableId')?.touched" formControlName="responsableId"
+                      (usuarioSelected)="onUsuarioSelected($event)">
                     </app-cbo-usuario>
-                    <span
-                      class="field-check-icon"
-                      *ngIf="prestamoForm.get('responsableId')?.valid"
-                    >
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('responsableId')?.valid">
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
@@ -127,51 +90,9 @@
             <div class="mb-4">
               <h6 class="form-section-title">
                 <i class="bi bi-2-circle-fill text-primary me-2"></i>
-                Fechas del Préstamo
+                Fecha del Préstamo
               </h6>
               <div class="row g-3">
-                <!-- Fecha de Préstamo -->
-                <div class="col-md-6">
-                  <label class="form-label soft-label">
-                    Fecha de Préstamo
-                    <span class="text-danger">*</span>
-                  </label>
-                  <div class="input-group input-group-modern">
-                    <span class="input-group-text bg-light border-end-0">
-                      <i class="bi bi-calendar3 text-primary"></i>
-                    </span>
-                    <input
-                      type="date"
-                      class="form-control border-start-0 ps-0"
-                      formControlName="fechaPrestamo"
-                      [class.is-invalid]="
-                        prestamoForm.get('fechaPrestamo')?.invalid &&
-                        prestamoForm.get('fechaPrestamo')?.touched
-                      "
-                      [class.is-valid]="
-                        prestamoForm.get('fechaPrestamo')?.valid &&
-                        prestamoForm.get('fechaPrestamo')?.touched
-                      "
-                    />
-                    <span
-                      class="input-group-text bg-white border-start-0"
-                      *ngIf="prestamoForm.get('fechaPrestamo')?.valid"
-                    >
-                      <i class="bi bi-check-circle-fill text-success"></i>
-                    </span>
-                  </div>
-                  <div
-                    class="invalid-feedback d-block"
-                    *ngIf="
-                      prestamoForm.get('fechaPrestamo')?.invalid &&
-                      prestamoForm.get('fechaPrestamo')?.touched
-                    "
-                  >
-                    <i class="bi bi-exclamation-circle me-1"></i>
-                    La fecha de préstamo es requerida
-                  </div>
-                </div>
-
                 <!-- Fecha Estimada de Devolución -->
                 <div class="col-md-6">
                   <label class="form-label soft-label">
@@ -182,43 +103,30 @@
                     <span class="input-group-text bg-light border-end-0">
                       <i class="bi bi-calendar-check text-primary"></i>
                     </span>
-                    <input
-                      type="date"
-                      class="form-control border-start-0 ps-0"
-                      formControlName="fechaEstimadaDevolucion"
-                      [class.is-invalid]="
+                    <input type="date" class="form-control border-start-0 ps-0"
+                      formControlName="fechaEstimadaDevolucion" [min]="getTodayDate()" [class.is-invalid]="
                         prestamoForm.get('fechaEstimadaDevolucion')?.invalid &&
                         prestamoForm.get('fechaEstimadaDevolucion')?.touched
-                      "
-                      [class.is-valid]="
+                      " [class.is-valid]="
                         prestamoForm.get('fechaEstimadaDevolucion')?.valid &&
                         prestamoForm.get('fechaEstimadaDevolucion')?.touched
-                      "
-                    />
-                    <span
-                      class="input-group-text bg-white border-start-0"
-                      *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.valid"
-                    >
+                      " />
+                    <span class="input-group-text bg-white border-start-0"
+                      *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.valid">
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
-                  <div
-                    class="invalid-feedback d-block"
-                    *ngIf="
+                  <div class="invalid-feedback d-block" *ngIf="
                       prestamoForm.get('fechaEstimadaDevolucion')?.invalid &&
                       prestamoForm.get('fechaEstimadaDevolucion')?.touched
-                    "
-                  >
+                    ">
                     <i class="bi bi-exclamation-circle me-1"></i>
-                    La fecha estimada de devolución es requerida
-                  </div>
-                  <!-- Alerta si la fecha es muy lejana -->
-                  <div
-                    class="form-text text-warning mt-2"
-                    *ngIf="isDaysExceeded()"
-                  >
-                    <i class="bi bi-exclamation-triangle me-1"></i>
-                    El préstamo excede los 30 días recomendados
+                    <span *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.errors?.['required']">
+                      La fecha estimada de devolución es requerida
+                    </span>
+                    <span *ngIf="prestamoForm.get('fechaEstimadaDevolucion')?.errors?.['dateInPast']">
+                      La fecha de devolución no puede ser anterior a hoy
+                    </span>
                   </div>
                 </div>
               </div>
@@ -236,23 +144,12 @@
                 <!-- Obra -->
                 <div class="col-md-6">
                   <label class="form-label soft-label"> Obra/Proyecto </label>
-                  <div
-                    class="form-field-wrapper"
-                    [class.has-value]="prestamoForm.get('obraId')?.value"
-                  >
-                    <app-cbo-obra
-                      [isLabel]="'Seleccionar Obra (Opcional)'"
-                      [isId]="'obraSelect'"
-                      [showOnlyActive]="true"
-                      [labelClass]="'soft-label'"
-                      formControlName="obraId"
-                      (obraSelected)="onObraSelected($event)"
-                    >
+                  <div class="form-field-wrapper" [class.has-value]="prestamoForm.get('obraId')?.value">
+                    <app-cbo-obra [isLabel]="'Seleccionar Obra (Opcional)'" [isId]="'obraSelect'"
+                      [showOnlyActive]="true" [labelClass]="'soft-label'" formControlName="obraId"
+                      (obraSelected)="onObraSelected($event)">
                     </app-cbo-obra>
-                    <span
-                      class="field-check-icon"
-                      *ngIf="prestamoForm.get('obraId')?.value"
-                    >
+                    <span class="field-check-icon" *ngIf="prestamoForm.get('obraId')?.value">
                       <i class="bi bi-check-circle-fill text-success"></i>
                     </span>
                   </div>
@@ -261,19 +158,12 @@
                 <!-- Observaciones -->
                 <div class="col-12">
                   <label class="form-label soft-label"> Observaciones </label>
-                  <textarea
-                    class="form-control modern-textarea"
-                    rows="4"
-                    formControlName="observaciones"
-                    placeholder=""
-                    maxlength="500"
-                    (focus)="onTextareaFocus()"
-                    (blur)="onTextareaBlur()"
-                  >
+                  <textarea class="form-control modern-textarea" rows="4" formControlName="observaciones" placeholder=""
+                    maxlength="500" (focus)="onTextareaFocus()" (blur)="onTextareaBlur()">
                   </textarea>
                   <div class="form-text text-end">
                     {{
-                      prestamoForm.get("observaciones")?.value?.length || 0
+                    prestamoForm.get("observaciones")?.value?.length || 0
                     }}
                     / 500 caracteres
                   </div>
@@ -282,33 +172,19 @@
             </div>
 
             <!-- BOTONES DE ACCIÓN -->
-            <div
-              class="form-actions d-flex gap-3 mt-auto border-top justify-content-end"
-            >
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                (click)="resetForm()"
-                [disabled]="isLoading"
-              >
+            <div class="form-actions d-flex gap-3 mt-auto border-top justify-content-end">
+              <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" [disabled]="isLoading">
                 <i class="bi bi-arrow-clockwise me-1"></i>
                 <span>Limpiar</span>
               </button>
-              <button
-                type="submit"
-                class="btn btn-success d-flex align-items-center gap-2"
-                [disabled]="prestamoForm.invalid || isLoading"
-              >
-                <span
-                  *ngIf="isLoading"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
+              <button type="submit" class="btn btn-success d-flex align-items-center gap-2"
+                [disabled]="prestamoForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                  aria-hidden="true"></span>
                 <i *ngIf="!isLoading" class="bi bi-check-circle-fill"></i>
                 <span>{{
                   isLoading ? "Registrando..." : "Registrar Préstamo"
-                }}</span>
+                  }}</span>
               </button>
             </div>
           </form>
@@ -319,12 +195,8 @@
     <!-- PANEL LATERAL DE INFORMACIÓN -->
     <div class="col-lg-4">
       <!-- Información de la Herramienta -->
-      <div
-        class="info-card herramienta-card card mb-3 shadow-sm"
-        [class.card-skeleton]="!selectedHerramientaInfo"
-        [class.card-filled]="selectedHerramientaInfo"
-        @fadeIn
-      >
+      <div class="info-card herramienta-card card mb-3 shadow-sm" [class.card-skeleton]="!selectedHerramientaInfo"
+        [class.card-filled]="selectedHerramientaInfo" @fadeIn>
         <div class="card-header bg-gradient-primary text-white">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-tools me-2"></i>
@@ -333,10 +205,7 @@
         </div>
         <div class="card-body">
           <!-- Estado sin selección -->
-          <div
-            *ngIf="!selectedHerramientaInfo"
-            class="empty-state-herramienta text-center text-muted py-4"
-          >
+          <div *ngIf="!selectedHerramientaInfo" class="empty-state-herramienta text-center text-muted py-4">
             <div class="empty-state-icon mb-3">
               <i class="bi bi-tools" style="font-size: 3rem"></i>
             </div>
@@ -347,16 +216,11 @@
 
           <!-- Estado con herramienta seleccionada -->
           <div *ngIf="selectedHerramientaInfo" class="info-content-herramienta">
-            <div
-              class="alert alert-success d-flex align-items-center mb-3"
-              role="alert"
-            >
+            <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
               <i class="bi bi-check-circle-fill me-2"></i>
               <div>
                 <strong>Disponible para Préstamo</strong>
-                <small class="d-block text-muted"
-                  >Herramienta en buen estado</small
-                >
+                <small class="d-block text-muted">Herramienta en buen estado</small>
               </div>
             </div>
 
@@ -367,7 +231,7 @@
                 </span>
                 <span class="info-value-herramienta">{{
                   selectedHerramientaInfo.codigo
-                }}</span>
+                  }}</span>
               </div>
               <div class="info-item-herramienta">
                 <span class="info-label-herramienta">
@@ -375,7 +239,7 @@
                 </span>
                 <span class="info-value-herramienta">{{
                   selectedHerramientaInfo.nombre
-                }}</span>
+                  }}</span>
               </div>
               <div class="info-item-herramienta">
                 <span class="info-label-herramienta">
@@ -383,7 +247,7 @@
                 </span>
                 <span class="info-value-herramienta">{{
                   selectedHerramientaInfo.marca
-                }}</span>
+                  }}</span>
               </div>
             </div>
           </div>
@@ -391,11 +255,7 @@
       </div>
 
       <!-- Información del Responsable -->
-      <div
-        class="info-card responsable-card card mb-3 shadow-sm"
-        *ngIf="selectedUsuarioInfo"
-        @fadeIn
-      >
+      <div class="info-card responsable-card card mb-3 shadow-sm" *ngIf="selectedUsuarioInfo" @fadeIn>
         <div class="card-header bg-gradient-info text-white">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-person-badge me-2"></i>
@@ -411,7 +271,7 @@
                 </span>
                 <span class="info-value-responsable">{{
                   selectedUsuarioInfo.legajo
-                }}</span>
+                  }}</span>
               </div>
               <div class="info-item-responsable">
                 <span class="info-label-responsable">
@@ -428,11 +288,7 @@
       </div>
 
       <!-- Información de la Obra -->
-      <div
-        class="info-card obra-card card mb-5 shadow-sm"
-        *ngIf="selectedObraInfo"
-        @fadeIn
-      >
+      <div class="info-card obra-card card mb-5 shadow-sm" *ngIf="selectedObraInfo" @fadeIn>
         <div class="card-header bg-gradient-warning text-dark">
           <h6 class="card-title mb-0 d-flex align-items-center">
             <i class="bi bi-building me-2"></i>
@@ -448,7 +304,7 @@
                 </span>
                 <span class="info-value-obra">{{
                   selectedObraInfo.codigo || "Sin código"
-                }}</span>
+                  }}</span>
               </div>
               <div class="info-item-obra">
                 <span class="info-label-obra">
@@ -456,7 +312,7 @@
                 </span>
                 <span class="info-value-obra">{{
                   selectedObraInfo.nombreObra
-                }}</span>
+                  }}</span>
               </div>
             </div>
           </div>
