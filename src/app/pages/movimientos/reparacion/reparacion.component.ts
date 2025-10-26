@@ -41,7 +41,7 @@ export class ReparacionComponent implements OnInit {
   isLoadingMovimiento = false;
 
   // Campos requeridos para calcular el progreso
-  private requiredFields = ['herramientaId', 'proveedorId', 'fechaReparacion', 'fechaEstimadaFinalizacion'];
+  private requiredFields = ['herramientaId', 'proveedorId', 'fechaEstimadaFinalizacion'];
 
   // Placeholder original para observaciones
   private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre la reparación... (Opcional)';
@@ -73,8 +73,7 @@ export class ReparacionComponent implements OnInit {
     this.reparacionForm = this.fb.group({
       herramientaId: ['', Validators.required],
       proveedorId: ['', Validators.required],
-      fechaReparacion: [this.getTodayDate(), Validators.required],
-      fechaEstimadaFinalizacion: ['', Validators.required],
+      fechaEstimadaFinalizacion: ['', [Validators.required]],
       observaciones: ['', Validators.maxLength(500)]
     });
   }
@@ -95,7 +94,7 @@ export class ReparacionComponent implements OnInit {
     });
   }
 
-  private getTodayDate(): string {
+  public getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
   }
 
@@ -114,25 +113,6 @@ export class ReparacionComponent implements OnInit {
     });
 
     return Math.round((filledFields / totalFields) * 100);
-  }
-
-  /**
-   * Verifica si el rango de fechas excede los 30 días recomendados
-   */
-  isDaysExceeded(): boolean {
-    const fechaReparacion = this.reparacionForm.get('fechaReparacion')?.value;
-    const fechaFinalizacion = this.reparacionForm.get('fechaEstimadaFinalizacion')?.value;
-
-    if (!fechaReparacion || !fechaFinalizacion) {
-      return false;
-    }
-
-    const inicio = new Date(fechaReparacion);
-    const fin = new Date(fechaFinalizacion);
-    const diffTime = Math.abs(fin.getTime() - inicio.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays > 30;
   }
 
   onHerramientaSelected(herramienta: HerramientaOption | null): void {
@@ -186,10 +166,10 @@ export class ReparacionComponent implements OnInit {
       idUsuarioGenera: currentUserId,
       idUsuarioResponsable: null, // Para reparaciones no hay usuario responsable
       idTipoMovimiento: 3, // Reparación
-      fechaMovimiento: formData.fechaReparacion, // Fecha cuando se registra la reparación
+      fechaMovimiento: new Date().toISOString(), // Enviar fecha actual
       fechaEstimadaDevolucion: formData.fechaEstimadaFinalizacion,
-      estadoHerramientaAlDevolver: 0, // Estado inicial
-      idObra: 0, // No aplica para reparaciones
+      estadoHerramientaAlDevolver: null, // Estado inicial
+      idObra: null, // No aplica para reparaciones
       idProveedor: formData.proveedorId.idProveedor, // El ID del proveedor seleccionado
       observaciones: formData.observaciones || undefined,
     };
@@ -226,9 +206,6 @@ export class ReparacionComponent implements OnInit {
 
   resetForm(): void {
     this.reparacionForm.reset();
-    this.reparacionForm.patchValue({
-      fechaReparacion: this.getTodayDate()
-    });
     this.selectedHerramientaInfo = null;
     this.selectedProveedorInfo = null;
   }

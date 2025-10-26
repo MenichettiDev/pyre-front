@@ -90,35 +90,9 @@
                         <div class="mb-4">
                             <h6 class="form-section-title">
                                 <i class="bi bi-2-circle-fill text-primary me-2"></i>
-                                Fechas de la Reparación
+                                Fecha de la Reparación
                             </h6>
                             <div class="row g-3">
-                                <!-- Fecha de Inicio Reparación -->
-                                <div class="col-md-6">
-                                    <label class="form-label soft-label">
-                                        Fecha de Inicio de Reparación
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group input-group-modern">
-                                        <span class="input-group-text bg-light border-end-0">
-                                            <i class="bi bi-calendar3 text-primary"></i>
-                                        </span>
-                                        <input type="date" class="form-control border-start-0 ps-0"
-                                            formControlName="fechaReparacion"
-                                            [class.is-invalid]="reparacionForm.get('fechaReparacion')?.invalid && reparacionForm.get('fechaReparacion')?.touched"
-                                            [class.is-valid]="reparacionForm.get('fechaReparacion')?.valid && reparacionForm.get('fechaReparacion')?.touched">
-                                        <span class="input-group-text bg-white border-start-0"
-                                            *ngIf="reparacionForm.get('fechaReparacion')?.valid">
-                                            <i class="bi bi-check-circle-fill text-success"></i>
-                                        </span>
-                                    </div>
-                                    <div class="invalid-feedback d-block"
-                                        *ngIf="reparacionForm.get('fechaReparacion')?.invalid && reparacionForm.get('fechaReparacion')?.touched">
-                                        <i class="bi bi-exclamation-circle me-1"></i>
-                                        La fecha de inicio de reparación es requerida
-                                    </div>
-                                </div>
-
                                 <!-- Fecha Estimada de Finalización -->
                                 <div class="col-md-6">
                                     <label class="form-label soft-label">
@@ -130,7 +104,7 @@
                                             <i class="bi bi-calendar-check text-primary"></i>
                                         </span>
                                         <input type="date" class="form-control border-start-0 ps-0"
-                                            formControlName="fechaEstimadaFinalizacion"
+                                            formControlName="fechaEstimadaFinalizacion" [min]="getTodayDate()"
                                             [class.is-invalid]="reparacionForm.get('fechaEstimadaFinalizacion')?.invalid && reparacionForm.get('fechaEstimadaFinalizacion')?.touched"
                                             [class.is-valid]="reparacionForm.get('fechaEstimadaFinalizacion')?.valid && reparacionForm.get('fechaEstimadaFinalizacion')?.touched">
                                         <span class="input-group-text bg-white border-start-0"
@@ -141,12 +115,14 @@
                                     <div class="invalid-feedback d-block"
                                         *ngIf="reparacionForm.get('fechaEstimadaFinalizacion')?.invalid && reparacionForm.get('fechaEstimadaFinalizacion')?.touched">
                                         <i class="bi bi-exclamation-circle me-1"></i>
-                                        La fecha estimada de finalización es requerida
-                                    </div>
-                                    <!-- Alerta si la fecha es muy lejana -->
-                                    <div class="form-text text-warning mt-2" *ngIf="isDaysExceeded()">
-                                        <i class="bi bi-exclamation-triangle me-1"></i>
-                                        La reparación excede los 30 días recomendados
+                                        <span
+                                            *ngIf="reparacionForm.get('fechaEstimadaFinalizacion')?.errors?.['required']">
+                                            La fecha estimada de finalización es requerida
+                                        </span>
+                                        <span
+                                            *ngIf="reparacionForm.get('fechaEstimadaFinalizacion')?.errors?.['dateInPast']">
+                                            La fecha de finalización no puede ser anterior a hoy
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -200,10 +176,8 @@
         <!-- PANEL LATERAL DE INFORMACIÓN -->
         <div class="col-lg-4">
             <!-- Información de la Herramienta -->
-            <div class="info-card herramienta-card card mb-3 shadow-sm"
-                [class.card-skeleton]="!selectedHerramientaInfo"
-                [class.card-filled]="selectedHerramientaInfo"
-                @fadeIn>
+            <div class="info-card herramienta-card card mb-3 shadow-sm" [class.card-skeleton]="!selectedHerramientaInfo"
+                [class.card-filled]="selectedHerramientaInfo" @fadeIn>
                 <div class="card-header bg-gradient-primary text-white">
                     <h6 class="card-title mb-0 d-flex align-items-center">
                         <i class="bi bi-tools me-2"></i>
