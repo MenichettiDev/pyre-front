@@ -51,29 +51,30 @@ export class LoginComponent implements OnInit {
 
       this.loginService.login(legajo, password).subscribe({
         next: (response) => {
-          // Mapear la respuesta del backend a la estructura esperada por el frontend
-          const normalizedUser = {
-            id: response.usuario.Id,
-            nombre: response.usuario.Nombre,
-            email: response.usuario.Email,
-            dni: response.usuario.Dni,
-            legajo: response.usuario.Legajo,
-            rolId: response.usuario.RolId,
-            rolNombre: response.usuario.RolNombre,
-            avatar: response.usuario.Avatar
-          };
+          console.log('Login response:', response);
 
-          // Save token and user data
-          this.authService.saveAuthData(response.token, normalizedUser);
+          // La respuesta viene con esta estructura:
+          // { status: 200, message: "...", token: "...", usuario: { id, nombre, email, etc. } }
+
+          // Usar directamente la estructura del usuario que viene en la respuesta
+          const userData = response.usuario;
+
+          console.log('User data from response:', userData);
+
+          // Save token and user data - usar los datos tal como vienen
+          this.authService.saveAuthData(response.token, userData);
 
           // Redirect to dashboard where sidebar and topbar are always visible
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
+          console.error('Login error:', error);
           let errorMessage = 'Hubo un problema al intentar iniciar sesión. Por favor, intente nuevamente.';
 
           if (error.status === 401) {
             errorMessage = 'Credenciales incorrectas. Verifique su legajo y contraseña.';
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
           }
 
           this.showErrorToast(errorMessage);

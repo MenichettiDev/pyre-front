@@ -105,6 +105,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private el = inject(ElementRef);
   private sidebarService = inject(SidebarService);
 
+  // Nuevo: mapeo de roles a IDs
+  private roleMapping = {
+    'SuperAdmin': Roles.SuperAdmin,
+    'Administrador': Roles.SuperAdmin,
+    'Supervisor': Roles.Supervisor,
+    'Operario': Roles.Operario,
+    'Administrativo': Roles.Administrativo,
+    // Agregar más mapeos si es necesario
+  };
+
   @HostListener('window:resize')
   onResize() {
     const previousState = this.isSmallScreen;
@@ -154,28 +164,43 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private loadUserData() {
     const user = this.authService.getUser();
     if (user) {
-      // Normalizar a número
-      this.id_acceso = user.id_acceso != null ? Number(user.id_acceso) : 0;
+      console.log('Cargando datos del usuario en SidebarComponent:', user);
+
+      // Mapear el rol string a número
+      const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
+      const mappedRoleId = this.roleMapping[roleName as keyof typeof this.roleMapping];
+
+      // Usar el rol mapeado o el id_acceso directo
+      this.id_acceso = mappedRoleId != null ? mappedRoleId : (user.id_acceso != null ? Number(user.id_acceso) : 0);
+
       const nombre = user.nombre || '';
       const apellido = user.apellido || '';
       this.nombreCompleto = `${nombre} ${apellido}`.trim() || 'Usuario';
+
       // email (legacy)
       this.userEmail = user.email || '';
       this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
 
-      // legajo (preferir legajo en raw si existe)
-      const legajo = user.legajo ?? user.raw?.legajo ?? user.id ?? null;
-      this.userLegajo = legajo != null ? String(legajo) : '';
+      // legajo
+      this.userLegajo = user.legajo ? String(user.legajo) : '';
       this.displayLegajo = this.userLegajo && this.userLegajo.length > 12 ? this.userLegajo.slice(0, 9) + '...' : this.userLegajo;
-      // Construir etiqueta descriptiva: incluir legajo y nombre completo si están disponibles
+
+      // Construir etiqueta descriptiva
       const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
       const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
       this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario';
-      // role (si viene en la respuesta del usuario)
-      const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
+
+      // role (mostrar el nombre del rol)
       this.displayRole = roleName ? String(roleName) : '';
+
+      console.log('Usuario cargado:', {
+        roleName,
+        mappedRoleId,
+        id_acceso: this.id_acceso,
+        user
+      });
     } else {
-      // Sin usuario: ocultar menú y mostrar nombre por defecto
+      // Sin usuario: valores por defecto
       this.id_acceso = 0;
       this.nombreCompleto = 'Usuario Demo';
       this.userEmail = '';
@@ -183,6 +208,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.userLegajo = '';
       this.displayLegajo = '';
       this.displayUserLabel = 'Usuario';
+      this.displayRole = '';
     }
   }
 
