@@ -59,7 +59,7 @@ export class DevolucionComponent implements OnInit {
   isLoadingMovimiento = false;
 
   // Campos requeridos para calcular el progreso
-  private requiredFields = ['herramientaId', 'fechaDevolucion', 'estadoFisicoId'];
+  private requiredFields = ['herramientaId', 'estadoFisicoId'];
 
   // Placeholder original para observaciones
   private originalPlaceholder: string = 'Agregue cualquier detalle adicional sobre la devolución... (Opcional)';
@@ -90,7 +90,6 @@ export class DevolucionComponent implements OnInit {
   private buildForm(): void {
     this.devolucionForm = this.fb.group({
       herramientaId: ['', Validators.required],
-      fechaDevolucion: [this.getTodayDate(), Validators.required],
       estadoFisicoId: ['', Validators.required],
       observaciones: ['', Validators.maxLength(500)]
     });
@@ -229,11 +228,12 @@ export class DevolucionComponent implements OnInit {
       idUsuarioGenera: currentUserId,
       idUsuarioResponsable: this.movimientoInfo.idUsuarioResponsable || null,
       idTipoMovimiento: 2, // Devolución
-      fechaMovimiento: formData.fechaDevolucion,
+      fechaMovimiento: this.getTodayDate(), // Set to current date
       estadoHerramientaAlDevolver: formData.estadoFisicoId,
       idObra: this.movimientoInfo.idObra || undefined,
       idProveedor: this.movimientoInfo.idProveedor || undefined,
       observaciones: formData.observaciones || undefined,
+      fechaEstimadaDevolucion: null
     };
 
     this.movimientoService.registrarDevolucion(devolucionData).subscribe({

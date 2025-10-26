@@ -13,11 +13,11 @@ export interface CreateMovimientoDto {
   idUsuarioResponsable: number | null;
   idTipoMovimiento: number;
   fechaMovimiento: string;
-  fechaEstimadaDevolucion?: string;
+  fechaEstimadaDevolucion?: string | null;
   estadoHerramientaAlDevolver?: number | null;
   idObra?: number | null;
   idProveedor?: number | null;
-  observaciones?: string;
+  observaciones?: string | null;
 }
 
 export interface UpdateMovimientoDto {
