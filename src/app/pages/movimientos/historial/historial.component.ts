@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, LOCALE_ID } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 import { FormsModule } from '@angular/forms';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PaginatorComponent } from '../../../shared/components/paginator/paginator.component';
 import { DatePipe } from '@angular/common';
 import { MovimientoService } from '../../../services/movimiento.service';
@@ -11,6 +13,8 @@ import { CboProveedorComponent } from '../../../shared/components/Cbo/cbo-provee
 import { CboEstadoFisicoHerramientaComponent } from '../../../shared/components/Cbo/cbo-estado-fisico-herramienta/cbo-estado-fisico-herramienta.component';
 import { CboFamiliaHerramientaComponent } from "../../../shared/components/Cbo/cbo-familia-herramienta/cbo-familia-herramienta.component";
 import { CboUsuarioComponent } from "../../../shared/components/Cbo/cbo-usuario/cbo-usuario.component";
+import { ModalHistorialComponent } from '../modal-historial/modal-historial.component';
+import { PageTitleService } from '../../../services/page-title.service';
 
 @Component({
   selector: 'app-historial',
@@ -18,6 +22,7 @@ import { CboUsuarioComponent } from "../../../shared/components/Cbo/cbo-usuario/
   imports: [
     CommonModule,
     FormsModule,
+  NgbTooltipModule,
     PaginatorComponent,
     DatePipe,
     CboObraComponent,
@@ -26,14 +31,17 @@ import { CboUsuarioComponent } from "../../../shared/components/Cbo/cbo-usuario/
     CboEstadoFisicoHerramientaComponent,
     CboFamiliaHerramientaComponent,
     CboUsuarioComponent
+    ,
+    ModalHistorialComponent
   ],
   templateUrl: './historial.component.html',
-  styleUrls: ['./historial.component.css']
+  styleUrls: ['../../../../styles/visor-style.css', './historial.component.css'],
+  providers: [{ provide: LOCALE_ID, useValue: 'es-ES' }]
 })
 export class HistorialComponent implements OnInit {
   movimientos: any[] = [];
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 6; // Cambiado a 6 para mantener consistencia con visor-usuarios
   totalItems = 0;
   loading = false;
 
@@ -49,9 +57,16 @@ export class HistorialComponent implements OnInit {
   filtroFechaDesde = '';
   filtroFechaHasta = '';
 
-  constructor(private movimientoService: MovimientoService, private alertaService: AlertaService) { }
+  constructor(
+    private movimientoService: MovimientoService,
+    private alertaService: AlertaService,
+    private pageTitleService: PageTitleService
+  ) {
+    registerLocaleData(localeEs, 'es');
+  }
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle('Historial de Movimientos');
     this.fetchMovimientos();
   }
 
@@ -75,9 +90,55 @@ export class HistorialComponent implements OnInit {
 
     this.movimientoService.getMovimientos(this.currentPage, this.pageSize, filters).subscribe({
       next: (resp) => {
-        // Ensure movimientos is always an array
-        this.movimientos = Array.isArray(resp.data) ? resp.data : resp.data?.data || [];
-        this.totalItems = resp.pagination?.totalRecords || 0;
+        // Debug log para inspeccionar la respuesta del backend (remover si no es necesario)
+        console.log('[Historial] getMovimientos response:', resp);
+
+        // Normalizar la propiedad que contiene el array de movimientos
+        let dataArray: any[] = [];
+        if (Array.isArray(resp)) {
+          dataArray = resp as any[];
+        } else if (Array.isArray(resp.data)) {
+          dataArray = resp.data;
+        } else if (Array.isArray(resp.data?.data)) {
+          dataArray = resp.data.data;
+        } else if (Array.isArray(resp.items)) {
+          dataArray = resp.items;
+        } else if (Array.isArray(resp.result)) {
+          dataArray = resp.result;
+        } else {
+          dataArray = [];
+        }
+
+        this.movimientos = dataArray;
+
+        // Intentar sincronizar página, pageSize y total desde distintas ubicaciones posibles en la respuesta
+        const respPage = resp.data?.page ?? resp.page ?? resp.data?.pagination?.page ?? resp.pagination?.page;
+        const respPageSize = resp.data?.pageSize ?? resp.pageSize ?? resp.data?.pagination?.pageSize ?? resp.pagination?.pageSize;
+
+        // Extraer total de registros (totalRecords / total)
+        const totalCandidates = [
+          resp.data?.totalRecords,
+          resp.data?.total,
+          resp.total,
+          resp.totalRecords,
+          resp.pagination?.totalRecords,
+          resp.pagination?.total,
+          resp.data?.pagination?.totalRecords,
+          resp.data?.pagination?.total,
+          resp.items?.total
+        ];
+        const foundTotal = totalCandidates.find(v => typeof v === 'number' && !isNaN(v)) as number | undefined;
+
+        // Aplicar valores si vienen desde el backend
+        if (typeof respPage === 'number' && !isNaN(respPage)) {
+          this.currentPage = respPage;
+        }
+        if (typeof respPageSize === 'number' && !isNaN(respPageSize)) {
+          this.pageSize = respPageSize;
+        }
+
+        this.totalItems = typeof foundTotal === 'number' ? foundTotal : (dataArray.length || 0);
+
         this.loading = false;
       },
       error: (err) => {
@@ -91,6 +152,22 @@ export class HistorialComponent implements OnInit {
   onSearch(): void {
     this.currentPage = 1;
     this.fetchMovimientos();
+  }
+
+  // Método para verificar si hay filtros activos
+  hasActiveFilters(): boolean {
+    return !!(
+      this.filtroNombreHerramienta?.trim() ||
+      this.filtroFamiliaHerramienta !== null ||
+      this.filtroIdUsuarioGenera !== null ||
+      this.filtroIdUsuarioResponsable !== null ||
+      this.filtroIdTipoMovimiento !== null ||
+      this.filtroObra !== null ||
+      this.filtroProveedor !== null ||
+      this.filtroEstadoFisico !== null ||
+      this.filtroFechaDesde ||
+      this.filtroFechaHasta
+    );
   }
 
   onObraSelected(obra: any): void {
@@ -107,6 +184,7 @@ export class HistorialComponent implements OnInit {
     this.filtroIdUsuarioGenera = usuario?.id || null;
     this.fetchMovimientos();
   }
+
   onUsuarioResponsableSelected(usuario: any): void {
     this.filtroIdUsuarioResponsable = usuario?.id || null;
     this.fetchMovimientos();
@@ -117,11 +195,11 @@ export class HistorialComponent implements OnInit {
     this.fetchMovimientos();
   }
 
-
   onEstadoFisicoSelected(estadoFisico: any): void {
     this.filtroEstadoFisico = estadoFisico?.idEstadoFisico || null;
     this.fetchMovimientos();
   }
+
   onFamiliaHerramientaSelected(familia: any): void {
     this.filtroFamiliaHerramienta = familia?.idFamilia || null;
     this.fetchMovimientos();
@@ -138,6 +216,7 @@ export class HistorialComponent implements OnInit {
     this.filtroEstadoFisico = null;
     this.filtroFechaDesde = '';
     this.filtroFechaHasta = '';
+    this.currentPage = 1;
     this.fetchMovimientos();
   }
 
@@ -145,5 +224,86 @@ export class HistorialComponent implements OnInit {
     this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
     this.fetchMovimientos();
+  }
+
+  // Control para el modal de detalle
+  showDetalleModal: boolean = false;
+  detalleMovimiento: any = null;
+
+  abrirModalDetalle(movimiento: any): void {
+    this.detalleMovimiento = movimiento;
+    this.showDetalleModal = true;
+    // Si más adelante se integra un componente modal, aquí se podría abrirlo.
+    console.debug('[Historial] abrirModalDetalle', movimiento);
+  }
+
+  cerrarModalDetalle(): void {
+    this.showDetalleModal = false;
+    this.detalleMovimiento = null;
+  }
+
+  /**
+   * Retorna la clase de icono adecuada según el tipo de movimiento.
+   * Acepta: nombre (con o sin acento, mayúsculas/minúsculas), id numérico
+   * o un objeto que contenga `idTipoMovimiento` o `nombreTipoMovimiento`.
+   */
+  getMovimientoIcon(tipoMovimiento: any): string {
+    if (tipoMovimiento == null) {
+      return 'pi pi-question-circle';
+    }
+
+    // Si viene un objeto con id o nombre
+    if (typeof tipoMovimiento === 'object') {
+      if (typeof tipoMovimiento.idTipoMovimiento === 'number') {
+        tipoMovimiento = tipoMovimiento.idTipoMovimiento;
+      } else if (typeof tipoMovimiento.nombreTipoMovimiento === 'string') {
+        tipoMovimiento = tipoMovimiento.nombreTipoMovimiento;
+      }
+    }
+
+    // Si viene un número (idTipoMovimiento)
+    if (typeof tipoMovimiento === 'number') {
+      switch (tipoMovimiento) {
+        case 1: // Préstamo
+          return 'pi pi-arrow-right';
+        case 2: // Devolución
+          return 'pi pi-arrow-left';
+        case 3: // Reparación
+          return 'pi pi-wrench';
+        case 4: // Baja (posible id común)
+          return 'pi pi-times';
+        case 5: // Alta (si el backend usa id 5 para alta)
+          return 'pi pi-plus';
+        default:
+          return 'pi pi-question-circle';
+      }
+    }
+
+    // Si viene una cadena, normalizar: quitar tildes y espacios, bajar a minúsculas
+    if (typeof tipoMovimiento === 'string') {
+      const normalized = tipoMovimiento
+        .normalize('NFD') // separar acentos
+        .replace(/\p{Diacritic}/gu, '') // eliminar diacríticos
+        .toLowerCase()
+        .trim();
+
+      if (normalized.includes('prestam') || normalized === 'prestamo') {
+        return 'pi pi-arrow-right';
+      }
+      if (normalized.includes('devolu') || normalized === 'devolucion') {
+        return 'pi pi-arrow-left';
+      }
+      if (normalized.includes('repar') || normalized === 'reparacion') {
+        return 'pi pi-wrench';
+      }
+      if (normalized.includes('baj') || normalized === 'baja') {
+        return 'pi pi-times';
+      }
+      if (normalized.includes('alt') || normalized === 'alta') {
+        return 'pi pi-plus';
+      }
+    }
+
+    return 'pi pi-question-circle';
   }
 }

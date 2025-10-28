@@ -1,59 +1,256 @@
-/* Estilos básicos para el componente de historial */
-
-.custom-table-container {
-    margin-top: 1rem;
-}
-
-.empty-message {
-    text-align: center;
-    font-style: italic;
-    color: #888;
-}
-
-/* Estilo de la cabecera de la tabla */
-.custom-table thead th {
-    background-color: #f8f9fa;
-    color: #495057;
-    font-weight: bold;
-    text-align: left;
-    padding: 0.75rem;
-    border-bottom: 2px solid #dee2e6;
-}
+/* Estilos específicos para el componente de historial */
+/* Los estilos base vienen de visor-style.css */
 
 /* Estilos para los filtros de fecha */
 .date-label {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-bottom: 2px;
-    display: block;
-    font-weight: 500;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+  display: block;
+  font-weight: 500;
 }
 
 .filter-item input[type="date"] {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: white;
-    width: 100%;
-    min-width: 140px;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 1px solid rgba(16, 24, 40, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  width: 100%;
+  min-width: 100px;
+  transition: all 0.2s ease;
 }
 
 .filter-item input[type="date"]:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-    outline: none;
+  outline: none;
+  border-color: var(--color-primary, #0d6efd);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 /* Responsive adjustments for date inputs */
 @media (max-width: 768px) {
-    .filter-item input[type="date"] {
-        min-width: 120px;
-        font-size: 0.85rem;
-        padding: 6px 8px;
-    }
+  .filter-item input[type="date"] {
+    min-width: 0;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+  }
 
-    .date-label {
-        font-size: 0.7rem;
-    }
+  .date-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Estilos para la tabla de historial */
+.custom-table th:nth-child(4),
+.custom-table td:nth-child(4) {
+  width: 180px;
+  text-align: center;
+}
+
+/* Estilos para los iconos de movimiento */
+.movimiento-icon {
+  font-size: 1.2rem;
+  color: var(--color-primary, #0d6efd);
+}
+
+/* Layout específico para la barra de filtros */
+.pyre-filter-bar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+/* Filas 1 y 2: Grid de 4 columnas iguales */
+.pyre-filter-bar .filter-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem 1rem;
+  align-items: end;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.pyre-filter-bar .filter-row .filter-item {
+  min-width: 0; /* Permitir que el grid comprima si es necesario */
+}
+
+/* Fila 3: Layout especial con 2 fechas + spacer + botones */
+.pyre-filter-bar .filter-row-actions {
+  grid-template-columns: 1fr 1fr 1fr 2fr;
+}
+
+.pyre-filter-bar .filter-row-actions .filter-spacer {
+  /* Espacio vacío para balance */
+  grid-column: span 1;
+}
+
+.pyre-filter-bar .filter-row-actions .filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* Forzar que los hijos ocupen el 100% del item */
+.pyre-filter-bar .filter-row .filter-item > * {
+  width: 100%;
+}
+
+/* Forzar que los componentes de tipo cbo ocupen todo el ancho disponible */
+.pyre-filter-bar .filter-row app-cbo-familia-herramienta,
+.pyre-filter-bar .filter-row app-cbo-usuario,
+.pyre-filter-bar .filter-row app-cbo-obra,
+.pyre-filter-bar .filter-row app-cbo-tipo-movimiento-herramienta,
+.pyre-filter-bar .filter-row app-cbo-proveedor,
+.pyre-filter-bar .filter-row app-cbo-estado-fisico-herramienta {
+  display: block;
+  width: 100%;
+}
+
+/* Forzar que los selects internos usen 100% */
+.pyre-filter-bar .filter-row app-cbo-familia-herramienta select.form-select,
+.pyre-filter-bar .filter-row app-cbo-usuario select.form-select,
+.pyre-filter-bar .filter-row app-cbo-obra select.form-select,
+.pyre-filter-bar .filter-row app-cbo-tipo-movimiento-herramienta select.form-select,
+.pyre-filter-bar .filter-row app-cbo-proveedor select.form-select,
+.pyre-filter-bar .filter-row app-cbo-estado-fisico-herramienta select.form-select {
+  width: 100% !important;
+  box-sizing: border-box;
+  min-width: 0 !important;
+}
+
+/* Si el componente usa .form-control */
+.pyre-filter-bar .filter-row app-cbo-familia-herramienta .form-control,
+.pyre-filter-bar .filter-row app-cbo-usuario .form-control,
+.pyre-filter-bar .filter-row app-cbo-obra .form-control,
+.pyre-filter-bar .filter-row app-cbo-tipo-movimiento-herramienta .form-control,
+.pyre-filter-bar .filter-row app-cbo-proveedor .form-control,
+.pyre-filter-bar .filter-row app-cbo-estado-fisico-herramienta .form-control {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Estilos para los botones de acción */
+.reset-button-inline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 44px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.reset-button-inline:hover {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+.search-button {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 44px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.search-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.search-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Ocultar texto de botones en pantallas tablets-medianas para ahorrar espacio */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .search-button .ms-1,
+  .reset-button-inline .ms-1 {
+    display: none !important;
+  }
+
+  .reset-button-inline,
+  .search-button {
+    min-width: 44px;
+    padding: 10px;
+  }
+}
+
+/* Responsive: en pantallas medianas cambiar a 2 columnas */
+@media (max-width: 900px) {
+  .pyre-filter-bar .filter-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Ajustar fila 3 para pantallas medianas */
+  .pyre-filter-bar .filter-row-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pyre-filter-bar .filter-row-actions .filter-spacer {
+    display: none;
+  }
+
+  .pyre-filter-bar .filter-row-actions .filter-actions {
+    grid-column: span 2;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Responsive: en móviles todo en una columna */
+@media (max-width: 768px) {
+  .pyre-filter-bar .filter-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .pyre-filter-bar .filter-row-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .pyre-filter-bar .filter-row-actions .filter-spacer {
+    display: none;
+  }
+
+  .pyre-filter-bar .filter-row-actions .filter-actions {
+    grid-column: span 1;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pyre-filter-bar .filter-row-actions .filter-actions button {
+    width: 100%;
+  }
+
+  /* Mostrar texto en botones en móviles */
+  .search-button .ms-1,
+  .reset-button-inline .ms-1 {
+    display: inline !important;
+  }
 }
