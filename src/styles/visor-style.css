@@ -273,13 +273,13 @@ input:checked + .toggle-slider::before {
   margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: visible; /* permitir que elementos absolutos (botón en móvil) no se recorten */
+  overflow: visible;
 }
 
 .user-list-container .pyre-filter-bar .filter-row {
-  /* Desktop: forzar grid en la vista del usuario para que los 7 controles ocupen todo el ancho de forma equitativa */
-  display: grid !important;
-  grid-template-columns: repeat(7, 1fr) !important; /* 7 columnas iguales: Legajo, Nombre, Apellido, Roles, Estado, reset, Buscar */
+  display: grid;
+  /* Usar auto-fit con minmax para que se ajuste automáticamente */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
   align-items: center;
   position: relative;
@@ -757,26 +757,169 @@ input:checked + .toggle-slider::before {
   }
 }
 
-/* Responsive adjustments */
+/* En pantallas grandes, forzar el layout de 7 columnas */
+@media (min-width: 1400px) {
+  .user-list-container .pyre-filter-bar .filter-row {
+    grid-template-columns: repeat(7, 1fr) !important;
+  }
+
+  /* Asignar columnas específicas solo en pantallas grandes */
+  .filter-row > .filter-item:nth-child(1) { grid-column: 1 / 2; }
+  .filter-row > .filter-item:nth-child(2) { grid-column: 2 / 3; }
+  .filter-row > .filter-item:nth-child(3) { grid-column: 3 / 4; }
+  .filter-row > .filter-item:nth-child(4) { grid-column: 4 / 5; }
+  .filter-row > .filter-item:nth-child(5) { grid-column: 5 / 6; }
+  .filter-row > .filter-item.filter-item-with-reset { grid-column: 6 / 7; }
+  .filter-row > .filter-actions { grid-column: 7 / 8; justify-self: end; }
+}
+
+/* Pantallas medianas: 3 columnas */
+@media (min-width: 769px) and (max-width: 1399px) {
+  .user-list-container .pyre-filter-bar .filter-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .filter-actions {
+    grid-column: 3 / 4;
+    justify-self: end;
+  }
+}
+
+.filter-item {
+  display: block;
+  width: 100%;
+}
+
+.filter-item-with-reset {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Asegurar que los hijos ocupen el ancho del item */
+.filter-item > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Componentes CBO dentro del grid */
+.filter-item app-cbo-rol-usuario,
+.filter-item app-cbo-estado {
+  display: block;
+  width: 100% !important;
+}
+
+.filter-item app-cbo-rol-usuario select.form-select,
+.filter-item app-cbo-estado select.form-select {
+  width: 100% !important;
+}
+
+.filter-item select.form-select,
+.filter-item .form-select {
+  width: 100% !important;
+}
+
+/* IMPORTANTE: Eliminar min-width fijo y usar 100% */
+.filter-item input,
+.filter-item select,
+.filter-item textarea,
+.filter-item app-cbo-rol-usuario,
+.filter-item app-cbo-estado {
+  min-width: 0; /* Permitir que se comprima */
+  width: 100%;
+}
+
+.filter-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.filter-input-group select,
+.filter-item input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 24, 40, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+  min-width: 0; /* Permitir compresión */
+}
+
+.filter-input-group select:focus,
+.filter-item input:focus {
+  outline: none;
+  border-color: var(--color-primary, #0d6efd);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.filter-actions {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-button {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  min-width: 44px;
+  max-width: 44px;
+  height: 44px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.search-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.reset-button-inline {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 6px;
+  border-radius: 50%;
+  min-width: 32px;
+  max-width: 32px;
+  height: 32px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.reset-button-inline:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Responsive para móvil */
 @media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .header-actions {
-    width: 100%;
-  }
-
-  .header-actions .btn {
-    flex: 1;
-  }
-
-  .action-buttons {
-    flex-wrap: wrap;
-  }
-
   .user-list-container .pyre-filter-bar .filter-row {
     display: flex;
     flex-direction: column;
@@ -793,7 +936,6 @@ input:checked + .toggle-slider::before {
   }
 
   .filter-actions {
-    /* En móvil el botón de búsqueda se posiciona fijo al fondo de la tarjeta de filtros */
     position: absolute;
     left: 0;
     right: 0;
@@ -803,46 +945,5 @@ input:checked + .toggle-slider::before {
     width: 100%;
     justify-content: flex-end;
     padding: 0 16px;
-  }
-
-  .pagination-container {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .pagination-controls {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .custom-table {
-    font-size: 0.85rem;
-  }
-
-  .custom-table thead th,
-  .custom-table tbody td {
-    padding: 8px 12px;
-  }
-
-  .estado-toggle {
-    flex-direction: row;
-    gap: 6px;
-  }
-
-  .toggle-switch {
-    width: 40px;
-    height: 20px;
-  }
-
-  .toggle-slider:before {
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-  }
-
-  .toggle-slider.active:before {
-    transform: translateX(20px);
   }
 }
