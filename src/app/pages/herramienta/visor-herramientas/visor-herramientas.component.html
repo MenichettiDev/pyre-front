@@ -11,37 +11,51 @@
 <div class="user-list-container container-fluid page-shell mt-2">
   <div class="pyre-table-shell">
     <!-- Filter bar -->
-    <div class="pyre-filter-bar">
-      <div class="filter-row">
-        <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroCodigo" placeholder="Código de herramienta" (keyup.enter)="onSearch()" />
+    <div class="pyre-filter-bar container-fluid">
+      <div class="row g-3 align-items-end">
+        <!-- Código -->
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <input type="text" class="form-control" [(ngModel)]="filtroCodigo" placeholder="Código de herramienta"
+            (keyup.enter)="onSearch()" />
         </div>
-        <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroNombre" placeholder="Nombre de herramienta" (keyup.enter)="onSearch()" />
+
+        <!-- Nombre -->
+        <div class="col-lg-3 col-md-3 col-sm-6">
+          <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Nombre de herramienta"
+            (keyup.enter)="onSearch()" />
         </div>
-        <div class="filter-item">
-          <input type="text" [(ngModel)]="filtroMarca" placeholder="Marca" (keyup.enter)="onSearch()" />
+
+        <!-- Marca -->
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <input type="text" class="form-control" [(ngModel)]="filtroMarca" placeholder="Marca"
+            (keyup.enter)="onSearch()" />
         </div>
-        <div class="filter-item filter-item-with-reset">
-          <div class="filter-input-group">
-            <select [(ngModel)]="filtroEstado">
+
+        <!-- Estado + botón reset -->
+        <div class="col-lg-3 col-md-3 col-sm-6 d-flex align-items-end">
+          <div class="input-group">
+            <select class="form-select" [(ngModel)]="filtroEstado">
               <option value="">Todos los estados</option>
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
-            <button *ngIf="hasActiveFilters()" type="button" class="reset-button-inline" (click)="onResetFilters()"
-              title="Limpiar todos los filtros">
+            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-outline-secondary"
+              (click)="onResetFilters()" title="Limpiar todos los filtros">
               <i class="pi pi-filter-slash"></i>
             </button>
           </div>
         </div>
-        <div class="filter-actions">
-          <button type="button" class="search-button" (click)="onSearch()" [disabled]="!hasActiveFilters()" title="Buscar">
+
+        <!-- Botón Buscar -->
+        <div class="col-lg-2 col-md-12 col-sm-12 d-flex justify-content-end">
+          <button type="button" class="btn btn-primary" (click)="onSearch()" [disabled]="!hasActiveFilters()"
+            title="Buscar">
             <i class="pi pi-search"></i>
           </button>
         </div>
       </div>
     </div>
+
 
     <!-- Loading indicator -->
     <div *ngIf="loading" class="text-center py-4">
@@ -72,7 +86,8 @@
             <td>{{ herramienta.disponibilidad }}</td>
             <td>
               <div class="estado-toggle">
-                <label class="toggle-switch" [ngbTooltip]="herramienta.activo ? 'Activo' : 'Inactivo'" placement="top" container="body">
+                <label class="toggle-switch" [ngbTooltip]="herramienta.activo ? 'Activo' : 'Inactivo'" placement="top"
+                  container="body">
                   <input type="checkbox" [checked]="herramienta.activo" (change)="toggleToolActive(herramienta)" />
                   <span class="toggle-slider modern" [class.active]="herramienta.activo"></span>
                 </label>
@@ -100,21 +115,14 @@
 
     <!-- Paginador -->
     <div *ngIf="!loading && totalItems > 0" class="paginator-container">
-      <app-paginator
-        [length]="totalItems"
-        [pageSize]="pageSize"
-        [pageIndex]="currentPage - 1"
+      <app-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="currentPage - 1"
         (pageChange)="onPageEvent($event)">
       </app-paginator>
     </div>
   </div>
 
   <!-- Modal de herramienta -->
-  <app-herramientas-modal
-    *ngIf="showToolModal"
-    [initialData]="modalInitialData"
-    [mode]="modalMode"
-    (submit)="onModalSubmit($event)"
-    (close)="closeToolModal()">
+  <app-herramientas-modal *ngIf="showToolModal" [initialData]="modalInitialData" [mode]="modalMode"
+    (submit)="onModalSubmit($event)" (close)="closeToolModal()">
   </app-herramientas-modal>
 </div>
