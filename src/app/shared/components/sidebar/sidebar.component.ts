@@ -5,9 +5,8 @@ import { AuthService } from '../../../services/auth.service';
 import { AlertaService } from '../../../services/alerta.service';
 import { Roles } from '../../enums/roles';
 import { Subscription } from 'rxjs';
-import { TopbarComponent } from '../topbar/topbar.component'; // Importar el componente TopbarComponent
+import { TopbarComponent } from '../topbar/topbar.component';
 import { SidebarService } from '../../../services/sidebar.service';
-// Usaremos el servicio AlertService para mostrar modales (envuelve SweetAlert2)
 
 interface MenuItem {
   id: number;
@@ -25,77 +24,242 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, TopbarComponent], // Agregar TopbarComponent aquí
+  imports: [CommonModule, RouterModule, TopbarComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   // Estados del componente
-  // ya no usamos el modal local; usaremos SweetAlert2
-  isModalVisible = false; // conservamos por compatibilidad en caso de uso distinto
   isSidebarVisible = false;
   isLoggedIn = false;
   id_acceso = 0;
   isSmallScreen = window.innerWidth < 992;
   isPerfilModalVisible = false;
 
-  // Agregar propiedades para usuario
+  // Propiedades de usuario
   nombreCompleto = '';
   userEmail: string = '';
   displayEmail: string = '';
-  // Nuevo: legajo
   userLegajo: string = '';
   displayLegajo: string = '';
-  // Nuevo: role
   displayRole: string = '';
-  // Etiqueta descriptiva que se mostrará en el topbar: "Legajo: 12345 — Nombre Apellido"
   displayUserLabel: string = '';
 
   private subscription = new Subscription();
 
-  // Menú hardcodeado basado en tu estructura
+  // Menú refactorizado según nueva estructura
   private readonly allMenuItems: MenuItem[] = [
-    // Dashboard
-    { id: 1, descripcion: 'Dashboard', icono: 'bi bi-speedometer2', link: '/dashboard', grupo: 'GM01', principal: true, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo] },
-    { id: 2, descripcion: 'Resumen General', icono: 'bi bi-graph-up', link: '/dashboard/resumen', grupo: 'GM01', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 3, descripcion: 'Alertas Pendientes', icono: 'bi bi-bell', link: '/dashboard/alertas', grupo: 'GM01', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 1. Listado de Herramientas
+    {
+      id: 1,
+      descripcion: 'Herramientas', // Cambiado a un nombre más conciso
+      icono: 'bi bi-tools', // Cambiado a un icono más representativo
+      link: '/herramienta/list',
+      grupo: 'GM01',
+      principal: true,
+      orden: 1,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Gestión de Herramientas
-    { id: 4, descripcion: 'Gestión de Herramientas', icono: 'bi bi-tools', link: '/herramienta', grupo: 'GM02', principal: true, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 5, descripcion: 'Listado de Herramientas', icono: 'bi bi-list-task', link: '/herramienta/list', grupo: 'GM02', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 6, descripcion: 'Registro / Alta de Herramienta', icono: 'bi bi-plus-circle', link: '/herramienta/alta', grupo: 'GM02', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 7, descripcion: 'Estados de Herramientas', icono: 'bi bi-check2-circle', link: '/herramienta/estados', grupo: 'GM02', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 8, descripcion: 'Ubicación Física', icono: 'bi bi-geo-alt', link: '/herramienta/ubicacion', grupo: 'GM02', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 2. Lista de Usuarios
+    {
+      id: 2,
+      descripcion: 'Usuarios', // Cambiado a un nombre más conciso
+      icono: 'bi bi-people', // Cambiado a un icono más representativo
+      link: '/user/list',
+      grupo: 'GM02',
+      principal: true,
+      orden: 2,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Movimientos / Trazabilidad
-    { id: 9, descripcion: 'Movimientos', icono: 'bi bi-arrow-left-right', link: '/movimientos', grupo: 'GM03', principal: true, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 10, descripcion: 'Registrar Préstamo', icono: 'bi bi-box-arrow-in-right', link: '/movimientos/prestamo', grupo: 'GM03', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 11, descripcion: 'Registrar Reparación', icono: 'bi bi-tools', link: '/movimientos/reparacion', grupo: 'GM03', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 12, descripcion: 'Registrar Devolución', icono: 'bi bi-box-arrow-in-left', link: '/movimientos/devolucion', grupo: 'GM03', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 13, descripcion: 'Historial de Herramienta', icono: 'bi bi-clock-history', link: '/movimientos/historial', grupo: 'GM03', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 3. Proveedores
+    {
+      id: 3,
+      descripcion: 'Proveedores',
+      icono: 'bi bi-truck',
+      link: '/recursos/proveedores',
+      grupo: 'GM03',
+      principal: true,
+      orden: 3,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Gestión de Usuarios
-    { id: 14, descripcion: 'Gestión de Usuarios', icono: 'bi bi-people', link: '/user', grupo: 'GM04', principal: true, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 15, descripcion: 'Lista de Usuarios', icono: 'bi bi-list-ul', link: '/user/list', grupo: 'GM04', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 17, descripcion: 'Roles y Permisos', icono: 'bi bi-shield-lock', link: '/user/roles', grupo: 'GM04', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 4. Obras
+    {
+      id: 4,
+      descripcion: 'Obras',
+      icono: 'bi bi-card-list',
+      link: '/recursos/obras',
+      grupo: 'GM04',
+      principal: true,
+      orden: 4,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Reportes
-    { id: 18, descripcion: 'Reportes', icono: 'bi bi-bar-chart', link: '/reportes', grupo: 'GM05', principal: true, orden: 5, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 19, descripcion: 'Herramientas por Estado', icono: 'bi bi-clipboard-data', link: '/reportes/estado', grupo: 'GM05', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 20, descripcion: 'Stock Valorizado', icono: 'bi bi-cash-coin', link: '/reportes/stock', grupo: 'GM05', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 21, descripcion: 'Uso por Operario', icono: 'bi bi-person-check', link: '/reportes/operario', grupo: 'GM05', principal: false, orden: 3, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 22, descripcion: 'Movimientos por Fecha / Herramienta', icono: 'bi bi-calendar-range', link: '/reportes/movimientos', grupo: 'GM05', principal: false, orden: 4, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 5. Movimientos (principal con submenús)
+    {
+      id: 5,
+      descripcion: 'Movimientos',
+      icono: 'bi bi-arrow-left-right',
+      link: '/movimientos',
+      grupo: 'GM05',
+      principal: true,
+      orden: 5,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 51,
+      descripcion: 'Registrar Préstamo',
+      icono: 'bi bi-box-arrow-in-right',
+      link: '/movimientos/prestamo',
+      grupo: 'GM05',
+      principal: false,
+      orden: 1,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 52,
+      descripcion: 'Registrar Devolución',
+      icono: 'bi bi-box-arrow-in-left',
+      link: '/movimientos/devolucion',
+      grupo: 'GM05',
+      principal: false,
+      orden: 2,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 53,
+      descripcion: 'Registrar Reparación',
+      icono: 'bi bi-tools',
+      link: '/movimientos/reparacion',
+      grupo: 'GM05',
+      principal: false,
+      orden: 3,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 54,
+      descripcion: 'Historial de Herramienta',
+      icono: 'bi bi-clock-history',
+      link: '/movimientos/historial',
+      grupo: 'GM05',
+      principal: false,
+      orden: 4,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Configuración (solo Administrador)
-    { id: 23, descripcion: 'Configuración', icono: 'bi bi-gear', link: '/configuracion', grupo: 'GM06', principal: true, orden: 6, estado: true, requiredAccess: [Roles.SuperAdmin] },
-    { id: 24, descripcion: 'Parámetros Generales', icono: 'bi bi-sliders', link: '/configuracion/parametros', grupo: 'GM06', principal: false, orden: 1, estado: true, requiredAccess: [Roles.SuperAdmin] },
-    { id: 25, descripcion: 'Tipos de Estado', icono: 'bi bi-tags', link: '/configuracion/estados', grupo: 'GM06', principal: false, orden: 2, estado: true, requiredAccess: [Roles.SuperAdmin] },
-    { id: 26, descripcion: 'Alertas y Notificaciones', icono: 'bi bi-bell-fill', link: '/configuracion/alertas', grupo: 'GM06', principal: false, orden: 3, estado: true, requiredAccess: [Roles.SuperAdmin] },
+    // 6. Reportes (principal con submenús)
+    {
+      id: 6,
+      descripcion: 'Reportes',
+      icono: 'bi bi-bar-chart',
+      link: '/reportes',
+      grupo: 'GM06',
+      principal: true,
+      orden: 6,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 61,
+      descripcion: 'Herramientas por Estado',
+      icono: 'bi bi-clipboard-data',
+      link: '/reportes/estado',
+      grupo: 'GM06',
+      principal: false,
+      orden: 1,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 62,
+      descripcion: 'Stock Valorizado',
+      icono: 'bi bi-cash-coin',
+      link: '/reportes/stock',
+      grupo: 'GM06',
+      principal: false,
+      orden: 2,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 63,
+      descripcion: 'Uso por Operario',
+      icono: 'bi bi-person-check',
+      link: '/reportes/operario',
+      grupo: 'GM06',
+      principal: false,
+      orden: 3,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
+    {
+      id: 64,
+      descripcion: 'Movimientos por Fecha / Herramienta',
+      icono: 'bi bi-calendar-range',
+      link: '/reportes/movimientos',
+      grupo: 'GM06',
+      principal: false,
+      orden: 4,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin, Roles.Operario, Roles.Supervisor, Roles.Administrativo]
+    },
 
-    // Recursos
-    { id: 27, descripcion: 'Recursos', icono: 'bi bi-truck', link: '/recursos', grupo: 'GM07', principal: true, orden: 7, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 28, descripcion: 'Proveedores', icono: 'bi bi-truck', link: '/recursos/proveedores', grupo: 'GM07', principal: false, orden: 1, estado: true, requiredAccess: [1, 2, 3, 4] },
-    { id: 29, descripcion: 'Obras', icono: 'bi bi-card-list', link: '/recursos/obras', grupo: 'GM07', principal: false, orden: 2, estado: true, requiredAccess: [1, 2, 3, 4] },
+    // 7. Configuración (solo SuperAdmin, con submenús)
+    {
+      id: 7,
+      descripcion: 'Configuración',
+      icono: 'bi bi-gear',
+      link: '/configuracion',
+      grupo: 'GM07',
+      principal: true,
+      orden: 7,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin]
+    },
+    {
+      id: 71,
+      descripcion: 'Parámetros Generales',
+      icono: 'bi bi-sliders',
+      link: '/configuracion/parametros',
+      grupo: 'GM07',
+      principal: false,
+      orden: 1,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin]
+    },
+    {
+      id: 72,
+      descripcion: 'Tipos de Estado',
+      icono: 'bi bi-tags',
+      link: '/configuracion/estados',
+      grupo: 'GM07',
+      principal: false,
+      orden: 2,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin]
+    },
+    {
+      id: 73,
+      descripcion: 'Alertas y Notificaciones',
+      icono: 'bi bi-bell-fill',
+      link: '/configuracion/alertas',
+      grupo: 'GM07',
+      principal: false,
+      orden: 3,
+      estado: true,
+      requiredAccess: [Roles.SuperAdmin]
+    },
   ];
 
   // Servicios inyectados
@@ -105,14 +269,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private el = inject(ElementRef);
   private sidebarService = inject(SidebarService);
 
-  // Nuevo: mapeo de roles a IDs
+  // Mapeo de roles a IDs
   private roleMapping = {
     'SuperAdmin': Roles.SuperAdmin,
     'Administrador': Roles.SuperAdmin,
     'Supervisor': Roles.Supervisor,
     'Operario': Roles.Operario,
     'Administrativo': Roles.Administrativo,
-    // Agregar más mapeos si es necesario
   };
 
   @HostListener('window:resize')
@@ -131,10 +294,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadUserData();
+
     this.subscription.add(
       this.authService.loggedIn$.subscribe((isLoggedIn: boolean) => {
         this.isLoggedIn = isLoggedIn;
-        // Mostrar u ocultar el sidebar según pantalla y login
         if (isLoggedIn) {
           if (this.isSmallScreen) {
             this.sidebarService.hide();
@@ -148,13 +311,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Suscribirse al estado del sidebar
     this.subscription.add(
       this.sidebarService.visible$.subscribe(v => {
         this.isSidebarVisible = v;
       })
     );
-
   }
 
   ngOnDestroy() {
@@ -170,27 +331,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const roleName = user.rolNombre ?? user.role ?? user.rol ?? '';
       const mappedRoleId = this.roleMapping[roleName as keyof typeof this.roleMapping];
 
-      // Usar el rol mapeado o el id_acceso directo
       this.id_acceso = mappedRoleId != null ? mappedRoleId : (user.id_acceso != null ? Number(user.id_acceso) : 0);
 
       const nombre = user.nombre || '';
       const apellido = user.apellido || '';
       this.nombreCompleto = `${nombre} ${apellido}`.trim() || 'Usuario';
 
-      // email (legacy)
       this.userEmail = user.email || '';
       this.displayEmail = this.userEmail && this.userEmail.length > 22 ? this.userEmail.slice(0, 19) + '...' : this.userEmail;
 
-      // legajo
       this.userLegajo = user.legajo ? String(user.legajo) : '';
       this.displayLegajo = this.userLegajo && this.userLegajo.length > 12 ? this.userLegajo.slice(0, 9) + '...' : this.userLegajo;
 
-      // Construir etiqueta descriptiva
       const legInfo = this.userLegajo ? `Legajo: ${this.userLegajo}` : '';
       const nameInfo = this.nombreCompleto ? ` — ${this.nombreCompleto}` : '';
       this.displayUserLabel = (legInfo + nameInfo).trim() || 'Usuario';
 
-      // role (mostrar el nombre del rol)
       this.displayRole = roleName ? String(roleName) : '';
 
       console.log('Usuario cargado:', {
@@ -200,7 +356,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
         user
       });
     } else {
-      // Sin usuario: valores por defecto
       this.id_acceso = 0;
       this.nombreCompleto = 'Usuario Demo';
       this.userEmail = '';
@@ -221,7 +376,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     ).sort((a, b) => a.orden - b.orden);
   }
 
-  // Métodos para el manejo del menú
   getSubMenus(menu: MenuItem): MenuItem[] {
     return this.allMenuItems.filter(item =>
       !item.principal &&
@@ -231,20 +385,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
     ).sort((a, b) => a.orden - b.orden);
   }
 
-  // Decide si un ítem del menú es visible para el usuario actual.
   private isItemVisibleForUser(item: MenuItem): boolean {
-    // Si no hay usuario logueado, ocultar todo
     if (!this.isLoggedIn || !this.id_acceso) return false;
 
-    // Primero, comprobar el requiredAccess declarado en el propio item
     const itemAllowed = item.requiredAccess && item.requiredAccess.length > 0
       ? item.requiredAccess.map(x => Number(x))
       : undefined;
 
-    // Segundo, intentar obtener la restricción del route padre (primer segmento)
     const parentAllowed = this.getParentRequiredAccessForLink(item.link);
 
-    // Si hay restricción en el padre, la efectiva es la intersección
     if (parentAllowed && parentAllowed.length > 0) {
       const allowed = itemAllowed && itemAllowed.length > 0
         ? itemAllowed.filter(x => parentAllowed.includes(x))
@@ -252,12 +401,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
       return allowed.includes(this.id_acceso);
     }
 
-    // Si no hay restricción en el padre, usar la del item (o permitir si no hay ninguna)
     if (!itemAllowed || itemAllowed.length === 0) return true;
     return itemAllowed.includes(this.id_acceso);
   }
 
-  // Buscar en Router.config la ruta padre (primer segmento) y leer su data.requiredAccess
   private getParentRequiredAccessForLink(link: string): number[] | undefined {
     try {
       const segments = link.split('/').filter(s => s.length > 0);
@@ -272,11 +419,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleSubMenu(menu: MenuItem) {
-    // Cerrar otros menús
-    this.visibleMenuItems.forEach(m => {
-      if (m !== menu) m.expanded = false;
-    });
-    menu.expanded = !menu.expanded;
+    if (this.getSubMenus(menu).length === 0 && menu.link) {
+      this.router.navigate([menu.link]); // Navegar directamente si no hay submenús
+      if (this.isSmallScreen) {
+        this.sidebarService.hide();
+      }
+    } else {
+      this.visibleMenuItems.forEach(m => {
+        if (m !== menu) m.expanded = false;
+      });
+      menu.expanded = !menu.expanded;
+    }
   }
 
   navigateToSubMenu(subMenu: MenuItem) {
@@ -293,7 +446,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleSidebar() {
-    // Delegar en el servicio para mantener estado global
     this.sidebarService.toggle();
   }
 
@@ -301,17 +453,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inicio']);
   }
 
-  // Método para obtener el nombre completo
   getNombreCompleto(): string {
     return this.nombreCompleto || 'Usuario';
   }
 
-  // Método de logout: muestra SweetAlert2 con estilo básico y centrado
   confirmLogout() {
-    // Cerrar el dropdown antes de abrir el diálogo
     this.isPerfilModalVisible = false;
 
-    // Usar AlertService (wrapper de SweetAlert2). Devuelve la promesa de Swal.fire
     this.alertaService
       .confirm('¿Estás seguro de que deseas cerrar sesión?', '¿Cerrar sesión?')
       .then((result: any) => {
@@ -322,35 +470,26 @@ export class SidebarComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Método para toggle del modal de perfil
   togglePerfilModal() {
     this.isPerfilModalVisible = !this.isPerfilModalVisible;
   }
 
-  // Método para manejar el evento del topbar
   onPerfilModalToggled(isVisible: boolean) {
     this.isPerfilModalVisible = isVisible;
   }
 
-  // Cerrar el dropdown si se hace click fuera
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
     const target = event.target as HTMLElement;
     if (!this.isPerfilModalVisible) return;
 
-    // Buscar los elementos toggle y dropdown dentro del componente
     const toggle = this.el.nativeElement.querySelector('.profile-toggle') as HTMLElement | null;
     const dropdown = this.el.nativeElement.querySelector('.profile-dropdown') as HTMLElement | null;
 
-    // Si el click fue dentro del toggle o dentro del dropdown, no cerrar
     if ((toggle && toggle.contains(target)) || (dropdown && dropdown.contains(target))) {
       return;
     }
 
-    // En cualquier otro caso, cerrar el dropdown
     this.isPerfilModalVisible = false;
   }
-
-
-
 }
